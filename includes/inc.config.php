@@ -16,10 +16,10 @@ if (file_exists("upgrade.php") && $running_upgrade_script!=true) {
 /******************* SITE LOCATIONS ***********************/
 
 // What is the domain name of the site?  
-define ("SERVER_DOMAIN","");	// no http://
+define ("SERVER_DOMAIN","");	// CT update - eg https://yoursite.co.uk. to remove all the inline instances and allow you to work with ssl. 
 
 // What is the path to the site? This is null for many sites.
-define ("SERVER_PATH_URL","");	// no ending slash
+define ("SERVER_PATH_URL","");	// CT update - like /members - no ending slash
 
 // The following only needs to be set if Pear has been
 // installed manually by downloading the files
@@ -38,6 +38,7 @@ define ("DATABASE_USERNAME","");
 define ("DATABASE_PASSWORD","");
 define ("DATABASE_NAME","");
 define ("DATABASE_SERVER","localhost"); // often "localhost"
+define ("DATABASE_PORT",""); // CT if needed. like 8889
 
 /**********************************************************/
 /********************* SITE NAMES *************************/
