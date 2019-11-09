@@ -33,7 +33,7 @@ if ($_REQUEST["printer_view"]!=1 || !$cUser->IsLoggedOn()) {
 }
 else {
 	
-	print '<head><link rel="stylesheet" href="http://'. HTTP_BASE .'/print.css" type="text/css"></link></head>';
+	print '<head><link rel="stylesheet" href="'. HTTP_BASE .'/print.css" type="text/css"></link></head>';
 }
 	
 if (!$pg) {

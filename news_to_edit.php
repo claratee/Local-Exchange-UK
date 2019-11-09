@@ -26,7 +26,7 @@ if ($form->validate()) { // Form is validated so processes the data
 
 function process_data ($values) {
 	global $cUser;
-	header("location:http://".HTTP_BASE."/news_edit.php?news_id=".$values["news_id"]);
+	header("location:".HTTP_BASE."/news_edit.php?news_id=".$values["news_id"]);
 	exit;	
 }
 

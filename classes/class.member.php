@@ -226,7 +226,7 @@ class cMember
 		// user isn't logged on, but is in a section of the site where they should be logged on.
 		$_SESSION['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
 		$cErr->SaveErrors();
-		header("location:http://".HTTP_BASE."/login_redirect.php");
+		header("location:". HTTP_BASE."/login_redirect.php");
 				
 		exit;
 	}

@@ -5,7 +5,7 @@ include_once("classes/class.uploads.php");
 require_once('Image/Transform.php');
 
 if (ALLOW_IMAGES!=true) 
-	header("location:http://".HTTP_BASE."/");
+	header("location:".HTTP_BASE."/");
 	
 if(!extension_loaded('gd')) {
 	$cErr->Error("The GD extension is required for photo uploads!");

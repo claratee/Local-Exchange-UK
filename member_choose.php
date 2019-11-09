@@ -42,7 +42,7 @@ function process_data ($values) {
 	else
 		$get_string = "";
 		
-	header("location:http://".HTTP_BASE."/". $_REQUEST["action"] .".php?mode=admin&member_id=".$values["member_id"] . $get_string);
+	header("location:".HTTP_BASE."/". $_REQUEST["action"] .".php?mode=admin&member_id=".$values["member_id"] . $get_string);
 	exit;	
 }
 

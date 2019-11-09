@@ -1,3 +1,14 @@
+
+
+
+
+moved inline database references to use those in global
+removed inline http so you can work with https - part of the HTTPBASE constant
+
+*****************************************************
+*****************************************************
+
+
 /* Local Exchange version 1.01 release notes */
 
 /* 02-02-2010 - changes by Chris Macdonald <chris@cdmweb.co.uk> and Rob Follett <robfol@gmail.com> */

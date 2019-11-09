@@ -33,10 +33,10 @@ function process_data ($values) {
 	
 	$member = $values["member"];
 	if(isset($values["btnDelete"])) {
-		header("location:http://".HTTP_BASE."/member_contact_delete.php?mode=admin&person_id=". $items->person_id[$member[0]][$member[1]]);
+		header("location:".HTTP_BASE."/member_contact_delete.php?mode=admin&person_id=". $items->person_id[$member[0]][$member[1]]);
 		exit;	
 	} else {
-		header("location:http://".HTTP_BASE."/member_contact_edit.php?mode=admin&member_id=".$items->id[$member[0]] ."&person_id=". $items->person_id[$member[0]][$member[1]]);
+		header("location:".HTTP_BASE."/member_contact_edit.php?mode=admin&member_id=".$items->id[$member[0]] ."&person_id=". $items->person_id[$member[0]][$member[1]]);
 		exit;	
 	}
 }

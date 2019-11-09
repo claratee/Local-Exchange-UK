@@ -21,7 +21,7 @@ if ($form->validate()) { // Form is validated so processes the data
 
 function process_data ($values) {
 	global $cUser;
-	header("location:http://".HTTP_BASE."/trade_history.php?mode=other&member_id=".$values["member_id"]);
+	header("location:".HTTP_BASE."/trade_history.php?mode=other&member_id=".$values["member_id"]);
 	exit;	
 }
 

@@ -22,10 +22,10 @@ if ($form->validate()) { // Form is validated so processes the data
 
 function process_data ($values) {
 	if(isset($values["btnDelete"])) {
-		header("location:http://".HTTP_BASE."/member_contact_delete.php?mode=self&person_id=". $values["person_id"]);
+		header("location:".HTTP_BASE."/member_contact_delete.php?mode=self&person_id=". $values["person_id"]);
 		exit;	
 	} else {
-		header("location:http://".HTTP_BASE."/member_contact_edit.php?mode=self&person_id=". $values["person_id"]);
+		header("location:".HTTP_BASE."/member_contact_edit.php?mode=self&person_id=". $values["person_id"]);
 		exit;	
 	}
 }

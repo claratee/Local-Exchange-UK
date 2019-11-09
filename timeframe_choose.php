@@ -33,7 +33,7 @@ function process_data ($values) {
 	$date = $values['to'];
 	$to = $date['Y'] . '-' . $date['F'] . '-' . $date['d'];
 		
-	header("location:http://".HTTP_BASE."/". $_REQUEST["action"] .".php?from=".$from . "&to=". $to);
+	header("location:".HTTP_BASE."/". $_REQUEST["action"] .".php?from=".$from . "&to=". $to);
 	exit;	
 } 
 

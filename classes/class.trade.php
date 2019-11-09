@@ -125,7 +125,7 @@ class cTrade {
 		if(!$balances->Balanced()) {
 			
 			if (OOB_EMAIL_ADMIN==true) // Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
-				$mailed = mail(EMAIL_ADMIN, "Database out of balance on ".SITE_LONG_TITLE."!", "Hi admin,\n\nWe thought you should know that whilst processing a trade the system detected that your trade database is out of balance! Obviously something has gone wrong somewhere along the line and we suggest you investigate the cause of this ASAP.\n\nhttp://".SERVER_DOMAIN.SERVER_PATH_URL."", EMAIL_FROM);
+				$mailed = mail(EMAIL_ADMIN, "Database out of balance on ".SITE_LONG_TITLE."!", "Hi admin,\n\nWe thought you should know that whilst processing a trade the system detected that your trade database is out of balance! Obviously something has gone wrong somewhere along the line and we suggest you investigate the cause of this ASAP.\n\n".HTTP_BASE, EMAIL_FROM);
 			
 			switch(OOB_ACTION) { // How should we handle the out-of-balance event?
 				
