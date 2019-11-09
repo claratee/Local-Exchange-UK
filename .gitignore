@@ -21,7 +21,7 @@
 /Log.php
 /Mail.php
 /OLE.php
-/PEAR.php
-/README
-/RELEASENOTES.txt
-/System.php
+.DS_store
+#/README
+#/RELEASENOTES.txt
+#/System.php
