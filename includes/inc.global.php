@@ -233,12 +233,12 @@ $global = ""; 	// $global lets other includes know that
 					// inc.global.php has been included
 
 //CT use this to map to the config appropriate for your context
-include_once("inc.config.php");
+include_once("inc.config-local.php");
 //include_once("inc.config-local.php");
 //include_once("inc.config-remote.php");
 
 /* ct third party cleaner for html - prevent xss atttack. */
-require_once VENDOR_PATH .  '/ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
+require_once VENDOR_PATH .  'ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
 
 
 

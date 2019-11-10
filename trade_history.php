@@ -38,7 +38,7 @@
 			
 		$output .= $p->Wrap($p->Wrap("Current balance: ", "span", "label") . $p->Wrap($member->getBalance() . " ". UNITS . ".", "span", "value ". $cssClass), "p", " summary");	
 		
-		$condition = "t.status = '" .TRADE_STATUS_APPROVED . "' AND (member_id_to='{$member_id}' OR member_id_from='{$member_id}') AND NOT t.type = '" . TRADE_TYPE_REVERSAL . "'";
+		$condition = "t.status = '" .TRADE_STATUS_APPROVED . "' AND (member_id_to='{$member_id}' OR member_id_from=\"{$member_id}\") AND NOT t.type = '" . TRADE_TYPE_REVERSAL . "'";
 	//trades relating to this member
 		$trades = new cTradeGroup();
 		$trades->Load($condition, $member_id);

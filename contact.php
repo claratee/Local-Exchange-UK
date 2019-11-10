@@ -78,7 +78,7 @@ $subject_string = "<input type=\"hidden\" id=\"subject\" name=\"subject\" value=
 if($cUser->isLoggedOn()){
 	//load full member - for email address
 	$member = new cMember();
-	$member->Load("m.member_id={$cUser->getMemberId()}");
+	$member->Load("m.member_id=\"{$cUser->getMemberId()}\"");
 	$contact_string = "
 		<input type=\"hidden\" id=\"contact_form_from_name\" name=\"contact_form_from_name\" value=\"{$member->getDisplayName()}\" />
 		<input type=\"hidden\" id=\"contact_form_from\" name=\"contact_form_from\" value=\"{$member->getPerson()->getEmail()}\" />

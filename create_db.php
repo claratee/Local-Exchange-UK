@@ -20,7 +20,7 @@ try{
 
 
   //CT remade
-  $cDB->Query("CREATE TABLE " . DATABASE_MEMBERS . " (
+  $success = $cDB->Query("CREATE TABLE " . DATABASE_MEMBERS . " (
     `member_id` varchar(15) NOT NULL,
     `password` varchar(255) NOT NULL,
     `member_role` char(1) NOT NULL,
@@ -39,9 +39,12 @@ try{
     `restriction` int(1) NOT NULL DEFAULT '0',
     `opt_in_list` varchar(1) NOT NULL DEFAULT 'N'
   ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_MEMBERS . " Created: {$success}.</p>");
+
+
   
   //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_PERSONS . " (
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_PERSONS . " (
   `person_id` mediumint(6) UNSIGNED NOT NULL,
   `member_id` varchar(15) NOT NULL,
   `primary_member` char(1) NOT NULL,
@@ -71,9 +74,10 @@ $cDB->Query("CREATE TABLE " . DATABASE_PERSONS . " (
   `age` varchar(20) DEFAULT NULL,
   `sex` varchar(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_PERSONS . " Created: {$success}.</p>");
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_LISTINGS . "
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_LISTINGS . "
   `listing_id` int(11) NOT NULL,
   `listing_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `title` varchar(60) NOT NULL,
@@ -86,19 +90,22 @@ $cDB->Query("CREATE TABLE " . DATABASE_LISTINGS . "
   `reactivate_date` date DEFAULT NULL,
   `type` char(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_LISTINGS . " Created: {$success}.</p>");
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_CATEGORIES . "((
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_CATEGORIES . "((
   `category_id` smallint(4) UNSIGNED NOT NULL,
   `parent_id` smallint(4) UNSIGNED DEFAULT NULL,
   `description` varchar(30) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+  print("<p>" . DATABASE_CATEGORIES . " Created: {$success}.</p>");
 
 //
-$cDB->Query("CREATE TABLE " . DATABASE_TRADES . "( trade_id mediumint(8) unsigned NOT NULL auto_increment, trade_date timestamp NOT NULL, status char(1) default NULL, member_id_from varchar(15) NOT NULL default '', member_id_to varchar(15) NOT NULL default '', amount decimal(8,2) NOT NULL default '0.00', category smallint(4) unsigned NOT NULL default '0', description varchar(255) default NULL, type char(1) NOT NULL default '', PRIMARY KEY (trade_id)) ".$engineSyntax."=InnoDB;");
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_TRADES . "( trade_id mediumint(8) unsigned NOT NULL auto_increment, trade_date timestamp NOT NULL, status char(1) default NULL, member_id_from varchar(15) NOT NULL default '', member_id_to varchar(15) NOT NULL default '', amount decimal(8,2) NOT NULL default '0.00', category smallint(4) unsigned NOT NULL default '0', description varchar(255) default NULL, type char(1) NOT NULL default '', PRIMARY KEY (trade_id)) ".$engineSyntax."=InnoDB;");
+  print("<p>" . DATABASE_TRADES . " Created: {$success}.</p>");
 
 //CT updated
-$cDB->Query("CREATE TABLE " . DATABASE_LOGGING . "(
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_LOGGING . "(
   `log_id` mediumint(8) UNSIGNED NOT NULL,
   `log_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `admin_id` varchar(15) NOT NULL,
@@ -107,17 +114,19 @@ $cDB->Query("CREATE TABLE " . DATABASE_LOGGING . "(
   `ref_id` varchar(15) NOT NULL,
   `note` varchar(100) DEFAULT NULL
 ) {$engineSyntax}=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_LOGGING . " Created: {$success}.</p>");
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_LOGINS . " (
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_LOGINS . " (
   `member_id` varchar(15) NOT NULL,
   `total_failed` mediumint(6) UNSIGNED NOT NULL DEFAULT '0',
   `consecutive_failures` mediumint(3) UNSIGNED NOT NULL DEFAULT '0',
   `login_event_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_LOGINS . " Created: {$success}.</p>");
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_FEEDBACK . "`feedback_id` mediumint(8) UNSIGNED NOT NULL,
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_FEEDBACK . "`feedback_id` mediumint(8) UNSIGNED NOT NULL,
   `feedback_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` char(1) NOT NULL,
   `member_id_author` varchar(15) NOT NULL,
@@ -126,22 +135,25 @@ $cDB->Query("CREATE TABLE " . DATABASE_FEEDBACK . "`feedback_id` mediumint(8) UN
   `rating` char(1) NOT NULL,
   `comment` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_FEEDBACK . " Created: {$success}.</p>");
 
-$cDB->Query("CREATE TABLE " . DATABASE_REBUTTAL . "( rebuttal_id mediumint(6) unsigned NOT NULL auto_increment, rebuttal_date timestamp NOT NULL, feedback_id mediumint(8) unsigned default NULL, member_id varchar(15) NOT NULL default '', comment varchar(255) default NULL, PRIMARY KEY (rebuttal_id)) ".$engineSyntax."=MyISAM;");
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_REBUTTAL . "( rebuttal_id mediumint(6) unsigned NOT NULL auto_increment, rebuttal_date timestamp NOT NULL, feedback_id mediumint(8) unsigned default NULL, member_id varchar(15) NOT NULL default '', comment varchar(255) default NULL, PRIMARY KEY (rebuttal_id)) ".$engineSyntax."=MyISAM;");
+  print("<p>" . DATABASE_REBUTTAL . " Created: {$success}.</p>");
 
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_NEWS . " (
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_NEWS . " (
   `news_id` mediumint(6) UNSIGNED NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `sequence` decimal(6,4) NOT NULL DEFAULT '0.0000',
   `expire_date` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+  print("<p>" . DATABASE_NEWS . " Created: {$success}.</p>");
 
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_SETTINGS . " (
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_SETTINGS . " (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `display_name` varchar(255) DEFAULT NULL,
@@ -153,12 +165,13 @@ $cDB->Query("CREATE TABLE " . DATABASE_SETTINGS . " (
   `descrip` text,
   `section` int(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_SETTINGS . " Created: {$success}.</p>");
 
 
 
 
 //CT remade
-$cDB->Query("CREATE TABLE " . DATABASE_UPLOADS . "(
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_UPLOADS . "(
   `upload_id` mediumint(6) UNSIGNED NOT NULL,
   `upload_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `title` varchar(100) NOT NULL,
@@ -166,26 +179,31 @@ $cDB->Query("CREATE TABLE " . DATABASE_UPLOADS . "(
   `filename` varchar(100) DEFAULT NULL,
   `note` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_UPLOADS . " Created: {$success}.</p>");
 
 //CT new for reset passwords the right way
-$cDB->Query("CREATE TABLE " . DATABASE_PASSWORD_RESET . "(`member_id` varchar(255) NOT NULL,
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_PASSWORD_RESET . "(`member_id` varchar(255) NOT NULL,
   `password_reset_token` varchar(255) NOT NULL,
   `password_reset_token_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
+  print("<p>" . DATABASE_PASSWORD_RESET . " Created: {$success}.</p>");
 
 
 //CT new - view based on search.
-$cDB->Query("CREATE TABLE " . DATABASE_VIEW_CONTACTS . "(
+ $success = $cDB->Query("CREATE TABLE " . DATABASE_VIEW_CONTACTS . "(
 `member_id` varchar(15)
 ,`email` varchar(40)
 ,`display_name` varchar(51)
 ,`email_updates` int(3) unsigned
 ,`member_role` char(1)
 );");
+  print("<p>" . DATABASE_VIEW_CONTACTS . " Created: {$success}.</p>");
 
-$cDB->Query("DROP TABLE IF EXISTS " . DATABASE_VIEW_CONTACTS);
+ $success = $cDB->Query("DROP TABLE IF EXISTS " . DATABASE_VIEW_CONTACTS);
+  print("<p>" . DATABASE_VIEW_CONTACTS . " Dropped for recreating as view: {$success}.</p>");
 
-$cDB->Query("CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW " . DATABASE_VIEW_CONTACTS . "AS  select `m`.`member_id` AS `member_id`,`p`.`email` AS `email`,concat(`p`.`first_name`,' ',`p`.`last_name`) AS `display_name`,`m`.`email_updates` AS `email_updates`,`m`.`member_role` AS `member_role` from (`localexchange-dev`.`lets_person` `p` left join `localexchange-dev`.`lets_member` `m` on((`m`.`member_id` = `p`.`member_id`))) where ((`m`.`status` = 'A') and (`m`.`account_type` <> 'F')) order by `m`.`member_id` ;");
+ $success = $cDB->Query("CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW " . DATABASE_VIEW_CONTACTS . "AS  select `m`.`member_id` AS `member_id`,`p`.`email` AS `email`,concat(`p`.`first_name`,' ',`p`.`last_name`) AS `display_name`,`m`.`email_updates` AS `email_updates`,`m`.`member_role` AS `member_role` from (`localexchange-dev`.`lets_person` `p` left join `localexchange-dev`.`lets_member` `m` on((`m`.`member_id` = `p`.`member_id`))) where ((`m`.`status` = 'A') and (`m`.`account_type` <> 'F')) order by `m`.`member_id` ;");
+  print("<p>" . DATABASE_VIEW_CONTACTS . " Created as view: {$success}.</p>");
 
 
 
@@ -201,25 +219,23 @@ $postcode = DEFAULT_ZIP_CODE;
 $country = DEFAULT_COUNTRY;
 $date = strftime("%Y-%m-%d", time());
 
-$cDB->Query("INSERT INTO " . DATABASE_MEMBERS . "(member_id, password, member_role, security_q, security_a, status, member_note, admin_note, join_date, expire_date, away_date, account_type, email_updates, balance) VALUES ('ADMIN','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '9',NULL,NULL,'A',NULL,'Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', '$date', NULL,NULL,'S',7,0.00);");
+ $success = $cDB->Query("INSERT INTO " . DATABASE_MEMBERS . "(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'S',7,0.00);");
+  print("<p>" . DATABASE_MEMBERS . " populated: {$success}.</p>");
 
-$cDB->Query("INSERT INTO " . DATABASE_PERSONS . "(person_id, member_id, primary_member, directory_list, first_name, last_name, mid_name, dob, mother_mn, email, phone1_area, phone1_number, phone1_ext, phone2_area, phone2_number, phone2_ext, fax_area, fax_number, fax_ext, address_street1, address_street2, address_city, address_state_code, address_post_code, address_country) VALUES (1,'admin','Y','Y','Special Admin','Account',NULL,NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL, NULL, '$city', '$state', '$postcode','$country');");
+ $success = $cDB->Query("INSERT INTO " . DATABASE_PERSONS . "(person_id, member_id, primary_member, directory_list, first_name, last_name, mid_name, dob, mother_mn, email, phone1_area, phone1_number, phone1_ext, phone2_area, phone2_number, phone2_ext, fax_area, fax_number, fax_ext, address_street1, address_street2, address_city, address_state_code, address_post_code, address_country) VALUES (1,'admin','Y','Y','Special Admin','Account',NULL,NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL, NULL, '{$city}', '{$state}', '{$postcode}','{$country}');");
+  print("<p>" . DATABASE_PERSONS . " populated: {$success}.</p>");
 
 
 // System account.
 if (defined("SYSTEM_ACCOUNT_ID")) {
-    $cDB->Query("
+     $success = $cDB->Query("
         INSERT INTO " .
-            DATABASE_MEMBERS . "(member_id, password, member_role, security_q,
-                security_a, status, member_note, admin_note, join_date,
-                expire_date, away_date, account_type, email_updates, balance)
-            VALUES ('system', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '0',
-                NULL, NULL, 'A', NULL, 'System account created during install.',
-                '$date', NULL, NULL, 'O', 7, 0.00)");
+            DATABASE_MEMBERS . "INSERT INTO `lets_member`(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('system','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'S',7,0.00);");
+      print("<p>" . DATABASE_MEMBERS . " system user populated: {$success}.</p>");
 
 
     $system_account_id = SYSTEM_ACCOUNT_ID;
-    $cDB->Query("
+     $success = $cDB->Query("
         INSERT INTO " .
             DATABASE_PERSONS . "(person_id, member_id, primary_member,
                 directory_list, first_name, last_name, mid_name, dob, mother_mn,
@@ -227,10 +243,12 @@ if (defined("SYSTEM_ACCOUNT_ID")) {
                 phone2_number, phone2_ext, fax_area, fax_number, fax_ext,
                 address_street1, address_street2, address_city,
                 address_state_code, address_post_code, address_country)
-            VALUES (2, '$system_account_id', 'Y', 'Y', 'system', 'system', NULL,
+            VALUES (2, '{$system_account_id}', 'Y', 'Y', 'system', 'system', NULL,
                 NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
                 NULL, NULL, NULL, NULL, '$city', '$state', '$postcode',
                 '$country')");
+       print("<p>" . DATABASE_PERSONS . " system user populated: {$success}.</p>");
+
 }
 
 
@@ -455,7 +473,7 @@ $cDB->Query("INSERT INTO ". DATABASE_SETTINGS . " (`id`, `name`, `display_name`,
 
 
 
-print("<h2>It could be done! Best check. Important: Check your tables have been created properly, and delete this file (create_db.php).</h2>");
+print("<h2>Success! Best check though :). Important: Check your tables have been created properly, and delete this file (create_db.php).</h2>");
 
 } catch(Exception $e){
   print_r($e->getMessage());

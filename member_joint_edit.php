@@ -11,7 +11,7 @@ try{
 		//CT can manage someone else's income shares - inactive users too, just in case
 		//CT TODO should be able to search active users to make sure that their inclme shares are not benefitting inactive account - sweep
 		$member = new cMemberUtils();
-		$condition="m.member_id={$_GET['member_id']} AND status=\"A\"";
+		$condition="m.member_id=\"{$_GET['member_id']}\" AND status=\"A\"";
 		$member->Load($condition);
 		$page_title = "Joint member for {$member->getDisplayName()} ({$member->getMemberId()})";
 
@@ -20,7 +20,7 @@ try{
 	} else {
 	//CT just use the stripped down logged-in user
 		$member = new cMemberUtils();
-		$condition="m.member_id={$cUser->getMemberId()} AND status=\"A\"";
+		$condition="m.member_id=\"{$cUser->getMemberId()}\" AND status=\"A\"";
 		$member->Load($condition);
 		$page_title = "Joint member";
 

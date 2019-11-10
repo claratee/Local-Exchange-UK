@@ -19,7 +19,7 @@ if($cUser->getMode() == "admin" && !empty($_REQUEST['member_id'])){
 }
 
 $member = new cMember();
-$member->Load("m.member_id={$member_id} AND m.status !='I'");
+$member->Load("m.member_id=\"{$member_id}\" AND m.status !=\"I\"");
 
 
 

@@ -26,6 +26,7 @@ abstract class cBasic2 {
     } 
     public function LoadDatabaseTable ($string_query)  {
     	global $cDB;
+    	//print($string_query ."<br />");
         if($query = $cDB->Query($string_query)){
 			if($field_array = $cDB->FetchArray($query)){	
 				return $this->Build($field_array);

@@ -17,7 +17,7 @@ try{
 		//CT can manage someone else's income shares - inactive users too, just in case
 		//CT TODO should be able to search active users to make sure that their inclme shares are not benefitting inactive account - sweep
 		$member = new cMember();
-		$condition="m.member_id={$_GET['member_id']} AND status=\"A\"";
+		$condition="m.member_id=\"{$_GET['member_id']}\" AND status=\"A\"";
 		$member->Load($condition);
 		$page_title = "Income sharing for {$member->getDisplayName()} ({$member->getMemberId()})";
 
