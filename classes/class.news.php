@@ -7,7 +7,7 @@ class cNews {
 	var $expire_date;
 	var $sequence;
 
-	function cNews ($title=null, $description=null, $expire_date=null, $sequence=null) {
+	function __construct($title=null, $description=null, $expire_date=null, $sequence=null) {
 		if($title) {
 			$this->title = $title;
 			$this->description = $description;
@@ -17,21 +17,21 @@ class cNews {
 	}
 	
 	function SaveNewNews () {
-		global $cDB, $cErr;
+		global $cDB, $cStatusMessage;
 		
 		$insert = $cDB->Query("INSERT INTO ". DATABASE_NEWS ." (title, description, expire_date, sequence) VALUES (".$cDB->EscTxt($this->title) .", ". $cDB->EscTxt($this->description) .", '". $this->expire_date->MySQLDate() ."', ". $this->sequence .");");
 
-		if(mysql_affected_rows() == 1) {
-			$this->news_id = mysql_insert_id();		
+		if(mysqli_affected_rows() == 1) {
+			$this->news_id = mysqli_insert_id();		
 			return true;
 		} else {
-			$cErr->Error("Could not save news item.");
+			$cStatusMessage->Error("Could not save news item.");
 			return false;
 		}		
 	}
 	
 	function SaveNews () {
-		global $cDB, $cErr;			
+		global $cDB, $cStatusMessage;			
 		
 		$update = $cDB->Query("UPDATE ".DATABASE_NEWS." SET title=". $cDB->EscTxt($this->title) .", description=". $cDB->EscTxt($this->description) .", expire_date='". $this->expire_date->MySQLDate(). "', sequence=". $this->sequence ." WHERE news_id=". $cDB->EscTxt($this->news_id) .";");
 
@@ -39,13 +39,13 @@ class cNews {
 	}
 	
 	function LoadNews ($news_id) {
-		global $cDB, $cErr;
+		global $cDB, $cStatusMessage;
 		
 //		$this->ExpireNews();
 				
 		$query = $cDB->Query("SELECT title, description, expire_date, sequence FROM ".DATABASE_NEWS." WHERE  news_id=". $cDB->EscTxt($news_id) .";");
 		
-		if($row = mysql_fetch_array($query)) {		
+		if($row = mysqli_fetch_array($query)) {		
 			$this->news_id = $news_id;
 			$this->title = $cDB->UnEscTxt($row[0]);
 			$this->description = $cDB->UnEscTxt($row[1]);		
@@ -53,7 +53,7 @@ class cNews {
 			$this->sequence = $row[3];
 			return true;
 		} else {
-			$cErr->Error("There was an error accessing the news table.  Please try again later.");
+			$cStatusMessage->Error("There was an error accessing the news table.  Please try again later.");
 			include("redirect.php");
 		}
 		
@@ -71,14 +71,14 @@ class cNewsGroup {
 	var $max_seq;
 	
 	function LoadNewsGroup () {
-		global $cDB, $cErr;
+		global $cDB, $cStatusMessage;
 		
 		$this->DeleteOldNews();
 	
 		$query = $cDB->Query("SELECT news_id FROM ".DATABASE_NEWS." ORDER BY sequence DESC;");
 		
 		$i = 0;				
-		while($row = mysql_fetch_array($query)) {
+		while($row = mysqli_fetch_array($query)) {
 			$this->newslist[$i] = new cNews;			
 			$this->newslist[$i]->LoadNews($row[0]);
 			$i += 1;

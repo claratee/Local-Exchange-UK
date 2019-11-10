@@ -2,194 +2,203 @@
 
 include_once("includes/inc.global.php");
 $p->site_section = SECTION_DIRECTORY;
-$p->page_title = "Member Directory";
 
 $cUser->MustBeLoggedOn();
 
-//include_once("classes/class.listing.php");
+
+
+$members = new cMemberGroup();
+
+//turns on extra options and controls
+if(!empty($_REQUEST['option'])) {
+	$members->setOption($_REQUEST['option']);
+}else{
+	$members->setOption("active");
+}
 
 //[chris] Search function
-if (SEARCHABLE_MEMBERS_LIST==true) {
-	
-	$output = "<form action=member_directory.php method=get>";
-	$output .= "Member ID: <input type=text name=uID size=4 value='".$_REQUEST["uID"]."'>
-		<br>Name (all or part): <input type=text name=uName value='".$_REQUEST["uName"]."'>
-		<br>Location (e.g. ".DEFAULT_CITY."): <input type=text name=uLoc value='".$_REQUEST["uLoc"]."'>";
-	
-	$orderBySel = array();
-	$orderBySel["".$_REQUEST["orderBy"].""]='selected';
-	
-	$output .= "<br>Order by: <select name='orderBy'>
-	<option value='idA' ".$orderBySel["idA"].">Membership No.</option>
-		<option value='fl' ".$orderBySel["fl"].">First Name</option>
-		<option value='lf' ".$orderBySel["lf"].">Last Name</option>
-		<option value='nh' ".$orderBySel["nh"].">Neighbourhood</option>
-		<option value='loc' ".$orderBySel["loc"].">Town</option>
-		<option value='pc' ".$orderBySel["pc"].">PostCode</option>
-		</select>";
-	$output .= "<p><input type=submit value='Search'></form>"; 
-}
+//[CT] built on it for readability and use. page has now become a one-stop shop for insights and management by admins, to remove duplication and help maintainability
 
-$output .=
-"<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH=\"100%\">
-  <TR BGCOLOR=\"#d8dbea\">
-    <TD><FONT SIZE=2><B>Member</B></FONT></TD>
-    <TD><FONT SIZE=2><B>Phone</B></FONT></TD>
-    <TD><FONT SIZE=2><B>" . ADDRESS_LINE_2 . "</B></FONT></TD>
-    <TD><FONT SIZE=2><B>" . ADDRESS_LINE_3 . "</B></FONT></TD>
-    <TD><FONT SIZE=2><B>" . ZIP_TEXT . "</B></FONT></TD>";
+	//language properties for fields
+	$field_array=array();
+	$field_array['member_id'] = 'Membership id';
+	$field_array['first_name'] = 'First Name';
+	$field_array['last_name'] = 'Last Name';
+	$field_array['address_street2'] = 'Neighbourhood';
+	$field_array['address_post_code'] = 'Postcode';
+	$field_array['address_city'] = 'Town/City';
+	$field_array['balance'] = 'Balance';
+	$field_array['expiry_date'] = 'Expiry date';
 
-if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->member_role >= 1)  {   
-	$output .= "<TD><FONT SIZE=2><B>Balance</B></FONT></TD>";
+		//select fom element
+	$order_by_selector = $p->PrepareFormSelector('order', $field_array, null, $_REQUEST["order"]);
 
-}
-$output .= "</TR>";
 
-//Phones (comma separated with first name in parentheses for non-primary phones)
-//Emails (comma separated with first name in parentheses for non-primary emails)
+	//admin only = options for filtering members
+	$option_field_array=array();
+	$option_field_array['active'] = 'All active members';
+	$option_field_array['all'] = 'Members: include inactive';
+	$option_field_array['inactive'] = 'Members: inactive only';
+	$option_field_array['restricted'] = 'Members: restricted';
+	$option_field_array['not-restricted'] = 'Members: not restricted';
+	$option_field_array['role-admin'] = 'Members: admin role';
+	$option_field_array['role-committee'] = 'Members: committee role';
 
-$member_list = new cMemberGroup();
-//$member_list->LoadMemberGroup();
+	$member_filter_options = $p->PrepareFormSelector('option', $option_field_array, null, $_REQUEST["option"]);
 
-// How should results be ordered?
-switch($_REQUEST["orderBy"]) {
-	
-	case("pc"):
-		
-		$orderBy = 'ORDER BY address_post_code asc';
-		
-	break;
-	
-	case("nh"):
-		
-		$orderBy = 'ORDER BY address_street2 asc';
-		
-	break;
-	
-	case("loc"):
-		
-		$orderBy = 'ORDER BY address_city asc';
-		
-	break;
-	
-	case("fl"):
-		
-		$orderBy = 'ORDER BY first_name, last_name';
-		
-	break;
-	
-	case("idD"):
-		
-		$orderBy = 'ORDER BY member_id desc';
-		
-	break;
-	
-	case("lf"):
-		
-		$orderBy = 'ORDER BY last_name, first_name';
-		
-	break;
-	
-	default:
-		
-		$orderBy = 'ORDER BY member_id asc';
-		
-	break;
-}
 
-// SQL condition string
-$condition = '';
-
-function buildCondition(&$condition,$wh) { // Add a clause to the SQL condition string
-	
-//	if (strlen($condition)>0)
-		$condition .= " AND ";
-	
-	$condition .= " ".$wh. " ";	
-}
-
-if ($_REQUEST["uID"]) // We' re searching for a specific member ID in the SQL
-	buildCondition($condition,"member.member_id='".trim($_REQUEST["uID"])."'");
-
-if ($_REQUEST["uName"]) { // We're searching for a specific username in the SQL
-	
-	$uName = trim($_REQUEST["uName"]);
-
-	// Does it look like we've been provided with a first AND last name?
-	$uName = explode(" ",$uName);
-	
-	$nameSrch = "person.first_name like '%".trim($uName[0])."%'";
-	
-	if ($uName[1]) { // surname provided
-		
-		$nameSrch .= " OR person.last_name like '%".trim($uName[1])."%'";
-		
+	$admin_extras = "";
+	if($cUser->getMode() == "admin"){
+		$admin_extras = "<p class=\"l_text\">
+			<label>
+				<span>[Admin] Options:</span>
+				{$member_filter_options}
+			</label>
+		</p>";
 	}
-	else // No surname, but term entered may be surname so apply to that too
-		$nameSrch .= " OR person.last_name like '%".trim($uName[0])."%'";
+
+	$output = "
+	<form class=\"layout1 summary\" action=\"member_directory.php\" method=\"get\" name=\"form1\" id=\"form1\">
+		<input type='hidden' name='mode' id='mode' value='{$cUser->getMode()}' />
+		{$admin_extras}
+		<p class=\"l_text\">
+			<label>
+				<span>Filter by:</span>
+				<input type='text' name='filter' id='filter' placeholder='Name/s, neighbourhood or postcode' value='".$_REQUEST["filter"]."'>
+			</label>
+		</p>
+		<p class=\"l_text\">
+			<label>
+				<span>Order by:</span>
+				{$order_by_selector}
+			</label>
+		</p>
+		<input name=\"submit\" value=\"Go\" type=\"submit\" />
+	</form>
+
+
+	";
+	//CT these are now global vars - less than ideal. TODO: put somewhere
+	list($condition, $label, $actions_keys) = $members->makeSettingFromOption();
+	//$condition = 1;
+	//$members->Load($condition, $order);
+	if(!empty($_REQUEST['filter'])){
+		//split by commas or spaces
+		$filters = explode( ", ", $_REQUEST['filter']);
+		if(sizeof($filters) == 1) $filters = explode( ",", $_REQUEST['filter']);
+		if(sizeof($filters) == 1) $filters = explode( " ", $_REQUEST['filter']);
+
+		$c = "";
+		foreach ($filters as $key => $like) {
+			//$c .= ($key==0) ? " AND " : " OR ";
+			$c .= "p.first_name LIKE '%{$like}%' OR ";
+			$c .= "j.first_name LIKE '%{$like}%' OR ";
+			$c .= "p.last_name LIKE '%{$like}%' OR ";
+			$c .= "j.last_name LIKE '%{$like}%' OR ";
+			$c .= "p.address_street2 LIKE '%{$like}%' OR ";
+			$c .= "p.address_city LIKE '%{$like}%'";
+		}
+		$condition .= " AND ({$c})";
+	}
+	$order_by = "m.member_id";
+	if(!empty($_REQUEST['order'])){
+		$order = $_REQUEST['order'];
+		switch ($order) {
+			case 'first_name':
+				$order_by = "p.first_name, m.member_id";
+				break;
+			case 'last_name':
+				$order_by = "p.last_name, m.member_id";
+				break;
+			case 'address_street2':
+				$order_by = "p.address_street2, m.member_id";
+				break;
+			case 'address_city':
+				$order_by = "p.address_city, m.member_id";
+				break;
+			case 'address_post_code':
+				$order_by = "p.address_post_code, m.member_id";
+				break;
+			case 'expiry_date':
+				$order_by = "m.expire_date, m.member_id";
+				break;
+			case 'balance':
+				$order_by = "m.balance, m.member_id";
+				break;
+		}
+	}
+
+	$members->Load($condition, $order_by);
+
+	$row_output = "";
+	$i=0;
+	$running_balance = 0; //CT shown only in admin mode - to check state of system. useful for checking inactive accounts that are not 0
+	foreach($members->getMembers() as $member) {
+		$running_balance = $running_balance + $member->getBalance();
+
+
+
+		//CT: use css styles not html colors - cleaner
+		$rowclass = ($i % 2) ? "even" : "odd";
+
+		//$postcode = $member->getPerson()->getAddressPostCode());
+		
+		$row_output .="<tr class='{$rowclass}'>
+		   <td>{$member->MemberLink()}</td>
+		   <td>{$member->getDisplayName()}</td>
+		   <td>{$member->getDisplayPhone()}";
+		//if (MEM_LIST_DISPLAY_EMAIL==true)  {   
+		//	$row_output .= "<div>{$member->getDisplayEmail()}</div>";
+		//}
+		$row_output .="</td><td>{$member->getDisplayLocation()}</td>";
+		
+		/*$row_output .="</td><td>{$member->getPerson()->getAddressStreet2()}";
+		if (!empty(trim($member->getPerson()->getAddressStreet2())) AND !empty(trim($member->getPerson()->getAddressCity()))){
+			$row_output  .= ", ";
+		}*/
+		
+
+		
+		if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->member_role >= 1){
+			$row_output .= "<td class='units balance'>{$member->getBalance()} </td>";
+		}
+		if ($cUser->getMode() == "admin")  {   
+			$row_output .= "<td class='action nowrap'>{$member->makeActionsButtons($actions_keys, $member->getMemberId())}</td>";
+		}
+		$row_output .= "</tr>";
+
+		$i++;
 	
-	
-	buildCondition($condition,"(".$nameSrch.")");
-}
-
-if ($_REQUEST["uLoc"]) // We're searching for a specific Location in the SQL
-	buildCondition($condition,"(person.address_post_code like '%".trim($_REQUEST["uLoc"])."%' OR person.address_street2 like '%".trim($_REQUEST["uLoc"])."%' OR person.address_city like '%".trim($_REQUEST["uLoc"])."%' OR person.address_country like '%".trim($_REQUEST["uLoc"])."%')");
-	
-// DEBUG: 
-//ECHO "SELECT ".DATABASE_MEMBERS.".member_id FROM ". DATABASE_MEMBERS .",". DATABASE_PERSONS." WHERE ". DATABASE_MEMBERS .".member_id=". DATABASE_PERSONS.".member_id AND primary_member='Y' ".$condition." $orderBy";
-
-// Do search in SQL
-$query = $cDB->Query("SELECT ".DATABASE_MEMBERS.".member_id FROM ". DATABASE_MEMBERS .",". DATABASE_PERSONS." WHERE ". DATABASE_MEMBERS .".member_id=". DATABASE_PERSONS.".member_id AND primary_member='Y' ".$condition." $orderBy;");
-		
-$i=0;
-
-while($row = mysql_fetch_array($query)) // Each of our SQL results
-{
-	$member_list->members[$i] = new cMember;			
-	$member_list->members[$i]->LoadMember($row[0]);
-	$i += 1;
-}
-		
-$i=0;
-
-if($member_list->members) {
-
-	foreach($member_list->members as $member) {
-		// RF next condition is a hack to disable display of inactive members
-		if($member->status != "I" || SHOW_INACTIVE_MEMBERS==true)  { // force display of inactive members off, unless specified otherwise in config file
-		
-			if($member->account_type != "F") {  // Don't display fund accounts
-				
-				if($i % 2)
-					$bgcolor = "#e4e9ea";
-				else
-					$bgcolor = "#FFFFFF";
-		
-				$output .=
-					"<TR VALIGN=TOP BGCOLOR=". $bgcolor .">
-					   <TD><FONT SIZE=2>". $member->AllNames()." (". $member->MemberLink() .")
-					       </FONT></TD>
-					   <TD><FONT SIZE=2>". $member->AllPhones() ."</FONT></TD>
-					   <TD><FONT SIZE=2>". $member->person[0]->address_street2 ."&nbsp;</FONT></TD>
-					   <TD><FONT SIZE=2>". $member->person[0]->address_city . "&nbsp;</FONT></TD>
-					   <TD><FONT SIZE=2>". $member->person[0]->address_post_code ."</FONT></TD>";
-					   
-				
-				if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->member_role >= 1)
-					$output .= "<TD><FONT SIZE=2>". $member->balance ."</FONT></TD>";
-					
-				$output .= "</TR>";
-				$i+=1;
-		 }
 	 } // end loop to force display of inactive members off
-}
-} 
 
-// $output .= "</TABLE>";
-// RF display active accounts 
-$output .= '<TR><TD colspan=5><br><br>Total of '.$i.' active accounts.</TD></TR></TABLE>';
+
+$output .="<div class=\"scrollable-x\"><table class=\"tabulated\">
+	<tr>
+		<th class='id' colspan='2'>Member</th>
+		<th>Contact</th>
+		<th>Location</th>";
+
+if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->getMemberRole() >= 1)  {   
+	$output .= "<th class='units balance'>Balance</th>";
+
+}
+if ($cUser->getMode() == "admin")  {   
+	$output .= "<th class='action'>Available actions</th>";
+}
+$output .= "</tr>
+			{$row_output}
+		</table></div>
+		<div class='summary'>{$label} ({$i} found).</div>";
+if($cUser->getMode() == "admin") {
+	$output .= "
+		<div class='summary'>[Admin] Total (for check balance): {$running_balance} " . UNITS . "</div>";
+}
+$p->page_title = $label;
+
+//$p->DisplayPage($output); 
+include_once("includes/inc.events.php");
 
 $p->DisplayPage($output); 
 
-include("includes/inc.events.php");
+
 ?>

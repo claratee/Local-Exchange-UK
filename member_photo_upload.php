@@ -5,10 +5,10 @@ include_once("classes/class.uploads.php");
 require_once('Image/Transform.php');
 
 if (ALLOW_IMAGES!=true) 
-	header("location:".HTTP_BASE."/");
+	header("location:http://".HTTP_BASE."/");
 	
 if(!extension_loaded('gd')) {
-	$cErr->Error("The GD extension is required for photo uploads!");
+	$cStatusMessage->Error("The GD extension is required for photo uploads!");
 	include("redirect.php");
 }
 
@@ -20,7 +20,7 @@ if($_REQUEST["mode"] == "admin") {
 	$cUser->MustBeLevel(1);
 	$member->LoadMember($_REQUEST["member_id"]);
 	
-	$p->page_title = "Upload/Replace photo for ".$member->member_id;
+	$p->page_title = "Upload/Replace photo for ".$member->getMemberId();
 } else {
 	$cUser->MustBeLoggedOn();
 	$member = $cUser;
@@ -28,10 +28,10 @@ if($_REQUEST["mode"] == "admin") {
 
 }
 
-$query = $cDB->Query("SELECT filename FROM ".DATABASE_UPLOADS." WHERE title=".$cDB->EscTxt("mphoto_".$member->member_id)." limit 0,1;");
+$query = $cDB->Query("SELECT filename FROM ".DATABASE_UPLOADS." WHERE title=".$cDB->EscTxt("mphoto_".$member->getMemberId())." limit 0,1;");
 		
-$num_results = mysql_num_rows($query);
-$mIMG = cMember::DisplayMemberImg($member->member_id);
+$num_results = mysqli_num_rows($query);
+$mIMG = cMember::DisplayMemberImg($member->getMemberId());
 
 if ($mIMG!=false) {
 			
@@ -41,7 +41,7 @@ if ($mIMG!=false) {
 else
 	$submitTxt = 'Upload Image';
 		
-$form->addElement('hidden', 'member_id', $member->member_id);
+$form->addElement('hidden', 'member_id', $member->getMemberId());
 $form->addElement('hidden', 'mode', $_REQUEST["mode"]);
 
 $form->addElement('file', 'userfile', 'Select file to upload:', array("MAX_FILE_SIZE"=>MAX_FILE_UPLOAD));
@@ -55,11 +55,11 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $member,$cDB,$cErr;
+	global $p, $member,$cDB,$cStatusMessage;
 
 	if ($_FILES['userfile']['size']==0) {
 			
-			$cErr->Error("Size of uploaded file is 0 bytes.");
+			$cStatusMessage->Error("Size of uploaded file is 0 bytes.");
 			$output = 'Size of uploaded file is 0 bytes.';
 			$p->DisplayPage($output);
 			exit;
@@ -70,11 +70,11 @@ function process_data ($values) {
 	$query = $cDB->Query("SELECT upload_date, type, title, filename, note FROM ".DATABASE_UPLOADS." WHERE title=".$cDB->EscTxt($name)." limit 0,1;");
 	
 	if ($query)
-		$num_results = mysql_num_rows($query);
+		$num_results = mysqli_num_rows($query);
 
 	if($num_results>0) { // Member already has a pic		
 	
-		$row = mysql_fetch_array($query);
+		$row = mysqli_fetch_array($query);
 		
 		$fileLoc = UPLOADS_PATH . stripslashes($row["filename"]);
 		

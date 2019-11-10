@@ -1,19 +1,18 @@
 <?php
 include_once("includes/inc.global.php");
-$p->site_section = SITE_SECTION_OFFER_LIST;
+//p->site_section = SITE_SECTION_OFFER_LIST;
 
+//print_r("sdas");
 if($cUser->IsLoggedOn())
 {
-	$list = "Welcome to ". SITE_LONG_TITLE .", ". $cUser->PrimaryName() ."!";
-	
-	if ($cUser->AccountIsRestricted())
-		$list .= "hi<p>".LEECH_NOTICE;
+	//ct - forward to profile page for something to do
+	header("location:" . SERVER_PATH_URL ."/member_dashboard.php");
 }
 else 
 {
-	$list = $cUser->UserLoginPage();
+	$output = $cUser->UserLoginPage();
+	$p->DisplayPage($output);
 }
 
-$p->DisplayPage($list);
 
 ?>

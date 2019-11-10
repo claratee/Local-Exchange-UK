@@ -8,7 +8,7 @@ $member_about->LoadMember($_REQUEST["about"]);
 $p->site_section = SECTION_FEEDBACK;
 $p->page_title = "Follow Up on Feedback";
 
-include("classes/class.feedback.php");
+include_once("classes/class.feedback.php");
 include("includes/inc.forms.php");
 include("includes/inc.forms.validation.php");
 
@@ -60,7 +60,7 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $member_about, $member, $cErr, $cUser, $feedback;
+	global $p, $member_about, $member, $cStatusMessage, $cUser, $feedback;
 	
 	$trade = new cTrade();
 	$trade->LoadTrade($feedback->trade_id);
@@ -69,7 +69,7 @@ function process_data ($values) {
 	if ($trade->member_from->member_id == $member->member_id and $trade->member_to->member_id == $member_about->member_id) {
 	} elseif ($trade->member_to->member_id == $member->member_id and $trade->member_from->member_id == $member_about->member_id) {
 	} else {
-		$cErr->Error("Members do not match the trade selected."); // Theoretically, must be a hacker
+		$cStatusMessage->Error("Members do not match the trade selected."); // Theoretically, must be a hacker
 		include("redirect.php");
 	}
 	
@@ -80,7 +80,7 @@ function process_data ($values) {
         // Log if enabled & entered by an admin
 		if(LOG_LEVEL > 0 and $_REQUEST["mode"] == "admin") {
             $cUser->MustBeLevel(2);
-			$log_entry = new cLogEntry (FEEDBACK, FEEDBACK_BY_ADMIN, $feedback->feedback_id);
+			$log_entry = new cLogging (FEEDBACK, FEEDBACK_BY_ADMIN, $feedback->feedback_id);
 			$log_entry->SaveLogEntry();	
 		}
 		$output = "Your feedback has been recorded.";

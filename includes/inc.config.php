@@ -30,6 +30,7 @@ define ("HTTP_BASE",SERVER_DOMAIN.SERVER_PATH_URL);
 define ("CLASSES_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/classes/");
 define ("IMAGES_PATH",SERVER_DOMAIN.SERVER_PATH_URL."/images/");
 define ("UPLOADS_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/uploads/");
+define ("VENDOR_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/vendor/"); //CT added extra libraries place
 
 /**********************************************************/
 /***************** DATABASE LOGIN  ************************/
@@ -205,18 +206,18 @@ define ("LISTING_UPDATES_MESSAGE", "<h1>".SITE_LONG_TITLE."</h1>The following li
 // a listing in a given period of time (default is six months), their 
 // listings will be set to expire and they will receive an email to 
 // that effect (as will the admin).
-define ("EXPIRE_INACTIVE_ACCOUNTS",false); 
+//define ("EXPIRE_INACTIVE_ACCOUNTS",false); 
 
 // If above is set, after this many days, accounts that have had no
 // activity will have their listings set to expire.  They will have 
 // to reactiveate them individually if they still want them.
-define ("MAX_DAYS_INACTIVE","180");  
+//define ("MAX_DAYS_INACTIVE","180");  
 
 // How many days in the future the expiration date will be set for
-define ("EXPIRATION_WINDOW","15");	
+//define ("EXPIRATION_WINDOW","15");	
 
 // How long should expired listings hang around before they are deleted?
-define ("DELETE_EXPIRED_AFTER","90"); 
+//define ("DELETE_EXPIRED_AFTER","90"); 
 
 
 // The following message is the one that will be emailed to the person 
@@ -268,8 +269,8 @@ define ("FAILED_LOGIN_LIMIT", 10);
 
 // Are magic quotes on?  Site has not been tested with magic_quotes_runtime on, 
 // so if you feel inclined to change this setting, let us know how it goes :-)
-define ("MAGIC_QUOTES_ON",false);
-set_magic_quotes_runtime (0);
+define ("MAGIC_QUOTES_ON",false); 
+//set_magic_quotes_runtime (0); //CT cannot use in PHP7
 
 // CSS-related settings.  If you'r looking to change colors, 
 // best to edit the CSS rather than add to this...
@@ -322,7 +323,7 @@ else if (DEFAULT_COUNTRY == "United Kingdom") {
 }
 
 
-if (DEBUG) error_reporting(E_ALL);
+if (DEBUG) error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
 	else error_reporting(E_ALL ^ E_NOTICE);
 
 define("LOAD_FROM_SESSION",-1);  // Not currently in use

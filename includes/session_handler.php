@@ -26,6 +26,7 @@
  * Last update: 2007-08-06 1254 +0100
  */
 
+// CT - not using this - see what breaks!
 
 session_set_save_handler("m_open", "m_close", "m_read", "m_write",
                                                   "m_destroy", "m_clean");

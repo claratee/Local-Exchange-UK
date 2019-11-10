@@ -10,7 +10,7 @@ require_once("HTML/Table.php");
 class cTable extends HTML_Table {
 	var $curr_row=0;
 
-	function cTable ($attrs=null) {
+	function __construct($attrs=null) {
 		global $CONTENT_TABLE;
 	
 		if(!$attrs)

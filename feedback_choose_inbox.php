@@ -5,7 +5,7 @@ include_once("includes/inc.global.php");
 $p->site_section = FEEDBACK;
 $p->page_title = "Leave Feedback";
 
-include("classes/class.feedback.php");
+include_once("classes/class.feedback.php");
 
 $member = new cMember;
 
@@ -18,6 +18,8 @@ if($_REQUEST["mode"] == "admin") {
 }
 
 $since_date = new cDateTime("-". DAYS_REQUEST_FEEDBACK ." days");
+
+//CT I think this is broken
 $tradegrp = new cTradeGroup($member->member_id, $since_date->MySQLDate()); 
 $tradegrp->LoadTradeGroup();
 
@@ -27,7 +29,7 @@ $output .= "<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH=\"100%\">";
 $i=0;
 
 foreach($tradegrp->trade as $trade) {	
-	if($trade->type == TRADE_REVERSAL or $trade->status == TRADE_REVERSAL)
+	if($trade->type == TRADE_TYPE_REVERSAL or $trade->status == TRADE_TYPE_REVERSAL)
 		continue;	// No reason to list reversed trades, so let's skip 'em
 
 	if($i % 2)

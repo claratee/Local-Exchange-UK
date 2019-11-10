@@ -1,42 +1,36 @@
 <?php
 include_once("includes/inc.global.php");
-
-if (isset($_GET["action"]))
+if (!empty($_GET["action"])){
 	$action = $_GET["action"];
+}
 
-if (isset($_POST["action"]))
+if (!empty($_POST["action"])){
 	$action = $_POST["action"];
+}
 
 if ($action=="logout")
 {
 	$cUser->Logout();
+	$redir_url="member_dashboard.php";
 }
 
 if ($action=="login")
 {
-	if (isset($_POST["location"]))
+	if (!empty($_POST["location"])){
 		$redir_url = $_POST["location"];
-
-	$user="";
-	$pass="";
-	if (isset($_POST["user"]))
-		$user = $_POST["user"];
-
-	if (isset($_POST["pass"]))
-		$pass = $_POST["pass"];
-
-	if ($user=="" || $pass=="")
-	{
-		if ($user=="")
-		{
-			$cErr->Error("Please enter a user name to log in.");
-		} else {
-			$cErr->Error("Please enter a password to log on with this account.  If you've forgotten your password, you can request a new one.");
-		}
-
-	} else {
-		$cUser->Login($user,$pass);
 	}
+
+
+	$member_id = $_POST["user"];
+
+	$password = $_POST["pass"];
+	//
+	try{
+		$cUser->Login($member_id,$password);
+	} catch(Exception $e){
+		$cStatusMessage->Error($e->getmessage());
+	}
+
 
 
 }

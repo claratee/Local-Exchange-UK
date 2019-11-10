@@ -14,7 +14,7 @@ include("includes/inc.forms.php");
 $cUser->MustBeLevel(2);
 
 if (OVRIDE_BALANCES!=true) // Provision for overriding member balances has been turned off, return to the admin menu
-	header("location:http://".HTTP_BASE."/admin_menu.php");
+	header("location:".HTTP_BASE."/admin_menu.php");
 	
 $member = new cMember;
 $member->LoadMember($_REQUEST["member_id"]);
@@ -53,7 +53,7 @@ if ($form->validate()) { // Form is validated so processes the data
 // The form has been submitted with valid data, so process it   
 //
 function process_data ($values) {
-	global $p, $cUser,$cErr, $cDB;
+	global $p, $cUser,$cStatusMessage, $cDB;
 	
 	$balance = trim($values["balance1"]).".".trim($values["balance2"]);
 	

@@ -40,9 +40,9 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $cErr;
+	global $p, $cStatusMessage;
 	
-	if(isset($values["btnDelete"])) {
+	if(!empty($values["btnDelete"])) {
 		$category = new cCategory;
 		$category->LoadCategory($values["category"]);
 		if($category->HasListings()) {
@@ -63,7 +63,7 @@ function process_data ($values) {
 				$output = "The category has been deleted.";
 		}
 	} else {
-		header("location:". HTTP_BASE."/category_edit.php?category_id=". $values["category"]);
+		header("location:".HTTP_BASE."/category_edit.php?category_id=". $values["category"]);
 		exit;	
 	}
 	

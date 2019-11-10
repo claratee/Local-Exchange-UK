@@ -1,6 +1,6 @@
 <?php
 include_once("includes/inc.global.php");
-include("classes/class.uploads.php");
+include_once("classes/class.uploads.php");
 include("includes/inc.forms.php");
 
 $cUser->MustBeLevel(1);
@@ -32,7 +32,7 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $cErr, $newsletters;
+	global $p, $cStatusMessage, $newsletters;
 
 	$deleted = 0;
 	
@@ -51,7 +51,7 @@ function process_data ($values) {
 	elseif($deleted > 1)
 		$output = $deleted . " newsletters deleted.";	
 	else
-		$cErr->Error("There was an error deleting the listings. Did you check any boxes?");
+		$cStatusMessage->Error("There was an error deleting the listings. Did you check any boxes?");
 		
    $p->DisplayPage($output);
 }

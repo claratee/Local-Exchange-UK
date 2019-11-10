@@ -11,7 +11,7 @@ class cSite {
 	var $redirect_url;
 	var $magic_quotes_gpc_status;
 	var $magic_quotes_runtime_status;
-	var $site_sections  // An array of cSiteSection objects
+	var $site_sections;  // An array of cSiteSection objects
 	
 	function SetMagicQuotesGPC ($turn_on) {
 		if($turn_on) {
@@ -55,17 +55,18 @@ class cSite {
 		$this->site_sections[] = new cSiteSection($description, $url);
 	}
 
-}
 
-class cSiteSection {
-	var $description;
-	var $url;
-	
-	function cSiteSection($description, $url) {
-		$this->description = $description;
-		$this->url = $url;
-	}
 }
+//CT TODO - delete
+// class cSiteSection {
+// 	var $description;
+// 	var $url;
+	
+// 	function cSiteSection($description, $url) {
+// 		$this->description = $description;
+// 		$this->url = $url;
+// 	}
+// }
 
 $cSite = new cSite;
 

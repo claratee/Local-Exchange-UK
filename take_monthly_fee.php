@@ -108,7 +108,7 @@ function already_fee_takenp()
 
     // How many times a monthly fee has been taken this month?
     if ($result)
-	    $trade_count = mysql_result($result, 0, 0);
+	    $trade_count = mysqli_result($result, 0, 0);
 
     if($trade_count)
     {
@@ -144,7 +144,7 @@ function transfer_fee($tid)
     $system_account_id = SYSTEM_ACCOUNT_ID;
     $member_table = DATABASE_MEMBERS;
     $trade_table = DATABASE_TRADES;
-    $trade_type = TRADE_MONTHLY_FEE;
+    $trade_type = TRADE_TYPE_MONTHLY_FEE;
     
     // Transaction starts.
     $cDB->Query("BEGIN");
@@ -161,7 +161,7 @@ function transfer_fee($tid)
     $ts = time();
 		//$ts = 'trade_date'; // Auto - probably gonna foul up the Refund Monthly Fee bit
 		
-    while ($row = mysql_fetch_object($result0))
+    while ($row = mysqli_fetch_object($result0))
     {
         if ( !in_array($row->member_id, $monthly_fee_exempt_list))
         {

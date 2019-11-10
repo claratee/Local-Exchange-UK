@@ -36,7 +36,7 @@ function select_time()
     $year = strftime("%Y", $ts);
     $month = strftime("%m", $ts);
     $trade_type = "S";
-    $refunded = TRADE_MONTHLY_FEE_REVERSAL;
+    $refunded = TRADE_TYPE_MONTHLY_FEE_REVERSAL;
 
     // We'll show only the monthly fees taken during the last 12 months.
     $date_year_ago = ($year - 1) . "-$month-01";
@@ -47,7 +47,7 @@ function select_time()
     $result = $cDB->Query($sql);
 
     $selection_list = "";
-    while ($row = mysql_fetch_object($result))
+    while ($row = mysqli_fetch_object($result))
     {
         $selection_list .=
             "<option value=\"$row->trade_date\">$row->trade_date</option>";
@@ -144,14 +144,14 @@ function transfer_fee($tid, $trade_time) {
    
     $result = $cDB->Query($sql);
 		
-		$row = mysql_fetch_array($result);
+		$row = mysqli_fetch_array($result);
 
     $monthly_fee = $row["amount"];
     $system_account_id = SYSTEM_ACCOUNT_ID;
     $member_table = DATABASE_MEMBERS;
     $trade_table = DATABASE_TRADES;
-    $trade_type_monthly = TRADE_MONTHLY_FEE;
-    $trade_type = TRADE_MONTHLY_FEE_REVERSAL;
+    $trade_type_monthly = TRADE_TYPE_MONTHLY_FEE;
+    $trade_type = TRADE_TYPE_MONTHLY_FEE_REVERSAL;
     $desc = "Refund for ".$row["description"]." taken on $trade_time";
     
     // Transaction starts.
@@ -170,7 +170,7 @@ function transfer_fee($tid, $trade_time) {
     // this transaction.  This is for the ease of identification of this
     // batch of transfer later.
  
-    while ($row = mysql_fetch_object($result0))
+    while ($row = mysqli_fetch_object($result0))
     {
     		
     		if ( !in_array($row->member_id, $monthly_fee_exempt_list)) {

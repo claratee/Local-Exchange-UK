@@ -6,34 +6,144 @@ if (!isset($global))
 
 class cDatabase
 {
-	var $isConnected;
-	var $db_link;
+	private $isConnected;
+	private $db_link;
+	//CT counters for stats - to show improvements in db efficiency
+	private $count_connection;
+	private $count_query;
 
-	function Database()
-	{
+	function Database() {
 		$this->isConnected = false;
+		//CT init counters
+		$this->count_connection = 0;
+		$this->count_query = 0;
 	}
+
+	// function Connect()
+	// {
+
+	// 	if ($this->isConnected){
+	// 		return;
+	// 	}
+	// 	$link = ($GLOBALS["___mysqli_ston"] = mysqli_connect(DATABASE_SERVER,DATABASE_USERNAME,DATABASE_PASSWORD)) or die("Problem occur in connection");  
+
+	// 	//$db = ((bool)mysqli_query($link, "USE " . info));  
+	// 	$this->db_link = $link;
+	// 	$this->isConnected=true;
+	// 	// CT iterate
+	// 	$this->count_connection++;
+	// 	//print("Connection" . $this->count_connection);
+	// }
 
 	function Connect()
 	{
-		if ($this->isConnected)
-			return;
+		if(!empty(DATABASE_PORT)){
+			$db_link = mysqli_connect(DATABASE_SERVER,DATABASE_USERNAME,DATABASE_PASSWORD, DATABASE_NAME, DATABASE_PORT);
+		} else{
+			$db_link = mysqli_connect(DATABASE_SERVER,DATABASE_USERNAME,DATABASE_PASSWORD, DATABASE_NAME);
+		}
+		// Check connection
+		if (mysqli_connect_errno())
+		{
+			echo "Failed to connect to MySQL: " . mysqli_connect_error();
+		} else{
+	//$db = ((bool)mysqli_query($link, "USE " . info));  
+			$this->db_link = $db_link;
+			$this->isConnected=true;
+			// CT iterate
+			$this->count_connection++;
+			//print("Connection" . $this->count_connection);
 
-		$this->db_link = mysql_connect(DATABASE_SERVER,DATABASE_USERNAME,DATABASE_PASSWORD)
-		       or die("Could not connect");	// TODO: fix error messages
-		mysql_selectdb(DATABASE_NAME)
-		       or die("Could not select database");	// TODO: fix error messages
-		$this->isConnected=true;
+		}
+		
+	}
+	function Disconnect()
+	{
+		if ($this->isConnected){
+			mysqli_close($db_link);
+			$this->isConnected=false;
+			//echo "disconnected";
+		}
 	}
 
-	function Query($thequery)
-	{
-		if (!$this->isConnected)
-			$this->Connect();
 
-		$ret = mysql_query($thequery);
-//		       or die ("Query failed: ".mysql_errno() . ": " . mysql_error()); // TODO: fix error messages
-		return $ret;
+
+	function Query($string_query)
+	{
+		//CT: 
+		global $cStatusMessage;
+		// CT iterate
+
+		if (!$this->isConnected) $this->Connect();
+
+		$result_message="";
+		//CT: why is this not a resource?
+		//print_r(mysqli_query($this->db_link, $string_query));
+		if($result = mysqli_query($this->db_link, $string_query)) {
+			if(gettype($result) == "object"){
+				//ct debug
+				//$result_message .= "| R: " . $this->AffectedRows();
+			}
+			
+		} else{
+			return false;
+			//throw new Exception("Unexpected response from the database.");
+		}
+		 
+
+		$this->count_query++;
+		//debug db call - uncomment out to get a print
+		//$debug = true;
+		$debug = DEBUG;
+		//CT THIS IS TEMPORARY
+		if(!empty($_REQUEST['debug']) && $cUser->IsLoggedOn()){
+			if($_REQUEST['debug']) $debug = true;
+		}
+		if($debug) $cStatusMessage->Info("Q.{$this->count_query}: {$string_query} {$result_message}");
+		
+		return $result;
+		//CT: uncomment when finishing demo
+	
+
+//		       or die ("Query failed: ".mysqli_errno() . ": " . mysqli_error()); // TODO: fix error messages
+		//$this->Disconnect();
+		//showMessage($this->NumRows($ret));
+		
+	}
+
+	function QueryReturnId($string_query)
+	{
+		//CT: returns the last used ID on an insert
+		global $cStatusMessage;
+		$ret = $this->Query($string_query);
+		if(mysqli_insert_id($this->db_link)) {
+			return mysqli_insert_id($this->db_link);
+		}else{
+			return $ret;
+		}
+
+		//$last_used_id = mysqli_insert_id($this->db_link);
+		//$cStatusMessage->Info("Last used id: " . $last_used_id);
+		return $last_used_id;
+	}
+
+	function FetchArray($thequery)
+	{
+		if(empty($thequery)) return false;
+		//potential backward compatibility 
+		return mysqli_fetch_array($thequery);
+	}
+
+	function FetchObject($thequery)
+	{
+		if(empty($thequery)) return false;
+		return mysqli_fetch_object($this->$db_link, $thequery);
+	}
+
+	function AffectedRows()
+	{
+		//return mysqli_affected_rows($this->$db_link);
+		return mysqli_affected_rows($this->db_link);
 	}
 
 	function NumRows($thequery)
@@ -41,9 +151,9 @@ class cDatabase
 		if (!$this->isConnected)
 			$this->Connect();
 
-		$result = mysql_query($thequery);
+		$result = $this->Query($thequery);
 
-		return mysql_num_rows($result);
+		return mysqli_num_rows($this->db_link);
 	}
 
 	function MakeSimpleTable($theQuery)
@@ -52,7 +162,7 @@ class cDatabase
 
 		/* Printing results in HTML */
 		$table = "<TABLE>\n";
-		while ($line = mysql_fetch_array($query, MYSQL_ASSOC)) {
+		while ($line = mysqli_fetch_array($query, mysqli_ASSOC)) {
 			$table .= "\t<TR>\n";
 			foreach ($line as $col_value)
 			{
@@ -88,37 +198,106 @@ class cDatabase
 		}
 	}
 */
+   // CT adjusted so that nulls dont overwrite. 
+    function BuildUpdateQueryStringFromArray($array){
+        $i=0;
+        $string = "";
+        //name value pair in array creates a Update query set statement
+        foreach($array as $key=>$value){
+        	//not sure if this is possible
+        	if(!is_null($key)){
+	            if($i > 0) $string .= ", ";
+	            $string .= " `{$key}`=\"{$this->EscTxt($value)}\"";
+	        	$i++;
+	    	}
+            
+        }
+        return $string;
+    }
+    //returns array of the two parts needed for the insert statement - keys and values
+    function BuildInsertQueryStringsFromArray($array) {
+        $i=0;
+        $keys_as_string="";
+        $values_as_string="";
+        foreach($array as $key=>$value){
+            if($i > 0){
+                $keys_as_string .=", ";
+                $values_as_string .=", ";
+            }
+            $keys_as_string .= "`{$key}`";
+            //set appropriate type for communication with mysql
+            if(is_int($value)){
+            	$values_as_string .= "{$value}";
+            }else{
+            	$values_as_string .= "\"{$this->EscTxt($value)}\"";
+            }
+            
+            $i++;
+        }
+
+        return array($keys_as_string, $values_as_string);
+    }
+
+       // CT arrays of fields wanted 
+    function BuildSelectQueryStringFromArray($array){
+        $i=0;
+        $string = "";
+        //name value pair in array creates a Update query set statement
+        foreach($array as $key=>$value){
+        	//make sure nulls arent set by accident in the db, now that the objects dont load all fields
+            if($i > 0) $string .= ", ";
+            //m.member_id as member_id to avoid collisions in namespace
+            $string .= " {$key} as $value";
+            $i++;
+        }
+        return $string;
+    }
+
+    //helper function to build update query
+    function BuildUpdateQuery($table_name, $array, $condition) {
+
+        $vars_as_string = $this->BuildUpdateQueryStringFromArray($array);
+        $string = "UPDATE `{$table_name}` SET {$vars_as_string} WHERE {$condition};";
+        return $string;
+    }
+    //helper function to build insert query
+    function BuildInsertQuery($table_name, $array) {
+        //this is for php7. php5 has these flipped
+        list($keys_as_string, $vars_as_string) = $this->BuildInsertQueryStringsFromArray($array);
+        $string = "INSERT INTO `{$table_name}` ({$keys_as_string}) VALUES ({$vars_as_string});";
+        return $string;
+    }    
+    //helper function to build select query
+    //will take in alias if needed -  $table_name_and_alias = member m
+    //CT condition can be cheted to have order by and limit associated with it
+    // eg $condition = "m.member_id='{$member_id}' order by m.memberId ASC limit 1";
+   function BuildSelectQuery($table_name, $array, $joins, $condition) {
+        $vars_as_string = $this->BuildSelectQueryStringFromArray($array);
+
+         $string = "SELECT {$vars_as_string} FROM {$table_name} {$joins} WHERE {$condition};";
+        return $string;
+    }
+        //helper function to build delete query
+    function BuildDeleteQuery($table_name, $condition) {
+        //$vars_as_string = $this->BuildUpdateQueryStringFromArray($array);
+        $string = "DELETE FROM `{$table_name}` WHERE {$condition};";
+        return $string;
+    }
 
 	/* A HTML screening function, an optional additional security step for data being submitted for storage in MySQL */
 	function ScreenHTML($var) {
 		
 		global $cUser,$allowedHTML;
 		
-		if (STRIP_JSCRIPT==true) { // Strip any obvious JavaScript
-		
-			$var = str_replace(array('javascript:','<script>','< script','</script'),' ',$var);
-		}
-		
-		if ($cUser->member_role>=HTML_PERMISSION_LEVEL) // User has free reign to submit any and all HTML
-			return $var;
-
-		// This next bit is messy but ProcessHTMLTag works on the assumption of a 2-dimensional array so we have to convert our existing 1-dimensional array
-		// Would be tidier to rewrite ProcessHTMLTag to work with 1-dimensional arrays but for now this will do
-		$allow = array();
-		
-		if ($allowedHTML) {
-			
-			foreach($allowedHTML as $tag) {
-				
-				$allow[$tag] = $tag;
-			}
-		}
+		// ct using the htmlpurifier library
+		$config = HTMLPurifier_Config::createDefault();
+		$purifier = new HTMLPurifier($config);
+		$clean_html = $purifier->purify($var);
 	
-		// Screen all the tags in this $var
-		$var = preg_replace("/<(.*?)>/e","cDatabase::ProcessHTMLTag(StripSlashes('\\1'), \$allow)",$var);
-			
-		return $var;
+		return $clean_html;
 	}
+
+	
 	
 	/* Takes an individual HTML tag and checks it
 			$allowed - an Array containing exceptions (e.g. em, i) */
@@ -163,38 +342,10 @@ class cDatabase
 		}
 	}
 	
-/*
- * Warning on mysql_escape_string()
- *
- * This function will escape the unescaped_string, so that it is safe to place
- * it in a mysql_query(). This function is deprecated.
- *
- * This function is identical to mysql_real_escape_string() except that
- * mysql_real_escape_string() takes a connection handler and escapes the string 
- * according to the current character set. mysql_escape_string() does not take a
- * connection argument and does not respect the current charset setting. 
- *
- * Despite this warning, mysql_real_escape_string() was not used becuase it
- * requires a database connection which is not always present when EscTxt() or
- * EscTxt2() is called.
- */
-
+// CT cleanup - just use mysqli_real_escape_string  
+	
     function EscTxt($text) {
-    		
-    		// An optional security step in case someone tries to put something 'evil' in our SQL
-    		$text = cDatabase::ScreenHTML($text);
-    		
-        if( !empty($text)) {
-            if(get_magic_quotes_gpc()) {
-                $text = stripslashes($text);
-            }
-
-            return "'" . mysql_escape_string($text) . "'";
-        } else if(is_numeric($text)) {
-            return "'$text'";
-        } else {
-            return "NULL";
-        }
+    	return mysqli_real_escape_string($this->db_link, $text);
     }
 
 
@@ -204,7 +355,7 @@ class cDatabase
                 $text = stripslashes($text);
             }
 
-            return "='" . mysql_escape_string($text) . "'";
+            return "='" . mysqli_real_escape_string($this->db_link, $text) . "'";
         } else if(is_numeric($text)) {
             return "='$text'";
         } else {
@@ -214,11 +365,10 @@ class cDatabase
 
 
 	function UnEscTxt($text) {
-		if(MAGIC_QUOTES_ON)
-			return $text;
-		else
-			return stripslashes($text);
+		return stripslashes($text);
 	}	
+
+
 
 }
 

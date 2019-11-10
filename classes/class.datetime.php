@@ -13,8 +13,8 @@ class cDateTime {
 	var $minute;
 	var $second;
 	
-	function cDateTime ($date_str, $redirect=true) { // TODO: There is a problem with timestamp()
-		global $cErr;											 // for dates much earlier than 1970.	
+	function __construct ($date_str, $redirect=true) { // TODO: There is a problem with timestamp()
+		global $cStatusMessage;											 // for dates much earlier than 1970.	
 		
 		if(!$date_str)
 			return;
@@ -27,7 +27,7 @@ class cDateTime {
 			if(!$redirect)
 				return false;
 				
-			$cErr->Error("Date format invalid in cDateTime.");
+			$cStatusMessage->Error("Date format invalid in cDateTime.");
 			include("redirect.php");
 		}
 		

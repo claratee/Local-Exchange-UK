@@ -34,7 +34,7 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $cErr;
+	global $p, $cStatusMessage;
 	
 	$category = new cCategory($values["category"]);
 	

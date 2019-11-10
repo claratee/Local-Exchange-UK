@@ -5,395 +5,448 @@ if (!isset($global))
 	die(__FILE__." was included without inc.global.php being included first.  Include() that file first, then you can include ".__FILE__);
 }
 
-include_once("class.category.php");
-include_once("class.feedback.php");
+// include_once("class.category.php");
+//include_once("class.feedback.php");
 
-class cTrade {
-	var $trade_id;
-	var $trade_date;
-	var $status;
-	var $member_from;
-	var $member_to;
-	var $amount;
-	var $category;		// this will be an object of class cCategory
-	var $description;
-	var $type;
-	var $feedback_buyer;	// added after trade completed; object of type cFeedback
-	var $feedback_seller; // added after trade completed; object of type cFeedback
 
-	function cTrade ($member_from=null, $member_to=null, $amount=null, $category=null, $description=null, $type='T') {
-		if($member_from) {
-			$this->status = 'V';  // Doesn't make sense for a new Trade to not be valid
-			$this->amount = $amount;
-			$this->description = $description;
-			$this->member_from = $member_from;
-			$this->member_to = $member_to;
-			$this->type = $type;
-			$this->category = new cCategory();
-			$this->category->LoadCategory($category);
-		}
-	}
+//CT should extend cBasic so it can use builder
+class cTrade extends cBasic2{
+    //
+	private $trade_id;
+	private $trade_date;
+	private $status;
+	private $member_id_from;
+	private $member_id_to;
+	private $member_id_author; //CT new - member doing action. good to have the record, eh
+	//private $member_from;
+	//private $member_to; //mrmbrt
+	private $amount;
+    private $description;
+    private $type; //code of action to be performed   
+    private $category;       // CT - category object NOT USED
+    private $category_id;       // CT - just the id.
+	private $category_name;		// CT - just the description is fine here - 1 string.
+	private $feedback;	// CT object
+ 
+
+//CT
+
+/*
+income ties
+add feedback straight after trade
+
+
+do the same for feedback and feedback rebuttal
+*/
+
+
+
+	// function __construct($variables=null) {
+	// 	if(!empty($variables)) {
+	// 		$this->Build($variables);
+	// 	}
+	// }
+
+	// function Build($variables) {	
+	// 	global $cStatusMessage;
+	// 	//$cStatusMessage->Error("row:"  . print_r($variables, true));
+	// 	if(!empty($variables['status'])) $this->setStatus($variables['status']);  // V for valid
+	// 	if(!empty($variables['id'])) $this->setTradeId($variables['id']);  // V for valid
+	// 	if(!empty($variables['date'])) $this->setTradeDate($variables['date']);  // V for valid
+	// 	if(!empty($variables['amount'])) $this->setAmount($variables['amount']);
+	// 	if(!empty($variables['description'])) {
+ //            $description = $variables['description'];
+ //            if($variables['status'] == 'R'){
+ //                $description .= " <span class=\"note\">[REVERSED]</span>";
+ //            }
+ //            $this->setDescription($description);
+ //        }
+	// 	if(!empty($variables['feedback_id'])) {
+	// 		$feedback = new cFeedback($variables);
+	// 		$this->setFeedback($feedback);
+	// 	}
+	// 	if(!empty($variables['member_id_from'])) {
+	// 		$this->setMemberIdFrom($variables['member_id_from']);
+	// 		//load nice names etc
+	// 		//$this->setMemberFrom = new;
+	// 	}
+	// 	if(!empty($variables['member_id_to'])) {
+	// 		$this->setMemberIdTo($variables['member_id_to']);
+	// 		//load nice names etc
+	// 		//$this->setMemberTo = new;
+
+	// 	}
+	// 	if(!empty($variables['type'])) $this->setType($variables['type']);
+ //        //`CT category object
+ //        $category = new cCategory($variables);
+	// 	$this->setCategory($category);
+	// }
 	
-	function ShowTrade() {
+	/*function ShowTrade() {
 		global $cDB;
 		
-		$content = $this->trade_id .", ". $this->trade_date .", ". $this->status .", ". $this->member_from->member_id .", ". $this->member_to->member_id .", ". $this->amount .", ". $this->category->id .", ". $this->description .", ". $this->type;
+		$content = $this->trade_id .", ". $this->trade_date .", ". $this->status .", ". $this->member_from->getMemberId() .", ". $this->member_id_to .", ". $this->amount .", ". $this->category->id .", ". $this->description .", ". $this->type;
 		
 		return $content;
-	}
+	}*/
+    // function __construct($field_array=null){
+    //     parent::__construct($field_array);
+    //     //CT do feedback stuff
+    //     $feedback = new cFeedback;
+    //     $this->setFeedback($feedback);
+    // }
 
-	function SaveTrade() {  // This function should never be called directly
-		global $cDB, $cErr;
-		
-		$insert = $cDB->Query("INSERT INTO ". DATABASE_TRADES ." (trade_date, status, member_id_from, member_id_to, amount, category, description, type) VALUES (now(), ". $cDB->EscTxt($this->status) .", ". $cDB->EscTxt($this->member_from->member_id) .", ". $cDB->EscTxt($this->member_to->member_id) .", ". $cDB->EscTxt($this->amount) .", ". $cDB->EscTxt($this->category->id) .", ". $cDB->EscTxt($this->description) .", ". $cDB->EscTxt($this->type) .");");
+	// CT not used? not tested...generally dont get one trade
+	function Load($condition) {
+		global $cDB, $cStatusMessage,  $cQueries;
+		//CT - efficiency - combine db calls. categories, feedback 
+        //$condition = "trade_id={$cDB->EscTxt($trade_id)}";
+        $order = "";
+		$query = $cDB->Query($cQueries->getMySqlTrade($condition));
 
-		if(mysql_affected_rows() == 1) {
 		
-			$this->trade_id = mysql_insert_id();	
-			$query = $cDB->Query("SELECT trade_date from ". DATABASE_TRADES ." WHERE trade_id=". $this->trade_id .";");
-			$row = mysql_fetch_array($query);
-			$this->trade_date = $row[0];	
-			return true;
-		} else {
-			return false;
-		}
-	}
-	
-	function LoadTrade($trade_id) {
-		global $cDB, $cErr;
-		
-		$query = $cDB->Query("SELECT date_format(trade_date,'%Y-%m-%d'), status, member_id_from, member_id_to, amount, description, type, category FROM ".DATABASE_TRADES." WHERE trade_id=". $cDB->EscTxt($trade_id) .";");
-		
-		if($row = mysql_fetch_array($query)) {		
-			$this->trade_id = $trade_id;
-			$this->trade_date = $row[0];
-			$this->status = $row[1];
-			$this->member_from = new cMember;
-			$this->member_from->LoadMember($row[2]);
-			$this->member_to = new cMember;
-			$this->member_to->LoadMember($row[3]);
-			$this->amount = $row[4];
-			$this->description = $cDB->UnEscTxt($row[5]);
-			$this->type = $row[6];
-			$this->category = new cCategory();
-			$this->category->LoadCategory($row[7]);
+		if($row = $cDB->FetchArray($query)) {		
+			return $this->Build($row);
+
+
 			
-			$feedback = new cFeedback;
-			$feedback_id = $feedback->FindTradeFeedback($trade_id, $this->member_from->member_id);
-			if($feedback_id) {
-				$this->feedback_buyer = new cFeedback;
-				$this->feedback_buyer->LoadFeedback($feedback_id);
-			}
-			$feedback_id = $feedback->FindTradeFeedback($trade_id, $this->member_to->member_id);
-			if($feedback_id) {
-				$this->feedback_seller = new cFeedback;
-				$this->feedback_seller->LoadFeedback($feedback_id);
-			}
+   //          $feedback_id = $feedback->FindTradeFeedback($trade_id, $this->member_from->getMemberId());
+			// if($feedback_id) {
+			// 	$this->feedback_buyer = new cFeedback;
+			// 	$this->feedback_buyer->LoadFeedback($feedback_id);
+			// }
+			// $feedback_id = $feedback->FindTradeFeedback($trade_id, $this->member_to->getMemberId());
+			// if($feedback_id) {
+			// 	$this->feedback_seller = new cFeedback;
+			// 	$this->feedback_seller->LoadFeedback($feedback_id);
+			// }
 			
 		} else {
-			$cErr->Error("There was an error accessing the trades table.  Please try again later.");
-			include("redirect.php");
+			throw new Exception("Trade not found.");
+			//include("redirect.php");
 		}				
 	}
 
-	// It is very important that this function prevent the database from going out balance.
-	function MakeTrade($reversed_trade_id=null) { 
-		global $cDB, $cErr;
-		
-		if ($this->amount <= 0 and $this->type != TRADE_REVERSAL) // Amount should be positive unless
-			return false;									 // this is a reversal of a previous trade.
-			
-		if ($this->amount >= 0 and $this->type == TRADE_REVERSAL)	 // And likewise.
-			return false;
-			
-		
-		if ($this->member_from->member_id == $this->member_to->member_id)
-			return false;		// don't allow trade to self
-		
-		if ($this->member_from->restriction==1) { // This member's account has been restricted - he is not allowed to make outgoing trades
-			
-			return false;
-		}
-	
-		$balances = new cBalancesTotal;
-	
-		// TODO: At some point, we should handle out-of-balance problems without shutting 
-		// down all trades.  But for now, seems like a wonderfully simple solution.	
-		//
-		// [chris] Have added a few more methods for dealing with out-of-balance scenarios (admin can set his/her preferred method in inc.config.php)	
-		
-		if(!$balances->Balanced()) {
-			
-			if (OOB_EMAIL_ADMIN==true) // Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
-				$mailed = mail(EMAIL_ADMIN, "Database out of balance on ".SITE_LONG_TITLE."!", "Hi admin,\n\nWe thought you should know that whilst processing a trade the system detected that your trade database is out of balance! Obviously something has gone wrong somewhere along the line and we suggest you investigate the cause of this ASAP.\n\n".HTTP_BASE, EMAIL_FROM);
-			
-			switch(OOB_ACTION) { // How should we handle the out-of-balance event?
-				
-				case("FATAL"): // FATAL: The original method for dealing which is to abort the transaction
-					
-					$cErr->Error("The trade database is out of balance!  Please contact your administrator at ". PHONE_ADMIN .".", ERROR_SEVERITY_HIGH);  
-
-					include("redirect.php");
-					exit;  // Probably unnecessary...
-					
-				break;
-				
-				default: // SILENT: Just ignore the situation and don't burden the user with warnings/error messages
-					
-						// doing nothing...
-						
-				break;
-			}
-		}	
-
-		// NOTE: Need table type InnoDB to do the following transaction-style statements.		
-		$cDB->Query("SET AUTOCOMMIT=0");
-		
-		$cDB->Query("BEGIN");
-		
-		if($this->SaveTrade()) {
-			
-			$success1 = $this->member_from->UpdateBalance(-($this->amount));
-			$success2 = $this->member_to->UpdateBalance($this->amount);
-			
-			if(LOG_LEVEL > 0 and $this->type != TRADE_ENTRY) {//Log if enabled & not an ordinary trade
-				$log_entry = new cLogEntry (TRADE, $this->type, $this->trade_id);
-				$success3 = $log_entry->SaveLogEntry();
-			} else {
-				$success3 = true;
-			}
-			
-			if($reversed_trade_id) {  // If this is a trade reversal, need to mark old trade reversed
-				$success4 = $cDB->Query("UPDATE ".DATABASE_TRADES." SET status='R', trade_date=trade_date WHERE trade_id=". $cDB->EscTxt($reversed_trade_id) .";");
-			} else {
-				$success4 = true;
-			}
-
-			if($success1 and $success2 and $success3 and $success4) {
-				$cDB->Query('COMMIT');
-				$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-				return true;
-			} else {
-				$cDB->Query('ROLLBACK');
-				$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-				return false;
-			}
-		} else {
-			$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-			return false;
-		}			
-	}
-	
-	function ReverseTrade($description) { 	// This method allows administrators to reverse
-		global $cUser;								// trades that were made in error.
-		
-		if($this->status == "R")
-			return false;		// Can't reverse the same trade twice
-			
-		$new_trade = new cTrade;				
-		$new_trade->status = "V";
-		$new_trade->member_from = $this->member_from;
-		$new_trade->member_to = $this->member_to;
-		$new_trade->amount = -$this->amount;
-		$new_trade->category = $this->category;
-		$new_trade->description = "[Reversal of exchange #". $this->trade_id." from ". $this->trade_date." by admin '". $cUser->member_id ."'] ". $description;
-		$new_trade->type = "R";
-		return $new_trade->MakeTrade($this->trade_id);
-	}
-}
-
-class cTradeGroup {
-	var $trade;   	// an array of cTrade objects
-	var $member_id;
-	var $from_date;
-	var $to_date;
-	
-	function cTradeGroup($member_id="%", $from_date=LONG_LONG_AGO, $to_date=FAR_FAR_AWAY) {
-		$this->member_id = $member_id;
-		$this->from_date = $from_date;
-		$this->to_date = $to_date;
-	}
-	
-	function LoadTradeGroup($type = "all") {
-		global $cDB, $cErr;
-		
-		$to_date = strtotime("+1 days", strtotime($this->to_date));
-		
-        if ("individual" == $type)
-        {
-		//select all trade_ids for this member
-		$query = $cDB->Query("SELECT trade_id FROM ".DATABASE_TRADES." WHERE (member_id_from LIKE ". $cDB->EscTxt($this->member_id) ." OR member_id_to LIKE ". $cDB->EscTxt($this->member_id) .") AND trade_date > ". $cDB->EscTxt($this->from_date) ." AND trade_date < ". $cDB->EscTxt(date("Ymd", $to_date)) ." ORDER BY trade_date DESC;");
+    function Build($field_array) {
+        global $cDB, $cStatusMessage,  $cQueries;
+             
+ 
+        //CT find a nicer way??
+        if(!empty($field_array['feedback_member_id_author'])){
+            $feedback_array=array();
+            $feedback_array['member_id_author'] = $field_array['feedback_member_id_author'];
+            $feedback_array['member_id_about'] = $field_array['feedback_member_id_about'];
+            $feedback_array['comment'] = $field_array['feedback_comment'];
+            $feedback_array['rating'] = $field_array['feedback_rating'];
+            
+            $feedback = new cFeedback;
+            $feedback->Build($feedback_array); 
+            $this->setFeedback($feedback);
         }
-        else
-        {
-            $trade_type = TRADE_MONTHLY_FEE;
-            $trade_type_refund = TRADE_MONTHLY_FEE_REVERSAL;
+        return parent::Build($field_array);
 
-        // Ignore monthly fees.
-				if (SHOW_GLOBAL_FEES!=true)
-					$query = $cDB->Query("SELECT trade_id FROM ".DATABASE_TRADES." WHERE (member_id_from LIKE ". $cDB->EscTxt($this->member_id) ." OR member_id_to LIKE ". $cDB->EscTxt($this->member_id) .") AND trade_date > ". $cDB->EscTxt($this->from_date) ." AND trade_date < ". $cDB->EscTxt(date("Ymd", $to_date)) ." AND type!='S' AND type != '$trade_type' AND type != '$trade_type_refund' ORDER BY trade_date DESC");
-       	else
-       			$query = $cDB->Query("SELECT trade_id FROM ".DATABASE_TRADES." WHERE (member_id_from LIKE ". $cDB->EscTxt($this->member_id) ." OR member_id_to LIKE ". $cDB->EscTxt($this->member_id) .") AND trade_date > ". $cDB->EscTxt($this->from_date) ." AND trade_date < ". $cDB->EscTxt(date("Ymd", $to_date)) ." ORDER BY trade_date DESC");
-       	
-        }
+                        
+    }
+    /**
+     * @return mixed
+     */
+    public function getTradeDate()
+    {
+        return $this->trade_date;
+    }
 
-		// instantiate new cTrade objects and load them
-		$i=0;
-		while($row = mysql_fetch_array($query))
-		{
-			$this->trade[$i] = new cTrade;			
-			$this->trade[$i]->LoadTrade($row[0]);
-			$i += 1;
-		}
-		
-		if($i == 0)
-			return false;
-		else
-			return true;
-	}
-	
-	function DisplayTradeGroup() {
-		global $cDB, $cUser;
-		
-		$output = "<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=3 WIDTH=\"100%\"><TR BGCOLOR=\"#d8dbea\"><TD><FONT SIZE=2><B>Date</B></FONT></TD><TD><FONT SIZE=2><B>From</B></FONT></TD><TD><FONT SIZE=2><B>To</B></FONT></TD><TD ALIGN=RIGHT><FONT SIZE=2><B>". UNITS ."&nbsp;</B></FONT></TD><TD><FONT SIZE=2><B>&nbsp;Description</B></FONT></TD></TR>";
-		
-		if(!$this->trade)
-			return $output. "</TABLE>";   // No trades yet, presumably
-		
-		$i=0;
-		foreach($this->trade as $trade) {
-/*
-            // Ignore monthly fees.
-            if ($trade->type == TRADE_MONTHLY_FEE or
-                                    $trade->type == TRADE_MONTHLY_FEE_REVERSAL)
-            {
-                continue;
-            }
-*/
-			if($trade->type == TRADE_REVERSAL or
-                                             $trade->status == TRADE_REVERSAL)
-				$fcolor = "pink";
-			else if ($trade->member_to->member_id == $this->member_id)
-				$fcolor = "#4a5fa4";
-			else
-				$fcolor = "#554f4f";
-				
-			if($i % 2)
-				$bgcolor = "#e4e9ea";
-			else
-				$bgcolor = "#FFFFFF";
-			
-			$trade_date = new cDateTime($trade->trade_date);			
-			
-			$output .= "<TR VALIGN=TOP BGCOLOR=". $bgcolor ."><TD><FONT SIZE=2 COLOR=".$fcolor.">". $trade_date->ShortDate()."</FONT></TD><TD><FONT SIZE=2 COLOR=".$fcolor.">". $trade->member_from->member_id ."</FONT></TD><TD><FONT SIZE=2 COLOR=".$fcolor.">". $trade->member_to->member_id ."</FONT></TD><TD ALIGN=RIGHT><FONT SIZE=2 COLOR=".$fcolor.">". $trade->amount ."&nbsp;</FONT></TD><TD><FONT SIZE=2 COLOR=".$fcolor.">". $cDB->UnEscTxt($trade->description) ."</FONT></TD></TR>";
-			$i+=1;
-		}
-		
-		return $output . "</TABLE>";
-	}
-	
-	function MakeTradeArray() {
-		$trades = "";
-		if($this->trade) {
-			foreach($this->trade as $trade) {
-				if($trade->type != "R" and $trade->status != "R") {
-					$trades[$trade->trade_id] = "#". $trade->trade_id ." - ". $trade->amount ." ". UNITS . " FROM ". $trade->member_from->member_id ." TO ". $trade->member_to->member_id ." ON ". $trade->trade_date;
-				}
-			}
-		}
-		
-		return $trades;
-	}
+    /**
+     * @param mixed $trade_date
+     *
+     * @return self
+     */
+    public function setTradeDate($trade_date)
+    {
+        $this->trade_date = $trade_date;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param mixed $status
+     *
+     * @return self
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMemberIdFrom()
+    {
+        return $this->member_id_from;
+    }
+
+    /**
+     * @param mixed $member_id_from
+     *
+     * @return self
+     */
+    public function setMemberIdFrom($member_id_from)
+    {
+        $this->member_id_from = $member_id_from;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMemberIdTo()
+    {
+        return $this->member_id_to;
+    }
+
+    /**
+     * @param mixed $member_id_to
+     *
+     * @return self
+     */
+    public function setMemberIdTo($member_id_to)
+    {
+        $this->member_id_to = $member_id_to;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMemberFrom()
+    {
+        return $this->member_from;
+    }
+
+    /**
+     * @param mixed $member_from
+     *
+     * @return self
+     */
+    public function setMemberFrom($member_from)
+    {
+        $this->member_from = $member_from;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMemberTo()
+    {
+        return $this->member_to;
+    }
+
+    /**
+     * @param mixed $member_to
+     *
+     * @return self
+     */
+    public function setMemberTo($member_to)
+    {
+        $this->member_to = $member_to;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param mixed $amount
+     *
+     * @return self
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     *
+     * @return self
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     *
+     * @return self
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryId()
+    {
+        return $this->category_id;
+    }
+
+    /**
+     * @param mixed $category_id
+     *
+     * @return self
+     */
+    public function setCategoryId($category_id)
+    {
+        $this->category_id = $category_id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategoryName()
+    {
+        return $this->category_name;
+    }
+
+    /**
+     * @param mixed $category_name
+     *
+     * @return self
+     */
+    public function setCategoryName($category_name)
+    {
+        $this->category_name = $category_name;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFeedback()
+    {
+        return $this->feedback;
+    }
+
+    /**
+     * @param mixed $feedback
+     *
+     * @return self
+     */
+    public function setFeedback($feedback)
+    {
+        $this->feedback = $feedback;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMemberIdAuthor()
+    {
+        return $this->member_id_author;
+    }
+
+    /**
+     * @param mixed $member_id_author
+     *
+     * @return self
+     */
+    public function setMemberIdAuthor($member_id_author)
+    {
+        $this->member_id_author = $member_id_author;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTradeId()
+    {
+        return $this->trade_id;
+    }
+
+    /**
+     * @param mixed $trade_id
+     *
+     * @return self
+     */
+    public function setTradeId($trade_id)
+    {
+        $this->trade_id = $trade_id;
+
+        return $this;
+    }
 }
 
-class cTradeStats extends cTradeGroup {
-	var $total_trades = 0;
-	var $total_units = 0;
-	var $most_recent = ""; // Will be an object of class cDateTime
-	
-	function cTradeStats ($member_id="%", $from_date=LONG_LONG_AGO, $to_date=FAR_FAR_AWAY) {
-		$this->cTradeGroup($member_id, $from_date, $to_date);
-		if(!$this->LoadTradeGroup())
-			return;
-		
-		foreach($this->trade as $trade) {
-			if ($trade->type == TRADE_REVERSAL or $trade->status == TRADE_REVERSAL)
-				continue; // skip reversed trades
-				
-			$this->total_trades += 1;
-			$this->total_units += $trade->amount;
-			
-			if($this->most_recent == "") {
-				$this->most_recent = new cDateTime($trade->trade_date);
-			} elseif ($this->most_recent->MySQLDate() < $trade->trade_date) {
-				$this->most_recent->Set($trade->trade_date);
-			}	
-		}
-	}
-
-}
-
-/*[chris] Trades Pending */
-class cTradesPending {
-	
-	var $numPending = 0; // Total num trades pending
-	
-	var $numIn = 0; // Number of trades directed TO us that we must act on
-	var $numOut = 0; // Number of trades sent FROM us that we are awaiting action on
-	
-	var $numToPay = 0; // Num Invoices we need to pay
-	var $numToConfirm = 0; // Num payments we need to confirm
-	var $numToBePayed = 0; // Num invoices awaiting payment on
-	var $numToHaveConfirmed = 0; // Num payments awaiting confirmation on
-	
-	function cTradesPending($memberID) {
-		
-		global $cDB;
-		
-		// Get all trades involving this memberID that are currently marked as Open
-		$query = $cDB->query("SELECT * from trades_pending where (member_id_to=".$cDB->EscTxt($memberID)." or
-			member_id_from=".$cDB->EscTxt($memberID).") and status='O';");
-			
-		if (!$query || mysql_num_rows($query)<1) // None found = none pending!
-			return;
-			
-		$num_results = mysql_num_rows($query);
-		
-		for ($i=0;$i<$num_results;$i++) {
-			
-			$row = mysql_fetch_array($query);
-		
-			// Is this - An Invoice TO memberID that hasn't yet been acted on?
-			if ($row["typ"]=="I" && $row["member_id_to"]==$memberID && $row["member_to_decision"]==1) {
-		
-				$this->numToPay += 1;
-			}
-			
-			// Is this - A Payment TO memberID that hasn't yet been acted on?
-			if ($row["typ"]=="T" && $row["member_id_to"]==$memberID && $row["member_to_decision"]==1) {
-	
-				$this->numToConfirm += 1;
-			}
-			
-			// Is this - An Invoice FROM memberID that hasn't yet been acted on?
-			if ($row["typ"]=="I" && $row["member_id_from"]==$memberID && $row["member_from_decision"]==1) {
-			
-				$this->numToBePayed += 1;
-			
-			}
-			
-			// Is this - An Payment FROM memberID that hasn't yet been acted on?
-			if ($row["typ"]=="T" && $row["member_id_from"]==$memberID && $row["member_from_decision"]==1) {
-				
-				$this->numToHaveConfirmed += 1;
-			}
-			
-		}
-		
-		$this->numIn = $this->numToPay + $this->numToConfirm;
-		$this->numOut = $this->numToBePayed + $this->numToHaveConfirmed;
-		$this->numPending = $this->numIn + $this->numOut;
-	}
-}
 
 ?>

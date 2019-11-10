@@ -1,35 +1,57 @@
 <?php
 	include_once("includes/inc.global.php");
-	
+
 	$cUser->MustBeLoggedOn();
-	$p->site_section = EXCHANGES;
-	$p->page_title = "Exchange History";
 
-	include("classes/class.trade.php");
-	
-	$member = new cMember;
-	
-	if($_REQUEST["mode"] == "self") {
-		$member = $cUser;
-	} else {
-		$member->LoadMember($_REQUEST["member_id"]);
-		$p->page_title .= " for ".$member->PrimaryName();
+	//if ($_REQUEST["mode"] == "admin" || $_REQUEST["mode"] == "other") {
+	$member_id = (!empty($_REQUEST["member_id"])) ? $cDB->EscTxt($_REQUEST["member_id"]) : $cUser->getMemberId();
+
+	$member = new cMember();
+
+
+	if($cUser->getMode() == "admin"){
+	    $condition = "m.member_id=\"{$member_id}\"";
+	} else{
+		//only show active users
+	    $condition = "m.member_id=\"{$member_id}\" AND m.status=\"A\"";
 	}
-	
-	if ($member->balance > 0)
-		$color = "#4a5fa4";
-	else
-		$color = "#554f4f";
-		
-	
-	
-	$list = "<B>Current Balance: </B><FONT COLOR=". $color .">". $member->balance . " ". UNITS ."</FONT><P>";	
 
-	$trade_group = new cTradeGroup($member->member_id);
-	$trade_group->LoadTradeGroup("individual");
-	$list .= $trade_group->DisplayTradeGroup();
+	$is_success = $member->Load($condition);	
+	 
+	if(!$is_success){
+		$page_title = "Trade history for member - not found";
+		$cStatusMessage->Error("Trade history cannot be shown. The member does not exist or no longer active.");
+		$output = "Nothing to show.";
+	} else{
+		$status_label ="";
+		if($member->getStatus()=="I") {
+    		$cStatusMessage->Info("This member is INACTIVE. They cannot log in and their profile, trades and listings are hidden from view for non-admin users.");
+		}
+		$page_title = "Trade History for {$member->getDisplayName()} (#{$member_id})";
 	
-	$p->DisplayPage($list);
+
+
+		
+		
+		
+		$cssClass = ($member->getBalance() > 0) ? "positive" : "negative";
+			
+		$output .= $p->Wrap($p->Wrap("Current balance: ", "span", "label") . $p->Wrap($member->getBalance() . " ". UNITS . ".", "span", "value ". $cssClass), "p", " summary");	
+		
+		$condition = "t.status = '" .TRADE_STATUS_APPROVED . "' AND (member_id_to='{$member_id}' OR member_id_from='{$member_id}') AND NOT t.type = '" . TRADE_TYPE_REVERSAL . "'";
+	//trades relating to this member
+		$trades = new cTradeGroup();
+		$trades->Load($condition, $member_id);
+		//$output .= $trade_group->DisplayTradeGroupUser($member->getBalance());
+		//$output .= $trades->Display($member->getBalance());
+		//CT without running balance
+		$output .= $trades->Display();
+		
+		$output .= "CT: show record of reversals";
+	}
+
+	$p->page_title = $page_title;
+	$p->DisplayPage($output);
 	
 
 	

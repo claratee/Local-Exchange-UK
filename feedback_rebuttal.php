@@ -8,7 +8,7 @@ $member_about->LoadMember($_REQUEST["about"]);
 $p->site_section = SECTION_FEEDBACK;
 $p->page_title = "Leave Feedback about ". $member_about->PrimaryName();
 
-include("classes/class.feedback.php");
+include_once("classes/class.feedback.php");
 include("includes/inc.forms.php");
 include("includes/inc.forms.validation.php");
 
@@ -56,7 +56,7 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $member_about, $member, $cErr, $cUser;
+	global $p, $member_about, $member, $cStatusMessage, $cUser;
 	
 	$feedback = new cFeedback($member->member_id, $member_about->member_id, $_REQUEST["trade_id"], $values["rating"], $values["comments"]);
 	$success = $feedback->SaveFeedback();
@@ -65,7 +65,7 @@ function process_data ($values) {
         // Log if enabled & entered by an admin
 		if(LOG_LEVEL > 0 and $_REQUEST["mode"] == "admin") {
             $cUser->MustBeLevel(2);
-			$log_entry = new cLogEntry (FEEDBACK, FEEDBACK_BY_ADMIN, $feedback->feedback_id);
+			$log_entry = new cLogging (FEEDBACK, FEEDBACK_BY_ADMIN, $feedback->feedback_id);
 			$log_entry->SaveLogEntry();	
 		}
 		$output = "Your feedback has been recorded.";

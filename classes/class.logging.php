@@ -5,96 +5,206 @@ if (!isset($global))
 	die(__FILE__." was included without inc.global.php being included first.  Include() that file first, then you can include ".__FILE__);
 }
 
-class cLogEntry {
-	var $log_id;
-	var $log_date;
-	var $admin_id; // usually a member_id, but not always
-	var $category; // See inc.global.php for constants used in this field
-	var $action;	// See inc.global.php for constants used in this field
-	var $ref_id; // usually refences a trade_id, feedback_id, or similar
-	var $note;
-	
-	function cLogEntry ($category, $action, $ref_id, $note=null) {
+class cLogging extends cBasic2 {
+	private $log_id; //not normally set, unless historic
+	private $log_date; // not normally set, unless historic
+	private $admin_id; // usually a member_id, but not always
+	private $category; // See inc.global.php for constants used in this field
+	private $action;	// See inc.global.php for constants used in this field
+	private $ref_id; // usually refences a trade_id, feedback_id, or similar
+	private $note; // ct extra details if needed
+
+
+	//you can only save new entries
+	function Save(){
+		$keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
+		$log_id = $this->CreateAbstract(DATABASE_LOGGING, $keys_array);
+		return $log_id;
+	}
+/*
+	function __construct ($field_array=null) {
 		global $cUser;
-	
-		$this->category = $category;
-		$this->action = $action;
-		$this->ref_id = $ref_id;
-		$this->note = $note;
-		$this->admin_id = $cUser->member_id;
+		//default to current user
+		$this->admin_id = $cUser->getMemberId();
+		if(!empty($field_array)) {
+			$this->Build($field_array);
+			//$this->Save();
+		}
 	}
-	
-	function SaveLogEntry () {
-		global $cDB, $cErr;
-		
-		$insert = $cDB->Query("INSERT INTO ". DATABASE_LOGGING ." (admin_id, category, action, ref_id, log_date, note) VALUES (". $cDB->EscTxt($this->admin_id) .", ". $cDB->EscTxt($this->category) .", ". $cDB->EscTxt($this->action) .", ". $cDB->EscTxt($this->ref_id) .", now(), ". $cDB->EscTxt($this->note) .");");
 
-		if(mysql_affected_rows() == 1) {
-			$this->log_id = mysql_insert_id();	
-			$query = $cDB->Query("SELECT log_date from ". DATABASE_LOGGING ." WHERE log_id=". $this->log_id .";");
-			$row = mysql_fetch_array($query);
-			$this->log_date = $row[0];	
-			return true;
-		} else {
-			return false;
-		}		
+
+	function Build($field_array){
+		if(!empty($field_array['category'])) $this->category = $field_array['category'];
+		if(!empty($field_array['action'])) $this->action = $field_array['action'];
+		if(!empty($field_array['ref_id'])) $this->ref_id = $field_array['ref_id'];
+		if(!empty($field_array['note'])) $this->note = $field_array['note'];
+		if(!empty($field_array['admin_id'])) $this->admin_id = $field_array['admin_id'];
 	}
+	
+	function Save () {
+		global $cDB, $cUser;
+		//CT rewrite
+		$field_array = array();
+		$field_array['admin_id']= $cDB->EscTxt($this->admin_id);
+		$field_array['category']= $cDB->EscTxt($this->category);
+		$field_array['action']= $cDB->EscTxt($this->action);
+		$field_array['ref_id']= $cDB->EscTxt($this->ref_id);
+		$field_array['note']= $cDB->EscTxt($this->note);
+		//$fieldArray['log_date']= NOW(); dont need this as its already built in
+		
+		$string_query = $cDB->BuildInsertQuery(DATABASE_LOGGING, $field_array);
+        
+        print_r($string_query);
+        if($log_id = $cDB->QueryReturnId($string_query)){
+         	return $log_id;
+        }else{
+         	throw new Exception("Couldnt insert new log");
+        	
+        }
+ 
+	}
+	*/
+
+    /**
+     * @return mixed
+     */
+    public function getLogId()
+    {
+        return $this->log_id;
+    }
+
+    /**
+     * @param mixed $log_id
+     *
+     * @return self
+     */
+    public function setLogId($log_id)
+    {
+        $this->log_id = $log_id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLogDate()
+    {
+        return $this->log_date;
+    }
+
+    /**
+     * @param mixed $log_date
+     *
+     * @return self
+     */
+    public function setLogDate($log_date)
+    {
+        $this->log_date = $log_date;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdminId()
+    {
+        return $this->admin_id;
+    }
+
+    /**
+     * @param mixed $admin_id
+     *
+     * @return self
+     */
+    public function setAdminId($admin_id)
+    {
+        $this->admin_id = $admin_id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * @param mixed $category
+     *
+     * @return self
+     */
+    public function setCategory($category)
+    {
+        $this->category = $category;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param mixed $action
+     *
+     * @return self
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getRefId()
+    {
+        return $this->ref_id;
+    }
+
+    /**
+     * @param mixed $ref_id
+     *
+     * @return self
+     */
+    public function setRefId($ref_id)
+    {
+        $this->ref_id = $ref_id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNote()
+    {
+        return $this->note;
+    }
+
+    /**
+     * @param mixed $note
+     *
+     * @return self
+     */
+    public function setNote($note)
+    {
+        $this->note = $note;
+
+        return $this;
+    }
 }
 
-class cLogStatistics {
-	function MostRecentLog ($category, $action=null) {
-		global $cDB;
-	
-		if($action != null)
-			$exclusions = " AND action='". $action ."'";
-		else
-			$exclusions = null;
-	
-		$query = $cDB->Query("SELECT max(log_date) FROM ". DATABASE_LOGGING ." WHERE category=". $cDB->EscTxt($category) . $exclusions .";");
-		
-		if($row = mysql_fetch_array($query))	
-			return new cDateTime($row[0]);
-		else
-			return false;
-	}
-}
-
-
-// System events are processes which only need to run periodically,
-// and so are run at intervals rather than weighing the system
-// down by running them each time a particlular page is loaded.
-
-class cSystemEvent {
-	var $event_type; // See inc.global.php for constants used in this field
-	var $event_interval; // See inc.config.php for interval settings
-	
-	function cSystemEvent ($event_type, $event_interval=null) {
-		global $SYSTEM_EVENTS;
-		$this->event_type = $event_type;
-		
-		if($event_interval)
-			$this->event_interval = $event_interval; // use explicit interval
-		else
-			$this->event_interval = $SYSTEM_EVENTS[$event_type]; // use defined interval
-	}
-	
-	function TimeForEvent () {
-		$logs = new cLogStatistics;
-		$last_event = $logs->MostRecentLog($this->event_type);
-		if($last_event->MinutesAgo() >= $this->event_interval)
-			return true;
-		elseif ($last_event == "") // Never run before, so now's as good a time as any
-			return true;
-		else
-			return false;
-	}
-	
-	function LogEvent() {
-		$e = new cLogEntry($this->event_type, $this->event_type, $this->event_type);
-		$e->admin_id = "EVENT_SYSTEM";
-		$e->SaveLogEntry();
-	}
-
-}
 
 ?>

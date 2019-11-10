@@ -113,7 +113,7 @@ if ($form->validate()) { // Form is validated so processes the data
 // The form has been submitted with valid data, so process it   
 //
 function process_data ($values) {
-	global $p, $cUser, $cErr, $person, $today;
+	global $p, $cUser, $cStatusMessage, $person, $today;
 	$list = "";
 
 	$person->first_name = htmlspecialchars($values["first_name"]);
@@ -159,7 +159,7 @@ function process_data ($values) {
 	if($person->SavePerson()) {
 		$list .= "Changes saved.";	 
 	} else {
-		$cErr->Error("There was an error saving the person. Please try again later.");
+		$cStatusMessage->Error("There was an error saving the person. Please try again later.");
 	}
    $p->DisplayPage($list);
 }

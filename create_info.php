@@ -1,7 +1,7 @@
 <?php
 
 include_once("includes/inc.global.php");
-include("classes/class.info.php");
+include_once("classes/class.info.php");
 include("includes/inc.forms.php");
 
 $cUser->MustBeLevel(1);
@@ -40,7 +40,7 @@ if ($form->validate()) { // Form is validated so processes the data
 // The form has been submitted with valid data, so process it   
 //
 function process_data ($values) {
-	global $p, $cErr, $cDB;
+	global $p, $cStatusMessage, $cDB;
 	$q = 'INSERT INTO cdm_pages set date='.time().', title='.$cDB->EscTxt($values["title"]).', body='.$cDB->EscTxt($values["description"]).'';
 	$success = $cDB->Query($q);
 	

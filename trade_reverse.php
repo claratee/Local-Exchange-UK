@@ -6,12 +6,14 @@ $cUser->MustBeLevel(2);
 $p->site_section = EXCHANGES;
 $p->page_title = "Reverse an Exchange";
 
-include("classes/class.trade.php");
-include("includes/inc.forms.php");
+//include_once("classes/class.trade.php");
+//include("includes/inc.forms.php");
 
 //
 // Define form elements
 //
+
+
 $trades = new cTradeGroup;
 $trades->LoadTradeGroup();
 $form->addElement("select", "trade_id", "Choose the exchange to reverse", $trades->MakeTradeArray());
@@ -37,7 +39,7 @@ if ($form->validate()) { // Form is validated so processes the data
 }
 
 function process_data ($values) {
-	global $p, $cErr;
+	global $p, $cStatusMessage;
 
 	$old_trade = new cTrade;
 	$old_trade->LoadTrade($values["trade_id"]);
