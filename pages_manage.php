@@ -22,7 +22,9 @@ if ($_POST["submit"]){
 	$vars['select_id'] = $_POST["select_id"];
 	$vars['action'] = $_POST["action"];
 	//print_r($vars);
-	$pageGroup->Save($vars);
+	if($pageGroup->Save($vars)){
+		$cStatus->Info("Your changes were saved.");
+	}
 }
 $pageGroup->Load($cUser->getMemberRole());
 

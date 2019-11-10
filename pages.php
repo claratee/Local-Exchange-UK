@@ -15,8 +15,15 @@ if ($_GET["destroySess"]==1) {
 	exit;
 }
 */
-//would like all the entities to be {entity}_id
-$page_id = (!empty($_REQUEST["page_id"])) ? $_REQUEST["page_id"] : null;
+//Design pattern of identifying entities with {entity}_id
+if((!empty($_REQUEST["page_id"]))){
+	$page_id = $_REQUEST["page_id"];
+}elseif((!empty($_REQUEST["id"]))){
+		//CT old style... deprecated. Will remove on another version
+	$page_id = $_REQUEST["id"];
+}else{
+	$page_id =null;
+}
 
 $cInfo = new cInfo;
 $cInfo->Load($page_id);

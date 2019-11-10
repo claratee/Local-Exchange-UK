@@ -52,7 +52,7 @@ abstract class cBasic2 {
     	return $field_array;
 	}
 	//CT abstract class for updating a record
-	function SaveAbstract($db_table, $keys_array, $condition) {
+	function update($db_table, $keys_array, $condition) {
         //CT saves all the properties that you pass in on the key array. table columns must have the same names
 		global $cDB, $cStatusMessage;
 		$context = (DEBUG) ? "DB:{$db_table} " : "";
@@ -73,7 +73,7 @@ abstract class cBasic2 {
 
 	}	
 	//CT abstract class for creating a record
-	function CreateAbstract($db_table, $keys_array) {
+	function insert($db_table, $keys_array) {
         
 		global $cDB, $cStatusMessage;
 		$context = (DEBUG) ? "DB:{$db_table} " : "";

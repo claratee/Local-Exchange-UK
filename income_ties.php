@@ -123,12 +123,12 @@ if ($_POST["remove"]) {
 		$output .= "<div class=\"summary\">Income sharing not active.</div>
 			<h3>Create income share</h3>"; 
 	}else{
-		 $output .= "<div class=\"summary\"><form method=\"POST\" class=\"float-right\"  action=\"" . $_SERVER['PHP_SELF'] . "\"><input name=\"remove\" id=\"remove\" value=\"Remove income share\"  type=\"submit\"  /></form>ACTIVE income sharing: {$ties->getPercent()}% on ".UNITS." received to member #{$ties->getMemberIdTo()}. </div>
+		 $output .= "<form method=\"POST\" class=\"layout3\"  action=\"" . $_SERVER['PHP_SELF'] . "\"><input name=\"remove\" id=\"remove\" value=\"Remove income share\"  type=\"submit\"  />ACTIVE income sharing: {$ties->getPercent()}% on ".UNITS." received to member #{$ties->getMemberIdTo()}. </form>
 			<h3>Update income share</h3>";  
 	}
 	
 	$members = new cMemberGroup;
-	list($condition, $label) = $members->makeCondition('active');
+	list($condition, $label, $actions_keys) = $members->makeSettingFromOption('active');
 	$order_by="p.first_name ASC";
 	$members->Load($condition, $order_by);
 	

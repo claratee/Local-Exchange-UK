@@ -316,7 +316,6 @@ include_once(CLASSES_PATH ."class.memberSelf.php");
 include_once(CLASSES_PATH ."class.memberUtils.php");
 include_once(CLASSES_PATH ."class.memberLabel.php");
 include_once(CLASSES_PATH ."class.memberGroup.php");
-include_once(CLASSES_PATH ."class.memberGroupMenu.php");
 include_once(CLASSES_PATH ."class.login_history.php");
 include_once(CLASSES_PATH ."class.passwordReset.php");
 //CT create entity for the current user. 

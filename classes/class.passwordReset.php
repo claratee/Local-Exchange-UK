@@ -47,7 +47,7 @@ class cPasswordReset extends cBasic2{
 	protected function Save(){
         $keys_array = array('member_id', 'password_reset_token');
 		$condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";		
-		$this->SaveAbstract($keys_array, $condition);
+		$this->update($keys_array, $condition);
 		return $is_success;
 	}
 	

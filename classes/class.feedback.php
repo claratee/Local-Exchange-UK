@@ -150,7 +150,7 @@ class cFeedback extends cBasic2 {
             'rating',
             'comment'
         );        
-        return $this->CreateAbstract(DATABASE_FEEDBACK, $keys_array);  
+        return $this->insert(DATABASE_FEEDBACK, $keys_array);  
     }
 
     function ProcessData ($field_array) {

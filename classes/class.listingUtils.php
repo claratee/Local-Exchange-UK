@@ -137,13 +137,13 @@ class cListingUtils extends cListing {
             	$condition = "`member_id`=\"{$this->getMemberId()}\" AND listing_id = \"{$this->getListingId()}\""; 
                 
                 //CT don't save the secondary member here, just the primary
-                return  $this->SaveAbstract(DATABASE_MEMBERS, $keys_array, $condition);
+                return  $this->update(DATABASE_MEMBERS, $keys_array, $condition);
             } 
             else{
                 //TODO -
                 $this->setStatus("A");
                 $keys_array[]="member_id";
-                return  $this->CreateAbstract(DATABASE_LISTINGS, $keys_array); //CT should return the id 
+                return  $this->insert(DATABASE_LISTINGS, $keys_array); //CT should return the id 
             }
         }
     }

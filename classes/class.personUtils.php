@@ -50,10 +50,10 @@ class cPersonUtils extends cPerson
             //make sure status=L, primary member=Y are all set before get to this stage
             $keys_array[] = 'member_id';
             $keys_array[] = 'primary_member';
-            $person_id = $this->CreateAbstract(DATABASE_PERSONS, $keys_array);        
+            $person_id = $this->insert(DATABASE_PERSONS, $keys_array);        
         }else{
             $condition = "member_id=\"{$this->getMemberId()}\"";  
-            $person_id = $this->SaveAbstract(DATABASE_PERSONS, $keys_array, $condition);
+            $person_id = $this->update(DATABASE_PERSONS, $keys_array, $condition);
         }
 
         //update or create

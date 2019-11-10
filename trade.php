@@ -86,7 +86,7 @@ if ($_POST["submit"]){
 	$trade->Build($field_array);
 	try {
 		$trade_id = $trade->ProcessData($field_array);
-		$cStatusMessage->Info("Successfully traded #{$trade_id}.");
+		$cStatusMessage->Info("Successfully traded. <!-- #{$trade_id}. -->");
 
 		$_POST=array();
 		$redir_url="member_trade_menu.php";

@@ -87,7 +87,7 @@ class cMemberUtils extends cMember {
                     // $password = $this->GeneratePassword();
                     // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
                     //CT cant do anything with password here anymore - security. only user themselves can change their password.
-                    $member_id = $this->CreateAbstract(DATABASE_MEMBERS, $keys_array);
+                    $member_id = $this->insert(DATABASE_MEMBERS, $keys_array);
                     //CT sets default password
                     $this->DefaultPassworForNewMember();
                 break; 
@@ -95,7 +95,7 @@ class cMemberUtils extends cMember {
                     // print_r($keys_array);
                     $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
                     //try{
-                    $this->SaveAbstract(DATABASE_MEMBERS, $keys_array, $condition);
+                    $this->update(DATABASE_MEMBERS, $keys_array, $condition);
                     //}catch (Exception $e){
                     //} 
                 break;
@@ -108,7 +108,7 @@ class cMemberUtils extends cMember {
                     //temporary password - user should reset when they log in
                     // $password = $this->GeneratePassword();
                     // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
-                    $is_success = $this->CreateAbstract(DATABASE_MEMBERS, $keys_array);
+                    $is_success = $this->insert(DATABASE_MEMBERS, $keys_array);
                     if(!$is_success) {
                         //report and return on fail
                         $cStatusMessage->Error("Could not create the member '". $this->getMemberId() ."'.");
@@ -119,7 +119,7 @@ class cMemberUtils extends cMember {
                     // print_r($keys_array);
                     $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
                     //try{
-                        $this->SaveAbstract(DATABASE_MEMBERS, $keys_array, $condition);
+                        $this->update(DATABASE_MEMBERS, $keys_array, $condition);
                     //}catch (Exception $e){
                     //    $cStatusMessage->Error("Update member: " . $e->getMessage());
                     //} 

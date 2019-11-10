@@ -28,6 +28,7 @@ class cMemberGroup extends cBasic2 {
         }
         $this->setmembers($members);  // this will be an array of cmembers
     }
+    //CT this isnt great - dont know how else to do this for now
     public function makeSettingFromOption(){
         //settings: condition, label, actions
         switch($this->getOption()){

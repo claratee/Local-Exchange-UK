@@ -18,7 +18,7 @@ class cLogging extends cBasic2 {
 	//you can only save new entries
 	function Save(){
 		$keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
-		$log_id = $this->CreateAbstract(DATABASE_LOGGING, $keys_array);
+		$log_id = $this->insert(DATABASE_LOGGING, $keys_array);
 		return $log_id;
 	}
 /*

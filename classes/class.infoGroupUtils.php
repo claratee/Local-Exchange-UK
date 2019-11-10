@@ -48,9 +48,9 @@ class cInfoUtilsGroup {
 					$i++;
 				}
 				//construct query
-				$string = $cQueries->BuildUpdateQuery(DATABASE_PAGE, $array, $condition);
+				$string = $cDB->BuildUpdateQuery(DATABASE_PAGE, $array, $condition);
 				// do the query. todo- make it return whether success
-				$query = $cDB->Query($string);
+				return $cDB->Query($string);
 			}
 		}
 		if(!empty($vars['action']) && !empty($vars['select_id'])){
@@ -68,9 +68,9 @@ class cInfoUtilsGroup {
 					$i++;
 				}
 				//construct query
-				$string = $cQueries->BuildUpdateQuery(DATABASE_PAGE, $array, $condition);
+				$string = $cDB->BuildUpdateQuery(DATABASE_PAGE, $array, $condition);
 				// do the query. todo- make it return whether success
-				$query = $cDB->Query($string);
+				return $cDB->Query($string);
 			}
 			elseif($vars['action']== "copy"){
 				//CT todo
@@ -78,6 +78,7 @@ class cInfoUtilsGroup {
 			}
 			
 		}
+
 
 	}
 

@@ -456,6 +456,9 @@ class cTradeUtils extends cTrade{
                         to {$this->getMemberIdTo()}. As the receiver has opted to be approve for incoming payments, this trade requires action from them before completion. You cannot leave feedback for trade until the trade has completed.
                         ";
                 } else{
+                    $confirmation_message = "Transferred {$this->getAmount()} " . UNITS . " 
+                        from {$this->getMemberIdFrom()} 
+                        to {$this->getMemberIdTo()}.";
                     /* 
                     //CT confirmation of sending - not needed for now as no action required, and user has just seen the confirmation message in the UI.
                     $message_array = array();

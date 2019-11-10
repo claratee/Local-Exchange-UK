@@ -171,7 +171,7 @@ class cPerson extends cBasic2
 //             // $password = $this->GeneratePassword();
 //             // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
 //             try{
-//                 $this->CreateAbstract(DATABASE_PERSONS, $keys_array);
+//                 $this->insert(DATABASE_PERSONS, $keys_array);
 //             }catch (Exception $e){
 //                  $cStatusMessage->Error("New person: " . $e->getMessage());
 
@@ -181,7 +181,7 @@ class cPerson extends cBasic2
 //         }else{
 //             $condition = "member_id=\"{$this->getMemberId()}\"";  
 //             try{
-//                 $this->SaveAbstract(DATABASE_PERSONS, $keys_array, $condition);
+//                 $this->update(DATABASE_PERSONS, $keys_array, $condition);
 //             }catch (Exception $e){
 //                  //$cStatusMessage->Error("Could not save person {$this->getPersonId()} with member Id {$this->getMemberId()}.");
 //                  $cStatusMessage->Error("Update person: " . $e->getMessage());

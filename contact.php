@@ -11,12 +11,15 @@ $mail = new cMail();
 // if form submitted
 if ($_POST["submit"]){
 	//build object from inputs
-	$mail->Build($_POST);
+
 
 	// error catching without PEAR is a bit of a faff, but cant use PEAR anymore.
 	$error_message = "";
-	if(strlen($mail->getSubject()) < 1) $error_message .= "Subject is missing. ";
-	if(strlen($mail->getMessage()) < 10) $error_message .= "Message is missing or not long enough.";
+
+
+	if(strlen($_POST['contact_form_from_name'] < 1) $error_message .= "Name is missing.";
+	if(strlen($_POST['contact_form_from'] < 1) $error_message .= "email missing.";
+	if(strlen($_POST['contact_form_message'] < 10) $error_message .= "Message is missing or not long enough.";
 
 	//check if errors and save
 	$is_sent = 0;
@@ -32,8 +35,8 @@ if ($_POST["submit"]){
 		{$mail->getMessage()}";
 
 		$mail->setMessage($message);
-		
-
+		$mail->setSubject("Contact form submit");
+		//TODO allow user to be mailed a copy
 
 		$is_sent = $mail->sendMail();
 	} else {

@@ -1,0 +1,23 @@
+# WIP 2019-11-10 Clara Todd clarabara@gmail.com
+
+* contact form - send to admin user, and option to send to sender
+* member form - apply for membership
+* joint member - add, remove
+* take service charge, refund
+* news items - 
+* restrict members 
+* inactivate member - expire listings
+
+* change filter or member chooser (member_chooser.php)
+* remove redundant classes
+* genericize style - too much camlets
+* make admin a user that can never log in (but can be seen in the dir)
+* date pickers 
+* all trades in a period
+* location for offers/wants
+* printed directory from site
+* retrofit id with page_id in pages - make sure it still works
+* gdpr PII sweep 
+* members not logged in
+* automatic restriction - set threshold in db. send mail
+

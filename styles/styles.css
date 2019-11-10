@@ -435,6 +435,7 @@ input[type=submit]:hover{
 }
 
 
+
 form.layout1{
     display: block ;
   }
@@ -505,6 +506,21 @@ form.layout2 label span {
     display: block;
     margin-bottom: 0.4em;
 }
+/* one liner */
+
+ form.layout3{
+  padding:1em;
+  display:block;
+  background-color: #f5f5ec;
+  border: solid 1px #EEE;
+  margin: 1em 0;
+ }
+ form.layout3 input[type=submit]{
+  float:right;
+  margin-top:-8px;
+  background: #CCC;
+}
+
 
 
 .columns2 {
