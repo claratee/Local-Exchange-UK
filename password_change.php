@@ -89,7 +89,7 @@ function displayPasswordForm($token) { // TODO: Should use SaveMember and should
         global $cUser, $cDB, $cStatusMessage;
         //CT todo - use template.
         $output = "
-        <form action=\"/members/password_change.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+        <form action=\"". HTTP_BASE ."/password_change.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
         	<input type=\"hidden\" name=\"token\" id=\"token\"  value=\"{$token}\" />
         	<input type=\"hidden\" name=\"member_id\" id=\"member_id\"  value=\"{$cUser->getMemberId()}\" />
             <p>Passwords can be a phrase at least 8 characters long, any character, even spaces - the longer it is the more secure it is.</p>

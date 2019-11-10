@@ -74,7 +74,7 @@ if($member->getAction() == "create") {
 
 $directory_array = array("Y"=>"Show in directory and listings", "N"=>"Hidden from directory and listings");
 $output .= "
-    <form action=\"/members/member_joint_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+    <form action=\"". HTTP_BASE ."/member_joint_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
         <input type=\"hidden\" id=\"person_id\" name=\"person_id\" value=\"{$member->getJointPerson()->getPersonId()}\" />
         <input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$member->getAction()}\" />
         

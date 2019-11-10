@@ -18,7 +18,7 @@ Updated to PHP 7.1+, Mysql 5.6, needed to modernise for security, safety, effici
 * [ADDED] Throw exceptions and handle errors nicely with try/catch
 * [ADDED] Basic abstract class to provide fundamental functions for most other classes
 * [CHANGE] Removed reliance on PEAR - this isn't necesssarily an intended thing. Couldn't get it to work!
-* [ADDED] Vendor location for third party scripts. Todo - distribute with composer or 
+* [ADDED] Vendor location for third party scripts. Use composer to keep everything up to date (but files included in got project in case)
 
 Ease of maintenance and extension:
 * [CHANGE] Replaced deprecated functions - can work in STRICT

@@ -179,7 +179,7 @@ $adminElements="";
         //CT todo - use template.
 
         $output = "
-        <form action=\"/members/member_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+        <form action=\"". HTTP_BASE ."/member_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
             <input type=\"hidden\" id=\"person_id\" name=\"person_id\" value=\"{$member->getPerson()->getPersonId()}\" />
             <input type=\"hidden\" id=\"primary_member\" name=\"primary_member\" value=\"{$member->getPerson()->getPrimaryMember()}\" />
             <input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$member->getAction()}\" />

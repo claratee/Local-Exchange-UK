@@ -151,7 +151,7 @@ if ($_POST["submit"]){
 
 	
 $output .= "
-	<form action=\"/members/listing_edit.php\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
+	<form action=\"". HTTP_BASE ."/listing_edit.php\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
 		<input type=\"hidden\" id=\"type\" name=\"type\" value=\"{$listing->getType()}\" />
 		<input type=\"hidden\" id=\"listing_id\" name=\"listing_id\" value=\"{$listing->getListingId()}\" />
 		<input type=\"hidden\" id=\"member_id\" name=\"member_id\" value=\"{$listing->getMemberId()}\" />

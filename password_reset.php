@@ -64,7 +64,7 @@ function displayPasswordResetForm() { // TODO: Should use SaveMember and should 
         //$date2=date_create("2013-12-12");
         //date_diff($date1, $date2);
         $output = "
-        <form action=\"/members/password_reset.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+        <form action=\"". HTTP_BASE ."/password_reset.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
             <p>Complete the details below to reset your password for your account. If you cannot remember your member ID or email address, please <a href=\"contact.php\">contact our support team for help</a>.</p>
             <p>
                 <label for=\"member_id\">
@@ -95,7 +95,7 @@ function displayPasswordResetButton() { // TODO: Should use SaveMember and shoul
         if($member->Load($condition)){
             //CT todo - use template.
             $output = "
-            <form action=\"/members/password_reset.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+            <form action=\"". HTTP_BASE ."/password_reset.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
                 <p>You are setting a new password. When you click the button below, a use-once link will be sent to your email address, and you will be logged out of your account.</p>
                 <input name=\"member_id\" id=\"member_id\" type=\"hidden\" value=\"{$member->getMemberId()}\">
                 <input name=\"email\" id=\"email\" type=\"hidden\" value=\"{$member->getPerson()->getEmail()}\">

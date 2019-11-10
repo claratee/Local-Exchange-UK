@@ -6,8 +6,8 @@
 * take service charge, refund
 * news items - 
 * restrict members 
+* settings writing UI
 * inactivate member - expire listings
-
 * change filter or member chooser (member_chooser.php)
 * remove redundant classes
 * genericize style - too much camlets
@@ -18,6 +18,11 @@
 * printed directory from site
 * retrofit id with page_id in pages - make sure it still works
 * gdpr PII sweep 
-* members not logged in
+* view members not logged in
+* trading health report
 * automatic restriction - set threshold in db. send mail
+* style and lnaguage in settings table and away from project
+* move constants that are used for language into settings tabl
+* create composer project for distribution
+
 

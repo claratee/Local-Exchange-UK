@@ -46,7 +46,7 @@ if ($_POST["submit"]){
 	  	}
 	}
 } 
-$output = "<form action=\"/members/admin_contact_all.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+$output = "<form action=\"". HTTP_BASE ."/admin_contact_all.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
     <p>This email will go out to <em>ALL</em> members of {$site_settings->getKey('SITE_LONG_TITLE')}, and will appear to be sent from the admin. Be sure that this is what you want to do. This form will take html or plain text, and will respect linebreaks. Need help with the formatting? Use an <a href=\"https://html-online.com/editor/\" target=\"_blank\">Online html editor</a></p>
    <!-- <p>
         <label for=\"from\">

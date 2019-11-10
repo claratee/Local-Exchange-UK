@@ -1,9 +1,12 @@
 Readme for /vendor
 Clara Todd 
-28 Aug 2017
+11 Nov 2019
 
 This is the directory for libraries and functions that you may have sourced elsewhere.
 Kept separately so that source control won't conflict with own project files.
+Used by composer. 
+
+At the moment am inlcuding the vendor files in git - but in future they should probably be added to exclude or ignore.
 
 Example third party vendor projects
 
@@ -11,7 +14,7 @@ Example third party vendor projects
   captcha bot protection for public forms. enable in config with 
   RECAPTCHA_VALIDATION constant.
 
-* FUTURE: future form creator () todo - find replacement for pear quickform!
+* form manager
 
 * FUTURE: session handle 
 

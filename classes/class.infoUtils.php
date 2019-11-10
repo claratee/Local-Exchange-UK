@@ -30,7 +30,7 @@ class cInfoUtils extends cInfo {
 	function Display(){
 
 		$output = "
-		<form action=\"/members/pages_edit.php?page_id={$this->page_id}\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
+		<form action=\"". HTTP_BASE ."/pages_edit.php?page_id={$this->page_id}\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
 			<input type=\"hidden\" id=\"page_id\" name=\"page_id\" value=\"{$this->page_id}\" />
 			<input type=\"hidden\" id=\"form_action\" name=\"form_action\" value=\"{$this->form_action}\" />
 			<!-- <input type=\"hidden\" id=\"active\" name=\"active\" value=\"1\" /> -->

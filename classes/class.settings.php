@@ -97,7 +97,8 @@ class cSettings {
 		
 		$query = $cDB->Query($string_query);
 		
-		if (!$query) throw new Exception("Can't read settings");
+		//if (!$query) throw new Exception("Can't read settings");
+		if (!$query) false;
         $field_array = array();
         while($row = $cDB->FetchArray($query)) {
         	$name = $row['name'];
@@ -131,7 +132,27 @@ class cSettings {
 		//CT ugh, sorry about this. dont like setting loads of top level variables, but are shoved in a rray to access. not the most elegant.
 		$this->setStrings($field_array);
 	}
-	
+	//CT It doesnt feel ok to be writing a bunch of global constants on the site...so not using this (rewrite of an older function). but could in future, if I get convinced
+	function makeConstant($field_array){
+		if ($field_array['typ']=='bool') {
+			
+			if (strtolower($field_array['current_value'])=='false') {
+				$field_array['current_value'] = "";
+				
+			}
+			else{
+				$field_array['current_value'] = 1;
+			}
+
+			define("{$field_array['name']}",((boolean)$field_array['current_value']));	
+		}
+		else if ($field_array['typ']=='int'){
+			define("{$field_array['name']}",((int)$field_array['current_value']));
+		}
+		else{
+			define("{$field_array['name']}",$field_array['current_value']);
+		}
+  	}
 	public function split_options($wh) {
 		$options = explode(",",$wh);
 		return $options;

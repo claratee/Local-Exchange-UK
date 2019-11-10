@@ -1,0 +1,7 @@
+{
+    "require": {
+        "form-manager/form-manager": "6.0.1",
+        "components/font-awesome": "5.9.0",
+        "ezyang/htmlpurifier": "4.12.0"
+    }
+}

@@ -108,7 +108,7 @@ if ($_POST["submit"]){
 } else{
     
     
-    $output .="<p>You are sending a welcome email with instructions how to set a password.</p><form action=\"/members/member_unlock.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
+    $output .="<p>You are sending a welcome email with instructions how to set a password.</p><form action=\"". HTTP_BASE ."/member_unlock.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
             
             <input name=\"member_id\" id=\"member_id\" type=\"hidden\" value=\"{$member->getMemberId()}\">
             <input name=\"email\" id=\"email\" type=\"hidden\" value=\"{$member->getPerson()->getEmail()}\">
