@@ -65,38 +65,32 @@ class cInfoUtils extends cInfo {
 		global $p, $cStatusMessage, $cDB, $cQueries;
 		$isSuccess = 0;
 		//can handle both create and update
-		if($this->form_action == "update"){
-			//construct vars array
 			$vars = array();
-			$vars['title'] = $this->title;
-			$vars['body'] = $this->body;
+			$vars['title'] = $cDB->EscTxt($this->title);
+			$vars['body'] = $cDB->EscTxt($this->body);
 			$vars['member_id_author'] = $this->member_id_author;
 			$vars['permission'] = $this->permission;
+		if($this->form_action == "update"){
+			//construct vars array
+			
 			//construct matching condition
 			$condition = "page_id=\"{$this->page_id}\"";
 			//construct query
-			$query = $cDB->BuildUpdateQuery(DATABASE_PAGE, $vars, $condition);
+			$string_query = $cDB->BuildUpdateQuery(DATABASE_PAGE, $vars, $condition);
 			// do the query.
-			$isSuccess = $cDB->Query($query);
+			return $cDB->Query($string_query);
 		} 
 		elseif($this->form_action == "create"){
+
+			$string_query = $cDB->BuildInsertQuery(DATABASE_PAGE, $vars);
+
+						print_r($string_query);
+
 			//CT returns last used id for display
-			$last_used_id = $cDB->QueryReturnId("INSERT INTO `lets_cdm_pages`(`title`, `body`, `active`, `permission`, `member_id_author`) VALUES (
-				\"{$cDB->EscTxt($this->title)}\",
-				\"{$cDB->EscTxt($this->body)}\",
-				1,
-				{$this->permission},
-				\"{$this->member_id_author}\")");
-			if(is_int($last_used_id)){
-				$this->page_id = $last_used_id;
-				$isSuccess = 1;
-			}
+			return $cDB->QueryReturnId($string_query);
+			
 		}
-		//something else?
-		
-		//$isSuccess = $cDB->Query("UPDATE ". DATABASE_PAGE . " SET `title`=\"{$cDB->EscTxt($this->title)}\" `updated_at`=CURRENT_TIMESTAMP WHERE `id`=\"{$this->page_id}\");
-		
-		return $isSuccess;
+		return false;
 		
 	}
 }

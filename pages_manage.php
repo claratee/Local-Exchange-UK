@@ -46,6 +46,7 @@ foreach($pageGroup->cdm_pages as $page) {
 }
 
 $output .= "
+	<a href=\"pages_edit.php?action=create\" class=\"button\">Create new page</a>
 	<!-- START bulk form pages -->
 	<form method=\"post\">
 		<div class=\"scrollable-x\"><table class=\"tabulated\">

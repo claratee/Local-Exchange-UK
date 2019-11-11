@@ -3,19 +3,17 @@
 
 /* 08-11-2019 - changes by Clara Todd <idesign@claratoddd.com> */
 
-
-
-
 *****************************************************
 /* New 2.00_alpha Functionality */
 
-/* ADDITIONAL TWEEKS/CHANGES/BUG FIXES */
-
 Updated to PHP 7.1+, Mysql 5.6, needed to modernise for security, safety, efficiency:
 * [CHANGE] Replaced all DB calls to use mysqli and use single db calls where possible (using joins and subqueries), overall reduced load on db by 90%
+* [CHANGE] Create and upgrade scripts for mysql now with feedback
+* [CHANGE] Feedback for DB creation on new site.
 * [CHANGE] Pages: show last updated and who can see it at the bottom of the page if you are logged in
 * [CHANGE] Rewrote many functions, split classes, rewrote to with private properties with getters and setters (ongoing process). 
 * [ADDED] Throw exceptions and handle errors nicely with try/catch
+* [ADDED] Pending and trade tables now have the same structure and direction for trades, to make it easy to transfer between the two
 * [ADDED] Basic abstract class to provide fundamental functions for most other classes
 * [CHANGE] Removed reliance on PEAR - this isn't necesssarily an intended thing. Couldn't get it to work!
 * [ADDED] Vendor location for third party scripts. Use composer to keep everything up to date (but files included in got project in case)
@@ -34,6 +32,7 @@ Ease of maintenance and extension:
 Privacy and personal security:
 * [ADDED] Replaced password reset mechanism - use pattern for sending use-once and expiring link with email so no one can see your password
 * [CHANGE] Inactive users are now not seen by ordinary members - previously you could go directly to the detail page with member id. 
+* [CHANGE] Record now of the person that authored the trade, in the trade table (admins can see)
 * [CHANGE] Password use recommended security features for PHP version, automatically
 * [CHANGE] Password can only be read by self
 * [CHANGE] Fixed the postcode truncation and address display to protect user data
@@ -54,7 +53,7 @@ User experience:
 * [CHANGE] Joint accounts now get emails and included in search
 
 
- ************************************************
+
 
 *****************************************************
 *****************************************************

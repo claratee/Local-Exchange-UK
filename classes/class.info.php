@@ -1,6 +1,6 @@
 <?php
 
-class cInfo {
+class cInfo extends cBasic2 {
 		var $page_id; 
 		var $title;
 		var $body;

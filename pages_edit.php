@@ -34,6 +34,7 @@ if ($_POST["submit"]){
 	$field_array['member_id_author'] = $cUser->getMemberId();
 	$cInfoUtils->Build($field_array);
 
+
 	//TODO: less hacky approcach. 
 	$error_message = "";
 	// error - no title
@@ -44,6 +45,7 @@ if ($_POST["submit"]){
 
 	$is_saved = 0;
 	if(empty($error_message)) {
+
 		$is_saved = $cInfoUtils->Save();
 	} else{
 		$cStatusMessage->Error($error_message);

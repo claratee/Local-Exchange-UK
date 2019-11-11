@@ -9,18 +9,18 @@ perhas I am not understanding why there was ISAM for some tables and innoDB for 
 
 
 //
-/* End */
 
-$running_upgrade_script = true;
-try{
-  include_once("includes/inc.global.php");
-  //$query = $cDB->Query("SHOW VARIABLES LIKE 'have_innodb';");
-//$row = mysqli_fetch_array($query);
-//if($row[1] != "YES")  die("Your database does not have InnoDB support. See the installation instructions for more information about InnoDB. Installation aborted.");
+include_once("includes/inc.global.php");
+
+$string_queries = array();
+
+
+
+//$running_upgrade_script = true;
 
 
   //CT remade
-  $success = $cDB->Query("CREATE TABLE " . DATABASE_MEMBERS . " (
+  $string_queries[]="CREATE TABLE " . DATABASE_MEMBERS . " (
     `member_id` varchar(15) NOT NULL,
     `password` varchar(255) NOT NULL,
     `member_role` char(1) NOT NULL,
@@ -38,13 +38,12 @@ try{
     `confirm_payments` int(1) NOT NULL DEFAULT '0',
     `restriction` int(1) NOT NULL DEFAULT '0',
     `opt_in_list` varchar(1) NOT NULL DEFAULT 'N'
-  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_MEMBERS . " Created: {$success}.</p>");
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 
   
   //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_PERSONS . " (
+ $string_queries[]="CREATE TABLE " . DATABASE_PERSONS . " (
   `person_id` mediumint(6) UNSIGNED NOT NULL,
   `member_id` varchar(15) NOT NULL,
   `primary_member` char(1) NOT NULL,
@@ -73,11 +72,10 @@ try{
   `about_me` text,
   `age` varchar(20) DEFAULT NULL,
   `sex` varchar(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_PERSONS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_LISTINGS . "
+$string_queries[]="CREATE TABLE " . DATABASE_LISTINGS . "(
   `listing_id` int(11) NOT NULL,
   `listing_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `title` varchar(60) NOT NULL,
@@ -89,23 +87,20 @@ try{
   `expire_date` date DEFAULT NULL,
   `reactivate_date` date DEFAULT NULL,
   `type` char(1) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_LISTINGS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_CATEGORIES . "((
+ $string_queries[]="CREATE TABLE " . DATABASE_CATEGORIES . "(
   `category_id` smallint(4) UNSIGNED NOT NULL,
   `parent_id` smallint(4) UNSIGNED DEFAULT NULL,
   `description` varchar(30) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-  print("<p>" . DATABASE_CATEGORIES . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 //
- $success = $cDB->Query("CREATE TABLE " . DATABASE_TRADES . "( trade_id mediumint(8) unsigned NOT NULL auto_increment, trade_date timestamp NOT NULL, status char(1) default NULL, member_id_from varchar(15) NOT NULL default '', member_id_to varchar(15) NOT NULL default '', amount decimal(8,2) NOT NULL default '0.00', category smallint(4) unsigned NOT NULL default '0', description varchar(255) default NULL, type char(1) NOT NULL default '', PRIMARY KEY (trade_id)) ".$engineSyntax."=InnoDB;");
-  print("<p>" . DATABASE_TRADES . " Created: {$success}.</p>");
+ $string_queries[]="CREATE TABLE " . DATABASE_TRADES . "( trade_id mediumint(8) unsigned NOT NULL auto_increment, trade_date timestamp NOT NULL, status char(1) default NULL, member_id_from varchar(15) NOT NULL default '', member_id_to varchar(15) NOT NULL default '', amount decimal(8,2) NOT NULL default '0.00', category smallint(4) unsigned NOT NULL default '0', description varchar(255) default NULL, type char(1) NOT NULL default '', PRIMARY KEY (trade_id)) ".$engineSyntax."=InnoDB;";
 
 //CT updated
- $success = $cDB->Query("CREATE TABLE " . DATABASE_LOGGING . "(
+ $string_queries[]="CREATE TABLE " . DATABASE_LOGGING . "(
   `log_id` mediumint(8) UNSIGNED NOT NULL,
   `log_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `admin_id` varchar(15) NOT NULL,
@@ -113,20 +108,18 @@ try{
   `action` char(1) NOT NULL,
   `ref_id` varchar(15) NOT NULL,
   `note` varchar(100) DEFAULT NULL
-) {$engineSyntax}=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_LOGGING . " Created: {$success}.</p>");
+) {$engineSyntax}=InnoDB DEFAULT CHARSET=utf8;";
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_LOGINS . " (
+ $string_queries[]="CREATE TABLE " . DATABASE_LOGINS . " (
   `member_id` varchar(15) NOT NULL,
   `total_failed` mediumint(6) UNSIGNED NOT NULL DEFAULT '0',
   `consecutive_failures` mediumint(3) UNSIGNED NOT NULL DEFAULT '0',
   `login_event_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_LOGINS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_FEEDBACK . "`feedback_id` mediumint(8) UNSIGNED NOT NULL,
+ $string_queries[]="CREATE TABLE " . DATABASE_FEEDBACK . "(`feedback_id` mediumint(8) UNSIGNED NOT NULL,
   `feedback_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `status` char(1) NOT NULL,
   `member_id_author` varchar(15) NOT NULL,
@@ -134,26 +127,23 @@ try{
   `trade_id` mediumint(8) UNSIGNED NOT NULL DEFAULT '0',
   `rating` char(1) NOT NULL,
   `comment` text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_FEEDBACK . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
- $success = $cDB->Query("CREATE TABLE " . DATABASE_REBUTTAL . "( rebuttal_id mediumint(6) unsigned NOT NULL auto_increment, rebuttal_date timestamp NOT NULL, feedback_id mediumint(8) unsigned default NULL, member_id varchar(15) NOT NULL default '', comment varchar(255) default NULL, PRIMARY KEY (rebuttal_id)) ".$engineSyntax."=MyISAM;");
-  print("<p>" . DATABASE_REBUTTAL . " Created: {$success}.</p>");
+ $string_queries[]="CREATE TABLE " . DATABASE_REBUTTAL . "( rebuttal_id mediumint(6) unsigned NOT NULL auto_increment, rebuttal_date timestamp NOT NULL, feedback_id mediumint(8) unsigned default NULL, member_id varchar(15) NOT NULL default '', comment varchar(255) default NULL, PRIMARY KEY (rebuttal_id)) ".$engineSyntax."=MyISAM";
 
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_NEWS . " (
+ $string_queries[]="CREATE TABLE " . DATABASE_NEWS . " (
   `news_id` mediumint(6) UNSIGNED NOT NULL,
   `title` varchar(100) NOT NULL,
   `description` text NOT NULL,
   `sequence` decimal(6,4) NOT NULL DEFAULT '0.0000',
   `expire_date` date DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-  print("<p>" . DATABASE_NEWS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_SETTINGS . " (
+ $string_queries[]="CREATE TABLE " . DATABASE_SETTINGS . " (
   `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `display_name` varchar(255) DEFAULT NULL,
@@ -164,46 +154,40 @@ try{
   `max_length` varchar(5) DEFAULT '99999',
   `descrip` text,
   `section` int(1) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_SETTINGS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 
 
 
 //CT remade
- $success = $cDB->Query("CREATE TABLE " . DATABASE_UPLOADS . "(
+ $string_queries[]="CREATE TABLE " . DATABASE_UPLOADS . "(
   `upload_id` mediumint(6) UNSIGNED NOT NULL,
   `upload_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `title` varchar(100) NOT NULL,
   `type` char(1) NOT NULL,
   `filename` varchar(100) DEFAULT NULL,
   `note` varchar(100) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_UPLOADS . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 //CT new for reset passwords the right way
- $success = $cDB->Query("CREATE TABLE " . DATABASE_PASSWORD_RESET . "(`member_id` varchar(255) NOT NULL,
+ $string_queries[]="CREATE TABLE " . DATABASE_PASSWORD_RESET . "(`member_id` varchar(255) NOT NULL,
   `password_reset_token` varchar(255) NOT NULL,
   `password_reset_token_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-  print("<p>" . DATABASE_PASSWORD_RESET . " Created: {$success}.</p>");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 
 //CT new - view based on search.
- $success = $cDB->Query("CREATE TABLE " . DATABASE_VIEW_CONTACTS . "(
+ $string_queries[]="CREATE TABLE " . DATABASE_VIEW_CONTACTS . "(
 `member_id` varchar(15)
 ,`email` varchar(40)
 ,`display_name` varchar(51)
 ,`email_updates` int(3) unsigned
 ,`member_role` char(1)
-);");
-  print("<p>" . DATABASE_VIEW_CONTACTS . " Created: {$success}.</p>");
+);";
 
- $success = $cDB->Query("DROP TABLE IF EXISTS " . DATABASE_VIEW_CONTACTS);
-  print("<p>" . DATABASE_VIEW_CONTACTS . " Dropped for recreating as view: {$success}.</p>");
+ $string_queries[]="DROP TABLE IF EXISTS " . DATABASE_VIEW_CONTACTS . ";";
 
- $success = $cDB->Query("CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW " . DATABASE_VIEW_CONTACTS . "AS  select `m`.`member_id` AS `member_id`,`p`.`email` AS `email`,concat(`p`.`first_name`,' ',`p`.`last_name`) AS `display_name`,`m`.`email_updates` AS `email_updates`,`m`.`member_role` AS `member_role` from (`localexchange-dev`.`lets_person` `p` left join `localexchange-dev`.`lets_member` `m` on((`m`.`member_id` = `p`.`member_id`))) where ((`m`.`status` = 'A') and (`m`.`account_type` <> 'F')) order by `m`.`member_id` ;");
-  print("<p>" . DATABASE_VIEW_CONTACTS . " Created as view: {$success}.</p>");
+ $string_queries[]="CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `lets_view_emails`  AS  select `m`.`member_id` AS `member_id`,`p`.`email` AS `email`,concat(`p`.`first_name`,' ',`p`.`last_name`) AS `display_name`,`m`.`email_updates` AS `email_updates`,`m`.`member_role` AS `member_role` from (`lets_person` `p` left join `lets_member` `m` on((`m`.`member_id` = `p`.`member_id`))) where ((`m`.`status` = 'A') and (`m`.`account_type` <> 'F')) order by `m`.`member_id`";
 
 
 
@@ -212,225 +196,71 @@ try{
 
 
 
-// Special admin account.
-$city = DEFAULT_CITY;
-$state = DEFAULT_STATE;
-$postcode = DEFAULT_ZIP_CODE;
-$country = DEFAULT_COUNTRY;
-$date = strftime("%Y-%m-%d", time());
+// // Special admin account.
+// $city = DEFAULT_CITY;
+// $state = DEFAULT_STATE;
+// $postcode = DEFAULT_ZIP_CODE;
+// $country = DEFAULT_COUNTRY;
+//$date = strftime("%Y-%m-%d", time()); //CT just use mysql
 
- $success = $cDB->Query("INSERT INTO " . DATABASE_MEMBERS . "(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'S',7,0.00);");
-  print("<p>" . DATABASE_MEMBERS . " populated: {$success}.</p>");
+ $string_queries[]="INSERT INTO " . DATABASE_MEMBERS . "(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('admin','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, curdate() + INTERVAL 1 YEAR,'S',7,0.00);";
 
- $success = $cDB->Query("INSERT INTO " . DATABASE_PERSONS . "(person_id, member_id, primary_member, directory_list, first_name, last_name, mid_name, dob, mother_mn, email, phone1_area, phone1_number, phone1_ext, phone2_area, phone2_number, phone2_ext, fax_area, fax_number, fax_ext, address_street1, address_street2, address_city, address_state_code, address_post_code, address_country) VALUES (1,'admin','Y','Y','Special Admin','Account',NULL,NULL,NULL, NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL, NULL, NULL, '{$city}', '{$state}', '{$postcode}','{$country}');");
-  print("<p>" . DATABASE_PERSONS . " populated: {$success}.</p>");
+// dlimmrf foen insert so it sets to the default values
+ $string_queries[]="INSERT INTO " . DATABASE_PERSONS . "(person_id, member_id, primary_member, directory_list, first_name, last_name) VALUES (1,'admin','Y','Y','Admin','Account');";
 
 
 // System account.
 if (defined("SYSTEM_ACCOUNT_ID")) {
-     $success = $cDB->Query("
-        INSERT INTO " .
-            DATABASE_MEMBERS . "INSERT INTO `lets_member`(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('system','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP,'S',7,0.00);");
-      print("<p>" . DATABASE_MEMBERS . " system user populated: {$success}.</p>");
+
+ $string_queries[]="INSERT INTO " . DATABASE_MEMBERS . "(member_id, password, member_role, status, admin_note, join_date, expire_date, account_type, email_updates, balance) VALUES ('". SYSTEM_ACCOUNT_ID ."','5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', '2', 'A','Special account created during install. Ok to inactivate once an Admin Level 2 acct has been created.', CURRENT_TIMESTAMP, curdate() + INTERVAL 1 YEAR,'S',7,0.00);";
 
 
-    $system_account_id = SYSTEM_ACCOUNT_ID;
-     $success = $cDB->Query("
-        INSERT INTO " .
-            DATABASE_PERSONS . "(person_id, member_id, primary_member,
-                directory_list, first_name, last_name, mid_name, dob, mother_mn,
-                email, phone1_area, phone1_number, phone1_ext, phone2_area,
-                phone2_number, phone2_ext, fax_area, fax_number, fax_ext,
-                address_street1, address_street2, address_city,
-                address_state_code, address_post_code, address_country)
-            VALUES (2, '{$system_account_id}', 'Y', 'Y', 'system', 'system', NULL,
-                NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-                NULL, NULL, NULL, NULL, '$city', '$state', '$postcode',
-                '$country')");
-       print("<p>" . DATABASE_PERSONS . " system user populated: {$success}.</p>");
-
+// dlimmrf foen insert so it sets to the default values
+ $string_queries[]="INSERT INTO " . DATABASE_PERSONS . "(person_id, member_id, primary_member, directory_list, first_name, last_name) VALUES (1,'". SYSTEM_ACCOUNT_ID ."','Y','Y','". SYSTEM_ACCOUNT_ID ."','Account');";
 }
 
+//$cDB->Query(
+//$string_queries[]="INSERT INTO " . DATABASE_CATEGORIES . "(parent_id, description) VALUES (
+$string_queries[]="INSERT INTO " . DATABASE_CATEGORIES . "(`category_id`, `parent_id`, `description`) VALUES
+(1, NULL, 'Arts &amp; Crafts: Other'),
+(2, NULL, 'Building &amp; DIY: Help'),
+(3, NULL, 'Administration: Business'),
+(4, NULL, 'Children &amp; Childcare'),
+(5, NULL, 'Technical: Computer/Phone Help'),
+(6, NULL, 'Personal: Counselling'),
+(7, NULL, 'Food &amp; Cooking'),
+(8, NULL, 'Gardening &amp; Plants'),
+(9, NULL, 'Building &amp; DIY: Equipment'),
+(10, NULL, 'Personal: Health'),
+(11, NULL, 'Goods: Household'),
+(12, NULL, 'Miscellaneous'),
+(13, NULL, 'Entertainment: Music'),
+(14, NULL, 'Pets'),
+(15, NULL, 'Sports &amp; Recreation'),
+(16, NULL, 'Tuition: Other'),
+(17, NULL, 'Transport: Lifts &amp; Deliveries'),
+(19, NULL, 'Household: equipment'),
+(20, NULL, 'Household: help'),
+(21, NULL, 'Updates/News'),
+(22, NULL, 'Transport: Bike Repair &amp; Loan'),
+(23, NULL, 'Transport: Boating'),
+(24, NULL, 'Personal: Spiritual'),
+(25, NULL, 'Goods: Furniture'),
+(26, NULL, 'LETS: stall hire'),
+(27, NULL, 'Accommodation &amp; storage'),
+(28, NULL, 'Goods: Books &amp; Magazines'),
+(29, NULL, 'Technical: Printing / Copying'),
+(30, NULL, 'Shopping'),
+(31, NULL, 'Tuition: Languages');";
 
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . "(parent_id, description) VALUES (null,'Arts & Crafts');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Building Services');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Business & Administration');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Children & Childcare');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Computers');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Counseling & Therapy');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Food');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Gardening & Yard Work');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Goods');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Health & Personal');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Household');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Miscellaneous');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Music & Entertainment');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Pets');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Sports & Recreation');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Teaching');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null, 'Transportation');");
-
-$cDB->Query("INSERT INTO " . DATABASE_CATEGORIES . " (parent_id, description) VALUES (null,'Freebies');");
-
-$cDB->Query("CREATE TABLE " . DATABASE_SESSION . "
+$string_queries[]="CREATE TABLE " . DATABASE_SESSION . "(
   `id` char(32) NOT NULL,
   `data` text,
   `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8");
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
 
- 
-/* BEGIN upgrade to 0.4.0 */
-
-// $cDB->Query("ALTER TABLE `person` ADD `about_me` text") or die ("Error altering person table. Does the web user account have alter table permission?");
-
-// $cDB->Query("ALTER TABLE `person` ADD `age` varchar(20) default NULL") or die ("Error altering person table. Does the web user account have alter table permission?");
-
-// $cDB->Query("ALTER TABLE `person` ADD `sex` varchar(1) default NULL") or die ("Error altering person table. Does the web user account have alter table permission?");
-
-// $cDB->Query("ALTER TABLE `member` ADD `confirm_payments` int(1) default '0'") or die ("Error altering member table. Does the web user account have alter table permission?");
-
-//CT updated
-$cDB->Query("CREATE TABLE " . DATABASE_PAGE . " (
-  `page_id` int(11) NOT NULL,
-  `date` int(30) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `body` text,
-  `active` int(1) DEFAULT '1',
-  `permission` int(2) DEFAULT NULL,
-  `member_id_author` varchar(24) NOT NULL DEFAULT 'system',
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8");
-
-//CT updated
-$cDB->Query("CREATE TABLE " . DATABASE_TRADES_PENDING . "
-  (
-  `trade_pending_id` mediumint(8) UNSIGNED NOT NULL,
-  `trade_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `member_id_from` varchar(15) NOT NULL,
-  `member_id_to` varchar(15) NOT NULL,
-  `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
-  `category_id` smallint(4) UNSIGNED NOT NULL DEFAULT '0',
-  `description` varchar(255) DEFAULT NULL,
-  `type` varchar(1) DEFAULT NULL,
-  `member_id_author` varchar(15) DEFAULT NULL,
-  `status` varchar(1) DEFAULT 'O',
-  `member_to_decision` varchar(2) DEFAULT '1',
-  `member_from_decision` varchar(2) DEFAULT '1'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-
-// Create the new tables...
-$cDB->Query("CREATE TABLE " . DATABASE_INCOME_TIES . " (
-  `member_id` varchar(15) DEFAULT NULL,
-  `member_id_to` varchar(15) DEFAULT NULL,
-  `percent` int(3) DEFAULT NULL,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;");
-
-
-
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_LOGGING . " ADD PRIMARY KEY (`log_id`)");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_CATEGORIES . " ADD PRIMARY KEY (`category_id`);");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_PAGE . " ADD PRIMARY KEY (`page_id`)");
-
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_FEEDBACK . " ADD PRIMARY KEY (`feedback_id`)");
-
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_FEEDBACK_REBUTTAL . " ADD PRIMARY KEY (`rebuttal_id`)");
-
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_LISTINGS . " ADD PRIMARY KEY (`listing_id`)");
-
-$cDB->Query("ALTER TABLE ". DATABASE_MEMBERS . " ADD PRIMARY KEY (`member_id`)");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_NEWS . " ADD PRIMARY KEY (`news_id`)");
-
-$cDB->Query("ALTER TABLE ". DATABASE_PASSWORD_RESET . " ADD UNIQUE KEY `member_id` (`memb");
-
-$cDB->Query("ALTER TABLE ". DATABASE_PERSONS . " ADD PRIMARY KEY (`person_id`)");
-$cDB->Query("ALTER TABLE ". DATABASE_PERSONS . " ADD UNIQUE KEY (`person_id`)");
-
-$cDB->Query("ALTER TABLE ". DATABASE_SESSION . " ADD PRIMARY KEY (`id`),
-  ADD KEY `ts` (`ts`)");
-
-$cDB->Query("ALTER TABLE ". DATABASE_SETTINGS . " ADD PRIMARY KEY (`id`)");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_TRADES . " ADD PRIMARY KEY (`trade_id`)");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_TRADES_PENDING . " ADD PRIMARY KEY (`trade_pending_id`)");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_UPLOADS . " ADD PRIMARY KEY (`upload_id`)");
-
-
-$cDB->Query("ALTER TABLE `lets_admin_activity`
-  MODIFY `log_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_CATEGORIES. "
-  MODIFY `category_id` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45");
-
-$cDB->Query("ALTER TABLE `". DATABASE_PAGE. "
-  MODIFY `page_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_FEEDBACK. "
-  MODIFY `feedback_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_FEEDBACK_REBUTTAL. "
-  MODIFY `rebuttal_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_LISTINGS. "
-  MODIFY `listing_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_NEWS. "
-  MODIFY `news_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_PERSONS. "
-  MODIFY `person_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_SETTINGS. "
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52");
-
-
-$cDB->Query("ALTER TABLE ". DATABASE_TRADES. "
-  MODIFY `trade_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_TRADES_PENDING. "
-  MODIFY `trade_pending_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-$cDB->Query("ALTER TABLE ". DATABASE_UPLOADS. "
-  MODIFY `upload_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0");
-
-//CT attempty to write whole of settings
-$cDB->Query("INSERT INTO ". DATABASE_SETTINGS . " (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES
+ //CT attempty to write whole of settings
+$string_queries[]="INSERT INTO ". DATABASE_SETTINGS . " (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES
 (6, 'LEECH_EMAIL_URLOCKED', '\'Account Restricted\' Email', 'longtext', 'Dear Member\r\n\r\nWe have been reviewing members balances as we are concerned to ensure that trading goes back and forth on an equitable basis so that members are able to keep their accounts close to zero.  We recognise that situations sometimes occur that lead to things getting out of balance.  Therefore to assist you, we have restricted expenditure on your account for the time being. If have any queries about this, or if we can assist you in any particular way, please let us know, and we will review the situation in due course. The LETS Administrator ', '', 'Dear Member\r\n\r\nWe have been reviewing members balances as we are concerned to ensure that trading goes back and forth on an equitable basis so that members are able to keep their accounts close to zero.  We recognise that situations sometimes occur that lead to things getting out of balance.  Therefore to assist you, we have restricted expenditure on your account for the time being. If have any queries about this, or if we can assist you in any particular way, please let us know, and we will review the situation in due course. The LETS Administrator ', '', 'Define email that is sent out when restrictions are imposed on an account.', 3),
 (8, 'LEECH_EMAIL_URUNLOCKED', '\'Account Restriction Lifted\' Email', 'longtext', 'Restrictions on your account have been lifted.', '', 'Restrictions on your account have been lifted.', '', 'Define email that is sent out when restrictions are lifted on an account.', 3),
 (10, 'MEM_LIST_DISPLAY_BALANCE', 'Display Member Balance', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to display member balances in the Members List? (Balances are always visible to Admins and Committee members regardless of what is set here.)', 7),
@@ -468,16 +298,168 @@ $cDB->Query("INSERT INTO ". DATABASE_SETTINGS . " (`id`, `name`, `display_name`,
 (48, 'OOB_UNLOCKED', 'is trading allowed right now? Lock site (false) if out of balance', 'bool', 'TRUE', 'TRUE, FALSE', 'TRUE', '', 'is trading allowed right now? Lock site if out of balance', 1),
 (49, 'SHOW_DATE_ON_LISTINGS', 'Show Date on Listings', 'bool', 'FALSE', '', 'TRUE', '', 'Do you want to display the Date alongside the offers/wants in the main listings?', 7),
 (50, 'EMAIL_LISTING_FOOTER', 'Text at the bottom of the listings email', 'varchar', '--\r\n\r\n<p><b>Join us on Facebook!</b><br />\r\nThere\'s a LETS facebook group for chatter and quick posts. Include your member number when you request to join, the group is only open to LETS members.<br />\r\n<a href=\"https://www.facebook.com/groups/pathtolets/\">https://www.facebook.com/groups/pathtolets/</a> \r\n\r\n<p><b>Want to feature on this listing update?</b><br />\r\nManage your LETS listings yourself from your main profile page. Updated listings are automatically included. <a href=\"https://www.mydomain.org/pathtomembermanagepage\">https://www.mydomain.org/pathtomembermanagepage</a>.</p>', '', '--\r\n\r\n<p><b>Want to feature on this listing update?</b><br />\r\nManage your listings yourself from your main profile page. Updated listings are automatically included.</p>', '', 'On the listings emails, what should the bottom text be?', 1),
-(51, 'EMAIL_LISTING_HEADER', 'Text at the top of the listings email', 'varchar', '', '', '', '', 'On the listings emails, what should the top text be?', 1)");
+(51, 'EMAIL_LISTING_HEADER', 'Text at the top of the listings email', 'varchar', '', '', '', '', 'On the listings emails, what should the top text be?', 1)";
+
+
+//CT updated
+$string_queries[]="CREATE TABLE " . DATABASE_PAGE . " (
+  `page_id` int(11) NOT NULL,
+  `date` int(30) DEFAULT NULL,
+  `title` varchar(255) DEFAULT NULL,
+  `body` text,
+  `active` int(1) DEFAULT '1',
+  `permission` int(2) DEFAULT NULL,
+  `member_id_author` varchar(24) NOT NULL DEFAULT 'system',
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8";
+
+//CT updated
+$string_queries[]="CREATE TABLE " . DATABASE_TRADES_PENDING . "
+  (
+  `trade_pending_id` mediumint(8) UNSIGNED NOT NULL,
+  `trade_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `member_id_from` varchar(15) NOT NULL,
+  `member_id_to` varchar(15) NOT NULL,
+  `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
+  `category_id` smallint(4) UNSIGNED NOT NULL DEFAULT '0',
+  `description` varchar(255) DEFAULT NULL,
+  `type` varchar(1) DEFAULT NULL,
+  `member_id_author` varchar(15) DEFAULT NULL,
+  `status` varchar(1) DEFAULT 'O',
+  `member_to_decision` varchar(2) DEFAULT '1',
+  `member_from_decision` varchar(2) DEFAULT '1'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
+
+
+// Create the new tables...
+$string_queries[]="CREATE TABLE " . DATABASE_INCOME_TIES . " (
+  `member_id` varchar(15) DEFAULT NULL,
+  `member_id_to` varchar(15) DEFAULT NULL,
+  `percent` int(3) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;";
 
 
 
 
-print("<h2>Success! Best check though :). Important: Check your tables have been created properly, and delete this file (create_db.php).</h2>");
+
+$string_queries[]="ALTER TABLE ". DATABASE_LOGGING . " ADD PRIMARY KEY (`log_id`)";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_CATEGORIES . " ADD PRIMARY KEY (`category_id`);";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_PAGE . " ADD PRIMARY KEY (`page_id`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_PAGE . " CHANGE `page_id` `page_id` INT(11) NOT NULL AUTO_INCREMENT";
+
+$string_queries[]="ALTER TABLE ". DATABASE_FEEDBACK . " ADD PRIMARY KEY (`feedback_id`)";
+
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_REBUTTAL . " ADD PRIMARY KEY (`rebuttal_id`)";
+
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_LISTINGS . " ADD PRIMARY KEY (`listing_id`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_MEMBERS . " ADD PRIMARY KEY (`member_id`)";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_NEWS . " ADD PRIMARY KEY (`news_id`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_PASSWORD_RESET . " ADD UNIQUE KEY `member_id` (`member_id`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_PERSONS . " ADD PRIMARY KEY (`person_id`)";
+$string_queries[]="ALTER TABLE ". DATABASE_PERSONS . " ADD UNIQUE KEY (`person_id`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_SESSION . " ADD PRIMARY KEY (`id`),
+  ADD KEY `ts` (`ts`)";
+
+$string_queries[]="ALTER TABLE ". DATABASE_SETTINGS . " ADD PRIMARY KEY (`id`)";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_TRADES . " ADD PRIMARY KEY (`trade_id`)";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_TRADES_PENDING . " ADD PRIMARY KEY (`trade_pending_id`)";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_UPLOADS . " ADD PRIMARY KEY (`upload_id`)";
+
+
+$string_queries[]="ALTER TABLE `lets_admin_activity`
+  MODIFY `log_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=0";
+
+$string_queries[]="ALTER TABLE ". DATABASE_CATEGORIES. "
+  MODIFY `category_id` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_FEEDBACK. "
+  MODIFY `feedback_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_REBUTTAL. "
+  MODIFY `rebuttal_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_LISTINGS. "
+  MODIFY `listing_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_NEWS. "
+  MODIFY `news_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_PERSONS. "
+  MODIFY `person_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_SETTINGS. "
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52";
+
+
+$string_queries[]="ALTER TABLE ". DATABASE_TRADES. "
+  MODIFY `trade_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_TRADES_PENDING. "
+  MODIFY `trade_pending_id` mediumint(8) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+$string_queries[]="ALTER TABLE ". DATABASE_UPLOADS. "
+  MODIFY `upload_id` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1";
+
+
+
+
+
+
+
+
+try{
+  $complete = doCreateScript();
 
 } catch(Exception $e){
-  print_r($e->getMessage());
+  $statusMessage->Error($e->getMessage());
+  $p->DisplayPage("");
+}
+
+function doCreateScript(){
+  global $string_queries, $cDB;
+  /* CT counters for feedback */
+  $success_count=0;
+  $fail_count=0;
+  $total_count=0;
+  echo "<h2>Starting create script</h2>";
+  foreach ($string_queries as $string_query) {
+    $total_count++;
+    if($cDB->Query($string_query)){
+      $r = "Success";
+      $success_count++;
+    }else{
+      $r = "<font color=\"red\">Fail</font>";
+      $fail_count++;
+    }
+    echo "{$total_count})  Run \"" . substr($string_query, 0, 30) . "\"...{$r}<br />";
+
+  }
+  echo "<h2>Script completed - {$total_count} total - {$fail_count} Fail, {$success_count} Success.</h2>";
 
 }
+
 
 ?>

@@ -60,7 +60,6 @@ CREATE VIEW `lets_view_emails`  AS  select `m`.`member_id` AS `member_id`,`p`.`e
 # vars that should be configured.
 INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES
 (39, 'SITE_SHORT_TITLE', 'Short title for the site', NULL, 'CamLETS', NULL, 'CamLETS', '99999', NULL, NULL),
-(40, 'SERVER_PATH_URL', 'Server path url', NULL, '/members', NULL, '/membaers', '99999', NULL, NULL),
 (41, 'SITE_MOTTO', 'Tagline', NULL, 'Building local community through trade', NULL, 'Building local community through trade', '100', NULL, NULL),
 (42, 'HEADER_LOGO', 'Logo for the header', NULL, 'mosaic-110.jpg', NULL, 'mosaic-110.jpg', '100', NULL, NULL),
 (43, 'SITE_LONG_TITLE', 'Long title for the site', NULL, 'Cambridge Local Exchange Trading Scheme', NULL, 'Cambridge Local Exchange Trading Scheme', '100', NULL, NULL),
