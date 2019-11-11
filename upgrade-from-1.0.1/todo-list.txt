@@ -1,12 +1,15 @@
 # WIP 2019-11-10 Clara Todd clarabara@gmail.com
 
+* create info page UI
+* move all admin tools into admin menu
 * contact form - send to admin user, and option to send to sender
 * member form - apply for membership
 * joint member - add, remove
 * take service charge, refund
-* news items - 
+* news items - create, edit
+* include news items in weekly updates
 * restrict members 
-* settings writing UI
+* site settings writing UI
 * inactivate member - expire listings
 * change filter or member chooser (member_chooser.php)
 * remove redundant classes
@@ -23,6 +26,9 @@
 * automatic restriction - set threshold in db. send mail
 * style and lnaguage in settings table and away from project
 * move constants that are used for language into settings tabl
+* use composer project for third party tools DONE
 * create composer project for distribution
+* move "info" content into pages
+* create starter pages for new site w boilerplate text
 
 
