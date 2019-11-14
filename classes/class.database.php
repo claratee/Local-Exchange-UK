@@ -214,7 +214,7 @@ class cDatabase
         }
         return $string;
     }
-    //returns array of the two parts needed for the insert statement - keys and values
+    //ct returns array of the two parts needed for the insert statement - keys and values
     function BuildInsertQueryStringsFromArray($array) {
         $i=0;
         $keys_as_string="";
@@ -253,14 +253,14 @@ class cDatabase
         return $string;
     }
 
-    //helper function to build update query
+    //CT helper function to build update query
     function BuildUpdateQuery($table_name, $array, $condition) {
 
         $vars_as_string = $this->BuildUpdateQueryStringFromArray($array);
         $string = "UPDATE `{$table_name}` SET {$vars_as_string} WHERE {$condition};";
         return $string;
     }
-    //helper function to build insert query
+    //CT helper function to build insert query
     function BuildInsertQuery($table_name, $array) {
         //this is for php7. php5 has these flipped
         list($keys_as_string, $vars_as_string) = $this->BuildInsertQueryStringsFromArray($array);
@@ -285,14 +285,22 @@ class cDatabase
     }
 
 	/* A HTML screening function, an optional additional security step for data being submitted for storage in MySQL */
-	function ScreenHTML($var) {
+	function ScreenHTML($dirty_html) {
 		
 		global $cUser,$allowedHTML;
 		
 		// ct using the htmlpurifier library
+
+
 		$config = HTMLPurifier_Config::createDefault();
+		//$config->set('HTML.Allowed', 'p,b,a[href],i');
+ 	   	//$config->set('URI.Base', 'http://www.example.com');
+  	  	//$config->set('URI.MakeAbsolute', true);
+   		//$config->set('AutoFormat.AutoParagraph', true);
+
+
 		$purifier = new HTMLPurifier($config);
-		$clean_html = $purifier->purify($var);
+		$clean_html = $purifier->purify($dirty_html);
 	
 		return $clean_html;
 	}
@@ -351,9 +359,9 @@ class cDatabase
 
     function EscTxt2($text) {
         if( !empty($text)) {
-            if(get_magic_quotes_gpc()) {
-                $text = stripslashes($text);
-            }
+            // if(get_magic_quotes_gpc()) {
+            //     $text = stripslashes($text);
+            // }
 
             return "='" . mysqli_real_escape_string($this->db_link, $text) . "'";
         } else if(is_numeric($text)) {

@@ -1,13 +1,13 @@
 <?php 
 class cInfoUtils extends cInfo {
 	//whether create or edit
-	var $form_action; 
+	var $action; 
 
 
 	function Build($vars) {
 		parent::Build($vars);
 		//add extra class
-		if($vars['form_action']) $this->form_action = $vars['form_action'];
+		if($vars['action']) $this->action = $vars['action'];
 	}
 	function PreparePermissionDropdown($page_id=null){
 		global $p, $cUser;
@@ -30,9 +30,9 @@ class cInfoUtils extends cInfo {
 	function Display(){
 
 		$output = "
-		<form action=\"". HTTP_BASE ."/pages_edit.php?page_id={$this->page_id}\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
+		<form action=\"". HTTP_BASE ."/pages_edit.php\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
 			<input type=\"hidden\" id=\"page_id\" name=\"page_id\" value=\"{$this->page_id}\" />
-			<input type=\"hidden\" id=\"form_action\" name=\"form_action\" value=\"{$this->form_action}\" />
+			<input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$this->action}\" />
 			<!-- <input type=\"hidden\" id=\"active\" name=\"active\" value=\"1\" /> -->
 			<input type=\"hidden\" id=\"active\" name=\"active\" value=\"{$this->active}\" />
 			<input type=\"hidden\" id=\"member_id_author\" name=\"member_id_author\" value=\"{$this->member_id_author}\" />
@@ -67,24 +67,30 @@ class cInfoUtils extends cInfo {
 		//can handle both create and update
 			$vars = array();
 			$vars['title'] = $cDB->EscTxt($this->title);
-			$vars['body'] = $cDB->EscTxt($this->body);
+			//CT stripping linebreaks....todo: fix
+			$body = str_replace("\r\n", "", $this->body);
+			$vars['body'] = $cDB->EscTxt($body);
 			$vars['member_id_author'] = $this->member_id_author;
 			$vars['permission'] = $this->permission;
-		if($this->form_action == "update"){
+		if($this->action == "update"){
 			//construct vars array
 			
 			//construct matching condition
-			$condition = "page_id=\"{$this->page_id}\"";
+			$condition = "page_id=\"{$this->page_id};\"";
 			//construct query
 			$string_query = $cDB->BuildUpdateQuery(DATABASE_PAGE, $vars, $condition);
-			// do the query.
-			return $cDB->Query($string_query);
+			// do the query, return the page id if updated
+			if($cDB->Query($string_query)){
+				return $this->page_id;
+			} else{
+				return false;
+			}
 		} 
-		elseif($this->form_action == "create"){
+		elseif($this->action == "create"){
 
 			$string_query = $cDB->BuildInsertQuery(DATABASE_PAGE, $vars);
 
-						print_r($string_query);
+						//print_r($string_query);
 
 			//CT returns last used id for display
 			return $cDB->QueryReturnId($string_query);

@@ -215,7 +215,7 @@ $adminElements="";
             <p>
                 <label for=\"gender\">
                     Gender<br />
-                    {$p->PrepareFormSelector(sex, ARRAY_SEX, "-- Select gender --", $member->getPerson()->getAge())}
+                    {$p->PrepareFormSelector('sex', ARRAY_SEX, "-- Select gender --", $member->getPerson()->getAge())}
                 </label>
             </p>
             <h3>Contact details</h3>

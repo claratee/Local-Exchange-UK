@@ -49,23 +49,16 @@ if(!$is_success){
             //CT todo: date format
             $mSince = $member->getJoinDate();
             
-            //CT person
+            //CT primary person
             //print_r($member->getPerson());
             $pName = "{$member->getPerson()->getFirstName()} {$member->getPerson()->getLastName()}";
-            //$agesArr = array("Rather not say","18-30", "30s", "40s" , "50s", "60s", "70s", "Over 80");
-            //echo($member->getPerson()->getAge());
-            $pAge = (empty($member->getPerson()->getAge())) ? 'Rather not say' : AGE_ARRAY[$member->getPerson()->getAge()];
-            // todo make in property for localisation
-            switch ($member->getPerson()->getSex()){
-                case "f" :
-                    $pSex =  'Female';
-                break;
-                case "m" :
-                    $pSex =  'Male';
-                break;
-                default:
-                    $pSex =  'Rather not say';
-            }
+
+
+
+            $pAge = ARRAY_AGE[$member->getPerson()->getAge()];
+            $pSex = ARRAY_SEX[$member->getPerson()->getSex()];
+
+
             $pAbout = (empty($member->getPerson()->getAboutMe())) ? '<em>No description supplied.</em>' : "\"" .stripslashes($member->getPerson()->getAboutMe()) . "\"";
             $pEmail = "<a href=\"mailto:{$member->getPerson()->getEmail()}\" class=\"normal\">{$member->getPerson()->getEmail()}</a>";
             $pPhones = $member->getPerson()->getAllPhones();

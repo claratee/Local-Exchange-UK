@@ -6,7 +6,7 @@ include_once("includes/inc.global.php");
 if($cUser->IsLoggedOn())
 {
 	//ct - forward to profile page for something to do
-	header("location:" . SERVER_PATH_URL ."/member_dashboard.php");
+	header("location:" . SERVER_PATH_URL ."/member_profile_menu.php");
 }
 else 
 {

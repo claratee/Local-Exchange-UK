@@ -26,14 +26,47 @@ class cMemberSelf extends cMember {
 */
         return false;
     }
+    //CT returns a new time n minutes from current set time.
+    private function getNewSessionTimeout($old_timestamp=null){
+        //CT would prefer to use date 'Y-m-d H:i:s' but timestmps are easier to work with right now
+        global $site_settings;
+        $timeout = round($site_settings->getKey("SESSION_TIMEOUT"));
+        //Can't be less than 1, or more than 24.
+        if($timeout<1) $timeout = 1;
+        elseif($timeout>24) $timeout = 24;        //CT if there is already an established session
 
+        $timestamp = strtotime("now");
+
+
+        $new_timestamp = strtotime(" + {$timeout} minute");
+
+
+        if($old_timestamp !=null && (($timestamp > $old_timestamp) OR ($new_timestamp < $old_timestamp))){
+                return false; //CT return false if past expiry, or the the old expiry set is earlier than the new expiry (indicating that the timeout has been set - and all sessions should respect the new expiry not the old one)
+                   
+        }
+        // otherwise...return the new timeout
+        return $new_timestamp;  //return the new date_string
+    }
     public function IsLoggedOn()
     {
+        global $cStatusMessage;
 //      if (isset($_SESSION["user_login"]) and $_SESSION["user_login"] != LOGGED_OUT)
-        if (isset($_SESSION["user_login"]))
+        //CT timeout should be 15 mins;
+        //print_r($_SESSION);
+        //if(empty($_SESSION["timeout_at"])) return false;
+        if (isset($_SESSION["user_login"])) {
+            $timeout_at=$this->getNewSessionTimeout($_SESSION["timeout_at"]);
+            //print_r($timeout_at);
+            if(!$timeout_at) return false;
+            //CT refreshes timeout
+            $_SESSION["timeout_at"] = $timeout_at;
+            if (DEBUG) $cStatusMessage->Info("Session: {$_SESSION['timeout_at']}");
+
+            //print_r($_SESSION["timeout_at"]);
             return true;
-        else
-            return false;
+        }
+        return false;
     }
 
     //TODO: need everyone to change password
@@ -107,6 +140,10 @@ class cMemberSelf extends cMember {
         //if user found and has a valid passwor
         if ($is_success) {
             //if there is no last login, there is no record
+            
+            $_SESSION["timeout_at"] = $this->getNewSessionTimeout(null);
+
+
             $_SESSION["user_login"] = $this->getMemberId();
             $_SESSION["expires"] = $this->getExpires();
             $_SESSION["mode"] = "default";
@@ -116,6 +153,9 @@ class cMemberSelf extends cMember {
             //CT wip - new mode var to store in session
             $this->changeMode();
             $this->getLoginHistory()->RecordLoginSuccess($member_id);
+            //DEBUG
+            if (DEBUG) $cStatusMessage->Info("New session: " . print_r($_SESSION, 1));
+
             return true;
         } 
             
@@ -309,6 +349,7 @@ class cMemberSelf extends cMember {
         //CT todo - put this in
         if (isset($_SESSION["expires"])) $field_array['expires'] = $_SESSION["expires"];
         if (isset($_SESSION["mode"])) $field_array['mode'] = $_SESSION["mode"];
+        if (isset($_SESSION["timeout_at"])) $field_array['timeout_at'] = $_SESSION["timeout_at"];
         //print_r($_SESSION);
         if(sizeof($field_array)>1){
             $this->Build($field_array);

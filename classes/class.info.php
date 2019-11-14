@@ -38,8 +38,9 @@ class cInfo extends cBasic2 {
 			global $cDB, $cStatusMessage;
 			//TODO: CT vars on class should use getters and setters
 			if($field_array['page_id']) $this->page_id = $field_array['page_id'];
-			if(isset($field_array['title'])) $this->title = $field_array['title'];
-			if(isset($field_array['body'])) $this->body = $this->tidyHTML($field_array['body']);
+			if(isset($field_array['title'])) $this->title = $cDB->UnEscTxt($field_array['title']);
+			//if(isset($field_array['body'])) $this->body = $this->tidyHTML($field_array['body']);
+			if(isset($field_array['body'])) $this->body = $cDB->UnEscTxt($field_array['body']);
 			if(isset($field_array['date'])) $this->date = $field_array['date'];
 			if(isset($field_array['active'])) $this->active = $field_array['active'];
 			if(isset($field_array['permission'])) $this->permission = $field_array['permission'];
@@ -50,6 +51,8 @@ class cInfo extends cBasic2 {
 
 		function tidyHTML($html) {
 			global $cDB;
+			//return $html;
+			//CT this is not working properly...
 			return $cDB->ScreenHTML($html);
 		}
 		function getExtract($extract_length=80){
@@ -59,9 +62,9 @@ class cInfo extends cBasic2 {
 			return substr($extract, 0, $extract_length) . "...";
 		}
 		function Display(){
-			global $cUser, $p;
+			global $cUser, $p, $cDB;
 			$string = "";
-			$clean_text = $this->tidyHTML($this->body);
+			//$clean_text = $this->tidyHTML($this->body);
 			//CT show page
 			if(!empty($this->page_id)){
 				if ($cUser->getMemberRole() > 0){
@@ -84,7 +87,7 @@ class cInfo extends cBasic2 {
 					break;
 				}
 				$authorstring = ($cUser->IsLoggedOn()) ? " by #{$this->member_id_author}" : "";
-				$string .= "<div class=\"content\">{$clean_text}</div>";
+				$string .= "<div class=\"content\">{$cDB->UnEscTxt($this->body)}</div>";
 				$string .= "<div class=\"metadata left\">{$role_string}</div><div class=\"metadata\"> Updated on {$this->updated_at}{$authorstring}</div>";
 			}
 			return $string;

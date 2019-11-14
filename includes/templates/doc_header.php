@@ -1,5 +1,3 @@
-<!--START include doc header -->
-
 <!DOCTYPE HTML>
 	<html>
 		<head>

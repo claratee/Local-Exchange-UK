@@ -68,9 +68,11 @@ define("ARRAY_AGE",
         "6" => "60's",
         "7" => "70's",
         "8" => "80's",
+        "8" => "Over 80",
         "9" => "Would rather not say"
     )
 );
+
 define("ARRAY_SEX", 
 	array(
        	"1" => "Male", 

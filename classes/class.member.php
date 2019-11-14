@@ -99,6 +99,9 @@ class cMember extends cBasic2
 
         $this->getPerson()->Build($field_array);  //CT call the build function for person
         $this->getPasswordReset()->Build($field_array);  //CT call the build function for password - will just set the member_id
+        //CT presets - todo:change
+        if(empty($this->getPerson()->getAge())) $this->getPerson()->setAge(9);
+        if(empty($this->getPerson()->getSex())) $this->getPerson()->setSex(3);
         //print("mebmer" . $this->getPerson()->getMemberId());
         // secondary
         if($this->getAccountType() == "J"){

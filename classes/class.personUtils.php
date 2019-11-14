@@ -7,12 +7,12 @@ class cPersonUtils extends cPerson
  
 	public function  __construct ($field_array=null) {
         global $cUser;
-        //init in case of creation
+        //init in case of creation...will be overwritten if set
         $this->setPrimaryMember="Y";
         $this->setDirectoryList="Y";
         //base constructor - build if values exist
         if(!empty($field_array)) $this->Build($field_array);
-        print_r($field_array);
+        //print_r($field_array);
     }
 
 	public function Save() {

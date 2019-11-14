@@ -115,19 +115,20 @@ class cPerson extends cBasic2
 	{
 		global $cDB, $cStatusMessage, $cQueries;
 		
-		/*[chris]*/ // Added fetch personal profile data
-		$query = $cDB->Query($cQueries->getSqlPerson($condition));
-		
-        $is_success = false;
+		//CT
+		 $string_query = $cQueries->getSqlPerson($condition);
+        return $this->LoadDatabaseTable($string_query);
 
-        if($field_array = $cDB->FetchArray($query)){   
-            $isSuccess = $this->Build($field_array);
-        } else {
-            //CT - moved error message out of the redirect - don't you wnat to see errors even if not redirected?
-            $cStatusMessage->Error("Error accessing member.");
+        // $is_success = false;
 
-        }   
-        return $is_success;		
+        // if($field_array = $cDB->FetchArray($query)){   
+        //     $isSuccess = $this->Build($field_array);
+        // } else {
+        //     //CT - moved error message out of the redirect - don't you wnat to see errors even if not redirected?
+        //     $cStatusMessage->Error("Error accessing member.");
+
+        // }   
+   
 	}
 
 // public function Save() {
