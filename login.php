@@ -19,6 +19,10 @@ if ($action=="login")
 	if (!empty($_POST["location"])){
 		$redir_url = $_POST["location"];
 	}
+	//CT request_uri stored in session - just in case it was from an intercept.
+	if(!empty($_SESSION['request_uri'])){
+		$redir_url = $_SESSION['request_uri'];
+	}
 
 
 	$member_id = $_POST["user"];

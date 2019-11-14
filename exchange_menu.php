@@ -9,10 +9,10 @@ $pending = new cTradesPending($_SESSION["user_login"]);
 
 $menuArray = array();
 $menuArray[] = $p->MenuItemArray("Invoices and trades pending", "trades_pending.php");
-$menuArray[] = $p->MenuItemArray("Record an exchange", "trade.php?mode=self");
-$menuArray[] = $p->MenuItemArray("View my balance and trade history", "trade_history.php?mode=self");
-$menuArray[] = $p->MenuItemArray("View my feedback", "feedback_all.php?mode=self");
-$menuArray[] = $p->MenuItemArray("Leave Feedback for a Recent Exchange", "feedback_choose.php?mode=self");
+$menuArray[] = $p->MenuItemArray("Record an exchange", "trade.php");
+$menuArray[] = $p->MenuItemArray("View my balance and trade history", "trade_history.php");
+$menuArray[] = $p->MenuItemArray("View my feedback", "feedback_all.php");
+$menuArray[] = $p->MenuItemArray("Leave Feedback for a Recent Exchange", "feedback_choose.php");
 $menuArray[] = $p->MenuItemArray("View All Trades in a Specified Time Period", "timeframe_choose.php?action=trade_history_all");
 $menuHtml = $p->Menu($menuArray);
 //$title = $p->Wrap("Wanted listings", "h3");

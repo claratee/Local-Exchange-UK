@@ -124,6 +124,7 @@ class cListingGroup extends cBasic2
 		//$vars[]=array(value, description);
 		// prepare vars to be in the right format for the generic builder
 		$vars=array();
+		$vars['1'] = 'Updated in last day';
 		$vars['3'] = 'Updated in last 3 days';
 		$vars['7'] = 'Updated in last week';
 		$vars['14'] = 'Updated in last two weeks';

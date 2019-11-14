@@ -151,5 +151,5 @@ ALTER TABLE `lets_password_reset_token`
   ADD UNIQUE KEY `member_id` (`member_id`);
 
 
-
+ALTER TABLE `lets_member` ADD UNIQUE(`member_id`);
 

@@ -170,7 +170,7 @@ class cFeedbackGroup extends cBasic2 {
 			// 	elseif ($member_viewing == $feedback->member_author->getMemberId())
 			// 		$text="Follow up";
 
-			// 	$output .= "<br /><a href='feedback_reply.php?feedback_id={$feedback->feedback_id}&mode=self&author={$member_viewing}&about={$feedback->member_author->getMemberId()}''>{$text}</a> "; 
+			// 	$output .= "<br /><a href='feedback_reply.php?feedback_id={$feedback->feedback_id}&author={$member_viewing}&about={$feedback->member_author->getMemberId()}''>{$text}</a> "; 
 			// }
 			
 			$output .= "</tr>";

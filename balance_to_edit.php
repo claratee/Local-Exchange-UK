@@ -2,6 +2,7 @@
 include_once("includes/inc.global.php");
 $p->site_section = SITE_SECTION_OFFER_LIST;
 	
+	//CT this is a page that should not exist... not fixing yet...
 $cUser->MustBeLevel(2);
 include("includes/inc.forms.php");
 
@@ -27,7 +28,7 @@ if ($form->validate()) { // Form is validated so processes the data
 
 function process_data ($values) {
 	global $cUser;
-	header("location:".HTTP_BASE."/edit_balance.php?mode=admin&member_id=".$values["member_id"]);
+	header("location:".HTTP_BASE."/edit_balance.php?&member_id=".$values["member_id"]);
 	exit;	
 }
 

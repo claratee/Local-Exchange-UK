@@ -61,7 +61,7 @@ class cMemberSelf extends cMember {
             if(!$timeout_at) return false;
             //CT refreshes timeout
             $_SESSION["timeout_at"] = $timeout_at;
-            if (DEBUG) $cStatusMessage->Info("Session: {$_SESSION['timeout_at']}");
+            //if (DEBUG) $cStatusMessage->Info("Session: {$_SESSION['timeout_at']}");
 
             //print_r($_SESSION["timeout_at"]);
             return true;
@@ -304,7 +304,7 @@ class cMemberSelf extends cMember {
             return true;
         
         // user isn't logged on, but is in a section of the site where they should be logged on.
-        $_SESSION['REQUEST_URI'] = $_SERVER['REQUEST_URI'];
+        $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
         
         //include("redirect.php");
 
@@ -350,6 +350,8 @@ class cMemberSelf extends cMember {
         if (isset($_SESSION["expires"])) $field_array['expires'] = $_SESSION["expires"];
         if (isset($_SESSION["mode"])) $field_array['mode'] = $_SESSION["mode"];
         if (isset($_SESSION["timeout_at"])) $field_array['timeout_at'] = $_SESSION["timeout_at"];
+        if (isset($_SESSION["request_uri"])) $field_array['request_uri'] = $_SESSION["request_uri"];
+
         //print_r($_SESSION);
         if(sizeof($field_array)>1){
             $this->Build($field_array);

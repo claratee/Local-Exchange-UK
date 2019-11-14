@@ -9,7 +9,6 @@
 Updated to PHP 7.1+, Mysql 5.6, needed to modernise for security, safety, efficiency:
 * [CHANGE] Replaced all DB calls to use mysqli and use single db calls where possible (using joins and subqueries), overall reduced load on db by 90%
 * [CHANGE] Create and upgrade scripts for mysql now with feedback
-* [CHANGE] Feedback for DB creation on new site.
 * [CHANGE] Pages: show last updated and who can see it at the bottom of the page if you are logged in
 * [CHANGE] Rewrote many functions, split classes, rewrote to with private properties with getters and setters (ongoing process). 
 * [ADDED] Throw exceptions and handle errors nicely with try/catch
@@ -31,11 +30,11 @@ Ease of maintenance and extension:
 
 Privacy and personal security:
 * [ADDED] Replaced password reset mechanism - use pattern for sending use-once and expiring link with email so no one can see your password
+* [CHANGE] Better handling of login sessions - now with timeout that can be set in site config.
 * [CHANGE] Inactive users are now not seen by ordinary members - previously you could go directly to the detail page with member id. 
 * [CHANGE] Record now of the person that authored the trade, in the trade table (admins can see)
-* [CHANGE] Password use recommended security features for PHP version, automatically
-* [CHANGE] Password can only be read by self
-* [CHANGE] Fixed the postcode truncation and address display to protect user data
+* [CHANGE] Password use recommended security features for PHP version, automatically. No reading of passwords by system unless logging in
+* [CHANGE] Fixed the UK postcode truncation and address display to protect user data
 * [CHANGE] Admin actions now logged. member id who performed the trade now saved in the trade as well as logged
 
 User experience:

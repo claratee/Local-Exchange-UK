@@ -159,6 +159,9 @@ $string_queries = array();
   $string_queries[]="ALTER TABLE " . DATABASE_PASSWORD_RESET . "
   ADD UNIQUE KEY `member_id` (`member_id`);";
 
+$string_queries[]="ALTER TABLE " . DATABASE_MEMBERS . "
+  ADD UNIQUE KEY `member_id` (`member_id`);";
+
 try{
   $complete = doCreateScript();
 

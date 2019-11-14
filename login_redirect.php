@@ -5,6 +5,7 @@ include_once("includes/inc.global.php");
 $string = file_get_contents(TEMPLATES_PATH . '/form_login.php', TRUE);
 $string = $p->ReplacePlaceholders($string);
 
+
 $p->DisplayPage($string);
 
 ?>
