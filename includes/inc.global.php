@@ -69,7 +69,7 @@ define("ARRAY_AGE",
         "7" => "70's",
         "8" => "80's",
         "8" => "Over 80",
-        "9" => "Would rather not say"
+        "9" => "Prefer not to say or n/a"
     )
 );
 
@@ -77,7 +77,7 @@ define("ARRAY_SEX",
 	array(
        	"1" => "Male", 
 		"2" => "Female", 
-		"3" => "Would rather not say"
+        "3" => "Prefer not to say say or n/a"
     )
 );
 
@@ -104,6 +104,15 @@ define("ARRAY_ACCOUNT_ROLE",
         "0" => "Member", 
         "1" => "Committee",
         "2" => "Administrator"
+    )
+);
+define("ARRAY_CONTACT_SUBJECT", 
+    array(
+        "join" => "Membership enquiry",
+        "login_issues" => "Lost login details",
+        "question_about_lets" => "General question about LETS and complementary currencies",
+        "press" => "Press or local networking opportunities",
+        "other" => "Other"
     )
 );
 define("ARRAY_RESTRICTION", 

@@ -13,7 +13,7 @@ try{
 		$member = new cMemberUtils();
 		$condition="m.member_id=\"{$_GET['member_id']}\" AND status=\"A\"";
 		$member->Load($condition);
-		$page_title = "Joint member for {$member->getDisplayName()} ({$member->getMemberId()})";
+		$page_title = "Joint member for {$member->getPerson()->getFirstName()} {$member->getPerson()->getLastName()} ({$member->getMemberId()})";
 
 		
 		//if($member->getDisplayName())
@@ -23,33 +23,70 @@ try{
 		$condition="m.member_id=\"{$cUser->getMemberId()}\" AND status=\"A\"";
 		$member->Load($condition);
 		$page_title = "Joint member";
-
 	}
 
+if($_POST["delete"]){
+	$field_array = array();
+	$field_array["action"]=$_POST["action"];
+	$field_array["member_id"]=$_POST["member_id"];
+	$field_array["j_person_id"]=$_POST["j_person_id"];
+	$field_array["account_type"]="S";
+	$member->Build($field_array);
+	//print_r($field_array);
+	$is_saved = $member->Save();
+	if($is_saved){
+		//redirect page if saved	
+	    $cStatusMessage->Info("Joint member has been deleted.");
+		$redir_url="member_detail.php?member_id={$member->getMemberId()}";
+			include("redirect.php");
+	} 
+}
 
 	if ($_POST["submit"]){
-		$fieldArray = $_POST;
-		// set into object
-		//print_r($fieldArray);
-		$member->Build($fieldArray);
+		$field_array = $_POST;
+		$member->Build($field_array);
+		//CT TODO - validation. this is hokey and manual, will replace with proper validator sometime...
+		$error_message = "";
+		//CT validation - manual. sorry...
+	    if(strlen($member->getJointPerson()->getFirstName()) < 1) $error_message .= "First name is missing. ";
+	    if(strlen($member->getJointPerson()->getFirstName()) > 100) $error_message .= "First name is too long. ";
+	    if(strlen($member->getJointPerson()->getLastName()) < 1) $error_message .= "Last name is missing. ";
+	    if(strlen($member->getJointPerson()->getLastName()) > 100) $error_message .= "Last name is too long. ";
+	    if(strlen($member->getJointPerson()->getEmail()) > 0 AND (!$p->isValidEmail($member->getPerson()->getEmail(), true) OR strlen($member->getJointPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
+	    if(strlen($member->getJointPerson()->getPhone1Number()) > 0 && strlen($member->getJointPerson()->getPhone1Number()) < 11) $error_message .= "Include full telephone number including dialling code. ";
+	    if(strlen($member->getJointPerson()->getEmail()) < 1 AND strlen($member->getJointPerson()->getPhone1Number()) < 1) $error_message .= "You must include at least a phone number or an email address so other members may contact you.";
 
-		// test out all the fields - make sure filled
-		//$is_saved = $member->ProcessData();
-			//redirect to page if saved
-	    $is_saved = $member->Save();
-		if($is_saved){
-			//redirect page if saved	
-	        $cStatusMessage->Info("Your changes to the member has been saved.");
-			$redir_url="member_detail.php?member_id={$member->getMemberId()}";
-	  		include("redirect.php");
-		} 
+
+		$person_id = 0;
+		if(empty($error_message)) {
+			try{
+				$person_id = $member->Save();
+				if($person_id){
+					//redirect page if saved	
+			        $cStatusMessage->Info("Your changes have been saved.");
+					$redir_url="member_detail.php?member_id={$member->getMemberId()}";
+			  		include("redirect.php");
+				} else{
+					$cStatusMessage->Error("Something went wrong - changes not saved.");
+
+				}
+			}catch(Exception $e){
+				$cStatusMessage->Info("Could not save person:" . $e->getMessage());
+			}
+		} else {
+			$cStatusMessage->Error($error_message);
+		}
+	    
+		
+
 	    
 	}else{
 		if(empty($member->getJointPerson()->getPersonId())){
 			//can I do this
-			$member->setAction("create");
+			$member->setAction("joint_create");
+
 		}else{
-			$member->setAction("update");
+			$member->setAction("joint_update");
 		}
 	}
 
@@ -64,53 +101,63 @@ try{
 
 $p->page_title = $page_title;
 
-if($member->getAction() == "create") {
+$joint_person_text = "{$member->getJointPerson()->getFirstName()} {$member->getJointPerson()->getLastName()}";
+if($member->getJointPerson()->getDirectoryList()=="N") $joint_person_text .= " (hidden from directory and listings)";
+
+
+if($member->getAction() == "joint_create") {
 		$output .= "<div class=\"summary\">There is no joint member on this account.</div>
 			<h3>Create joint member</h3>"; 
 	}else{
-		 $output .= "<div class=\"summary\"><form method=\"POST\" class=\"float-right\"  action=\"" . $_SERVER['PHP_SELF'] . "\"><input name=\"remove\" id=\"remove\" value=\"Remove joint member\"  type=\"submit\"  /></form>ACTIVE joint member: {$member->getJointMember()->getFirstName()} {$member->getJointMember()->getLastName()}</div>
+		 $output .= "<form method=\"POST\" class=\"layout3\"  action=\"" . $_SERVER['PHP_SELF'] . "\"><input name=\"delete\" id=\"delete\" value=\"Remove joint member\"  type=\"submit\"  />
+        <input type=\"hidden\" id=\"action\" name=\"action\" value=\"joint_delete\" />
+
+		    <input type=\"hidden\" id=\"member_id\" name=\"member_id\" value=\"{$member->getMemberId()}\" />
+
+		 	<input name=\"j_person_id\" id=\"j_person_id\" value=\"{$member->getJointPerson()->getPersonId()}\"  type=\"hidden\"  />ACTIVE joint member: {$joint_person_text}</form>
 			<h3>Update joint member</h3>";  
 	}
 
 $directory_array = array("Y"=>"Show in directory and listings", "N"=>"Hidden from directory and listings");
 $output .= "
     <form action=\"". HTTP_BASE ."/member_joint_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
-        <input type=\"hidden\" id=\"person_id\" name=\"person_id\" value=\"{$member->getJointPerson()->getPersonId()}\" />
+        <input type=\"hidden\" id=\"member_id\" name=\"member_id\" value=\"{$member->getMemberId()}\" />
+        <input type=\"hidden\" id=\"account_type\" name=\"account_type\" value=\"J\" />
+        <input type=\"hidden\" id=\"j_person_id\" name=\"j_person_id\" value=\"{$member->getJointPerson()->getPersonId()}\" />        
         <input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$member->getAction()}\" />
-        
         <p>The joint member can be shown or hidden from directory and listings. In either case, they will receive emails from the system just like you do. </p>
         
 		<p>
-		    <label for=\"directory\">  
+		    <label for=\"j_directory_list\">  
 		        <span>Display of joint member *</span>
-		        {$p->PrepareFormSelector('directory_list', $directory_array, null, $member->getJointPerson()->getDirectoryList())}
+		        {$p->PrepareFormSelector('j_directory_list', $directory_array, null, $member->getJointPerson()->getDirectoryList())}
 		    </label>
 		</p>
         <p>
-            <label for=\"first_name\">
+            <label for=\"j_first_name\">
                 <span>First name  *</span>
-                <input maxlength=\"200\" name=\"first_name\" id=\"first_name\" type=\"text\" value=\"{$member->getJointPerson()->getFirstName()}\">
+                <input maxlength=\"100\" name=\"j_first_name\" id=\"j_first_name\" type=\"text\" value=\"{$member->getJointPerson()->getFirstName()}\">
             </label>
         </p>
         <p>
-            <label for=\"last_name\">
+            <label for=\"j_last_name\">
                 <span>Last name  *</span>
-                <input maxlength=\"200\" name=\"last_name\" id=\"last_name\" type=\"text\" value=\"{$member->getJointPerson()->getLastName()}\">
+                <input maxlength=\"100\" name=\"j_last_name\" id=\"j_last_name\" type=\"text\" value=\"{$member->getJointPerson()->getLastName()}\">
             </label>
         </p>
        
         <h3>Contact details</h3>
 
         <p>
-            <label for=\"email\">
+            <label for=\"j_email\">
                 <span>Email address *</span>
-                <input maxlength=\"200\" name=\"email\" id=\"email\" type=\"text\" value=\"{$member->getJointPerson()->getEmail()}\">
+                <input maxlength=\"100\" name=\"j_email\" id=\"j_email\" type=\"text\" value=\"{$member->getJointPerson()->getEmail()}\">
             </label>
         </p>            
         <p>
-            <label for=\"phone1_number\">
+            <label for=\"j_phone1_number\">
                 <span>Phone number</span>
-                <input maxlength=\"200\" name=\"phone1_number\" id=\"phone1_number\" type=\"text\" value=\"{$member->getJointPerson()->getPhone1Number()}\">
+                <input maxlength=\"200\" name=\"j_phone1_number\" id=\"j_phone1_number\" type=\"text\" value=\"{$member->getJointPerson()->getPhone1Number()}\">
             </label>
         </p>
 

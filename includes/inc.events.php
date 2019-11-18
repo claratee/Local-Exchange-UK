@@ -61,7 +61,7 @@ try{
 		if($log_event->TimeForEvent(DAILY_LISTING_UPDATES, DAILY)){
 			$mailer = new cMail;
 			$mailed = $mailer->EmailListingUpdates(DAILY);
-			//print("mailed " .$mailed);
+			print("mailed " .$mailed);
 			if($mailed){
 				$log_event->CreateSystemEvent(DAILY_LISTING_UPDATES);
 				$log_event->Save();

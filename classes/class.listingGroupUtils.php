@@ -48,7 +48,7 @@ class cListingGroupUtils extends cListingGroup
         // relabelled "expire" and "active" to make more robust and uderstandable - "hide" and "show"
         $vars = array("D" => "Delete", "E" => "Hide", "A" => "Show");
         $select_name = "action";
-        $output = $p->PrepareFormSelector("action", $vars, "-- Select action --", null);
+        $output = $p->PrepareFormSelector("action", $vars, "Select action", null);
         return $output;
     }
 	function InactivateAll($reactivate_date) {

@@ -50,6 +50,7 @@ User experience:
 * [CHANGE] In-page controls for useful functions - eg you can now edit from a detail page
 * [CHANGE] Replace dropdowns with scrollable tables for chooser pages, with filters as necessary
 * [CHANGE] Joint accounts now get emails and included in search
+* [ADDED] Greeter in 20+ languages (pointless but amusing) 
 
 
 

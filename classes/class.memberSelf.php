@@ -300,14 +300,12 @@ class cMemberSelf extends cMember {
     {
         global $p, $cStatusMessage;
         
-        if ($this->IsLoggedOn())
+        if ($this->IsLoggedOn()){
             return true;
+        }
         
         // user isn't logged on, but is in a section of the site where they should be logged on.
         $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
-        
-        //include("redirect.php");
-
         $cStatusMessage->SaveMessages();
         header("location:" . HTTP_BASE . "/login_redirect.php");
                 
@@ -322,16 +320,35 @@ class cMemberSelf extends cMember {
 
     }
 
-    public function MustBeLevel($level) {
-        global $p;
-        $this->MustBeLoggedOn(); // seems prudent to check first.
+    //CT replaced
+    // public function MustBeLevel($level) {
+    //     global $p;
+    //     $this->MustBeLoggedOn(); // seems prudent to check first.
 
-        if ($this->getMemberRole()<$level)
-        {
-            $page = "<p class='AccessDenied'>You don't have permissions for this action.</p>";
-            $p->DisplayPage($page);
+    //     if ($this->getMemberRole()<$level)
+    //     {
+    //         $page = "<p class='AccessDenied'>You don't have permissions for this action.</p>";
+    //         $p->DisplayPage($page);
+    //         exit;
+
+    //     }
+    // }
+    //CT a replacement to the function above - as admin mode should be explicitly entered into - like SUPER USER mode for unix - even if you are an admin. Safety first!
+    public function MustBeLevel($level){
+        global $p, $cStatusMessage;
+        $this->MustBeLoggedOn();
+        if($this->getMode() != "admin"){
+            $cStatusMessage->Error('You do not have permission to view this page.');
+            $output = "";
+            if(!$this->getMemberRole() < $level) {
+                $request_uri = $_SERVER['REQUEST_URI'];
+                //your add_querystring_var() returns the new url, it doesn't echo it to the screen
+                $request_uri= $p->add_querystring_var($request_uri,"mode","admin");
+
+                $output .= "<a href=\"" . $request_uri . "\" class=\"button large\"><i class=\"fas fa-lock\"></i>Turn on admin mode</a>";
+            }
+            $p->DisplayPage($output);
             exit;
-
         }
     }
  

@@ -9,15 +9,16 @@ include("includes/inc.forms.php");
 //
 // First, we define the form
 //
-if($_REQUEST["mode"] == "admin") {  // Administrator is editing a member's account
+if($cUser->getMode()== "admin" && !empty($_REQUEST["member_id"])) {  // Administrator is editing a member's account
 	$cUser->MustBeLevel(1);
 	$form->addElement("hidden","mode","admin");
 	$form->addElement("hidden","member_id",$_REQUEST["member_id"]);		
 } else {  // Member is editing own account
 	$cUser->MustBeLoggedOn();
-	$cUser->VerifyPersonInAccount($_REQUEST["person_id"]); // Make sure hacker didn't change URL
-	$form->addElement("hidden","member_id", $cUser->member_id);
-	$form->addElement("hidden","mode","self");
+	$cUser->VerifyPersonInAccount($_REQUEST["person_id"]); // Make sure hacker didn't change URL 
+	//CT better yet guys, dont expect get responses to be secure, and check some other way.
+	$form->addElement("hidden","member_id", $cUser->getMemberId());
+	//$form->addElement("hidden","mode","self");
 }
 
 $person = new cPerson;

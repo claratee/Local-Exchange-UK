@@ -2,11 +2,7 @@
 include_once("includes/inc.global.php");
 
 $cUser->MustBeLevel(2);
-if($cUser->getMode() !="admin"){
-	$cStatusMessage->Error("You don't have permission to view this page.");
-	$redir_url="member_profile_menu.php";
-    include("redirect.php");
-}
+
 
 $member = new cMember;
 

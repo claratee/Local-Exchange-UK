@@ -46,13 +46,25 @@ class cMemberUtils extends cMember {
     public function makePerson($field_array=null){
         return new cPersonUtils($field_array);
     }
+        //includes the category making gubbins
+    public function PrepareRestrictionDropdown(){
+        global $p, $cUser;
+        $vars = array("0" => "No restriction", "1" => "Restriction");
+        // add extra option if user is an admin 
+        $select_name = "restriction";
+        //if used in context of batch page controls
+        //if(!empty($page_id)) $select_name .= "_{$page_id}";
+        $output = $p->PrepareFormSelector($select_name, $vars, null, $this->getRestriction());
+        return $output;
+    }
+
     public function Save(){
         
         global $cDB, $cUser, $cStatusMessage; 
-        if($cUser->getMemberId() != $this->getMemberId()) {
-            //CT hardstop if user not authorized
-            $cUser->MustBeLevel(1);
-        }
+        // if($cUser->getMemberId() != $this->getMemberId()) {
+        //     //CT hardstop if user not authorized
+        //     $cUser->MustBeLevel(1);
+        // }
  
         //$cStatusMessage->Error("save data");    
         //Rejigged for safety
@@ -60,26 +72,34 @@ class cMemberUtils extends cMember {
 
         //only allow committee and up to make Could not execute queryto these fields
         //$admin 
-        if($cUser->getMode()=="admin"){
-            if(null !=($this->getMemberId())) $keys_array[] = 'member_id';
-            if(null !=($this->getMemberRole())) $keys_array[] = 'member_role';
-            if(null !=($this->getAccountType())) $keys_array[] = 'account_type';
-            if(null !=($this->getAdminNote())) $keys_array[] = 'admin_note';
-            if(null !=($this->getJoinDate())) $keys_array[] = 'join_date';
-            if(null !=($this->getExpireDate())) $keys_array[] = 'expire_date';
-            if(null !=($this->getRestriction())) $keys_array[] = 'restriction';
-            if(null !=($this->getStatus())) $keys_array[] = 'status';
+        //CT used for update actions
+        $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
+
+        if($this->getAction() == "create" OR $this->getAction() == "update"){
+            if (null !=($this->getEmailUpdates())) $keys_array[] = 'email_updates';
+            if (null !=($this->getConfirmPayments())) $keys_array[] = 'confirm_payments';
+            if(null !=($this->getAccountType())) $keys_array[] = 'account_type'; //CT non-admins can only change from single to joint or back again
+
+            if($cUser->getMode()=="admin"){
+                if(null !=($this->getMemberId())) $keys_array[] = 'member_id';
+                if(null !=($this->getMemberRole())) $keys_array[] = 'member_role';
+                if(null !=($this->getAccountType())) $keys_array[] = 'account_type';
+                if(null !=($this->getAdminNote())) $keys_array[] = 'admin_note';
+                if(null !=($this->getJoinDate())) $keys_array[] = 'join_date';
+                if(null !=($this->getExpireDate())) $keys_array[] = 'expire_date';
+                if(null !=($this->getRestriction())) $keys_array[] = 'restriction';
+                if(null !=($this->getStatus())) $keys_array[] = 'status';
             //$admin_action=true;
+            }
         }
-        if (null !=($this->getEmailUpdates())) $keys_array[] = 'email_updates';
-        if (null !=($this->getConfirmPayments())) $keys_array[] = 'confirm_payments';
+        
         try{
             switch($this->getAction()){
                 case "create":
                     //TODO -
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array=array();
-                    $keys_array[] = 'member_id';
+                    //$keys_array[] = 'member_id';
                     //$keys_array[] = 'primary_member';
                    // $keys_array[] = 'status';
 
@@ -88,81 +108,74 @@ class cMemberUtils extends cMember {
                     // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
                     //CT cant do anything with password here anymore - security. only user themselves can change their password.
                     $member_id = $this->insert(DATABASE_MEMBERS, $keys_array);
+                    $this->setMemberId($member_id);
                     //CT sets default password
                     $this->DefaultPassworForNewMember();
                 break; 
                 case "update":
                     // print_r($keys_array);
-                    $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
                     //try{
-                    $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
                     //}catch (Exception $e){
                     //} 
                 break;
                 case "joint_create":
                     //make sure status=L, primary member=Y are all set before get to this stage
-                    $keys_array[] = 'member_id';
-                    //$keys_array[] = 'primary_member';
-                    //$keys_array[] = 'status';
+                    //$keys_array[] = 'member_id';
+                    $this->setAccountType("J");
+                    $keys_array[] = 'account_type';
+                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
 
-                    //temporary password - user should reset when they log in
-                    // $password = $this->GeneratePassword();
-                    // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
-                    $is_success = $this->insert(DATABASE_MEMBERS, $keys_array);
-                    if(!$is_success) {
-                        //report and return on fail
-                        $cStatusMessage->Error("Could not create the member '". $this->getMemberId() ."'.");
-                        return false;
-                    }
-                break;            
+                break;
+                case "joint_delete":
+                    
+                    $this->setAccountType("S");
+                    $keys_array[] = 'account_type';
+                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+
+                break;              
                 case "joint_update":
-                    // print_r($keys_array);
-                    $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
-                    //try{
-                        $this->update(DATABASE_MEMBERS, $keys_array, $condition);
-                    //}catch (Exception $e){
-                    //    $cStatusMessage->Error("Update member: " . $e->getMessage());
-                    //} 
+                    //no change for member - so just behave as if it was successful
+                    $is_success = true;
                 break;
             }
         } catch (Exception $e){
                 $cStatusMessage->Error("{$this->getAction()}: " . $e->getMessage());
         } 
-        
-        //person
-            $member_id = $this->getMemberId();
+        //CT return at this stage if something went wrong...
+        if(!$is_success) {
+            return false;
+        }
         try{
-            //CT getting desperate - shuldnt have to set this here but not know why its blank
-            $this->getPerson()->setMemberId($member_id);
-            //print("mbmer " . $this->getPerson()->getMemberId());
-            $this->getPerson()->Save();
-        }catch (Exception $e){
+            $this->getPerson()->setMemberId($this->getMemberId());
+            switch($this->getAction()){
+                case "create":
+                case "update":
+                    $this->getPerson()->setAction($this->getAction());
+
+                    $is_success = $this->getPerson()->Save();
+                break;
+                case "joint_create":
+                    $this->getJointPerson()->setAction('create');
+                    $field_array["primary_member"]="N";
+                    $field_array["account_type"]="J";
+                    $is_success = $this->getJointPerson()->Save();
+                break;
+                case "joint_update":
+                    $this->getJointPerson()->setAction('update');
+                    $is_success = $this->getJointPerson()->Save();
+                break;
+                case "joint_delete":
+                    $is_success = $this->getJointPerson()->DeleteJointPerson();
+                break;              
+            }
+        } catch (Exception $e){
             $cStatusMessage->Error("Create/update person: " . $e->getMessage());
         } 
-        //joint person
-        if($this->account_type == "J"){
-            try{
-                $this->getJointPerson()->setMemberId($member_id);
-                $this->getJointPerson()->Save();
-            }catch (Exception $e){
-                $cStatusMessage->Error("Create/update joint person: " . $e->getMessage());
-            } 
-        }
         
-        return true;
+        return $is_success;
     }
 
-    //includes the category making gubbins
-     public function PrepareRestrictionDropdown(){
-            global $p, $cUser;
-            $vars = array("0" => "No restriction", "1" => "Restriction");
-            // add extra option if user is an admin 
-            $select_name = "restriction";
-            //if used in context of batch page controls
-            //if(!empty($page_id)) $select_name .= "_{$page_id}";
-            $output = $p->PrepareFormSelector($select_name, $vars, null, $this->getRestriction());
-            return $output;
-        }
 
     public function DefaultPassworForNewMember(){
         global $cDB;

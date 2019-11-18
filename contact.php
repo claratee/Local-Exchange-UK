@@ -1,7 +1,8 @@
-<?php //session_start(); ?> 
+<?php session_start(); ?> 
 <?php
 include_once("includes/inc.global.php");
-if(RECAPTCHA_VALIDATION) include_once(RECAPTCHA_SRC. "securimage.php");
+
+if(RECAPTCHA_VALIDATION) include_once(VENDOR_PATH. "/securimage/secureimage.php");
 
 //$p->site_section = SECTION_EMAIL;
 $p->page_title = "Contact Us";
@@ -11,31 +12,39 @@ $mail = new cMail();
 // if form submitted
 if ($_POST["submit"]){
 	//build object from inputs
-
-
+$cc_me_string ="";
+if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"";
 	// error catching without PEAR is a bit of a faff, but cant use PEAR anymore.
 	$error_message = "";
+	//if(!strlen($_POST['contact_form_message'] > 10)) $error_message .= "Message is missing or not long enough.";
+    if(strlen($_POST['contact_form_from_name']) < 1) $error_message .= "Your name is missing. ";
+    if(strlen($_POST['contact_form_from_name']) > 100) $error_message .= "Name cannot be more than 100 letters. ";
+    if(strlen($_POST['contact_form_from_email']) < 0) $error_message .= "You must include your email address. ";
+    if(!$p->isEmailValid($_POST['contact_form_from_email']) OR strlen($_POST['contact_form_from_email']) > 100) $error_message .= "Email is not formed correctly.";
 
-
-	if(strlen($_POST['contact_form_from_name'] < 1) $error_message .= "Name is missing.";
-	if(strlen($_POST['contact_form_from'] < 1) $error_message .= "email missing.";
-	if(strlen($_POST['contact_form_message'] < 10) $error_message .= "Message is missing or not long enough.";
+	if(empty($_POST['contact_form_subject'])) $error_message .= "Subject is missing. This helps us to know who to direct your enquiry to.";
+	if(empty($_POST['contact_form_message'])) $error_message .= "Message is missing.";
 
 	//check if errors and save
 	$is_sent = 0;
 	if(empty($error_message)) {
-		//the contact form will go to the email address configured for the admin user.
-		$condition = "m.member_id = \"admin\"";
-		$admin_member = new cMember();
-		$admin_member->Load($condition);
-		$mail->buildRecipientsFromMemberObject($admin_member);
-		$message = "From: {$_POST['contact_form_from_name']}<br />
-		Email: {$_POST['contact_form_from']}<br />
-		<br />
-		{$mail->getMessage()}";
+		
+	    $field_array = array();
+	    $field_array['reply_to_name'] = $_POST['contact_form_from_name'];
+	    $field_array['reply_to_email'] = $_POST['contact_form_from_email'];
 
-		$mail->setMessage($message);
-		$mail->setSubject("Contact form submit");
+	    //$field_array['recipients'] = array();
+	    $field_array['recipients'][0] = array('display_name'=>"Admin", 'email'=>EMAIL_ADMIN);
+	    if(!empty($_POST['contact_form_from_cc'])){
+		    $field_array['recipients'][1] = array('display_name'=>$_POST['contact_form_from_name'], 'email'=>$_POST['contact_form_from_email']);
+	    }
+	    $field_array['message'] = "From: {$_POST['contact_form_from_name']}<br />
+			Email: {$_POST['contact_form_from']}<br />
+			<br />
+			{$_POST['contact_form_message']}
+			";
+		$field_array['subject'] = "Contact form - {$_POST['contact_form_subject']}";
+		$mail->Build($field_array);
 		//TODO allow user to be mailed a copy
 
 		$is_sent = $mail->sendMail();
@@ -74,18 +83,31 @@ if ($_POST["submit"]){
 // First, we define the form
 //
 //$form->addElement("header", null, "Contact us");
-$subject_string = "<input type=\"hidden\" id=\"subject\" name=\"subject\" value=\"Contact form\" />";
+$subject_dropdown = $p->PrepareFormSelector("contact_form_subject", ARRAY_CONTACT_SUBJECT, "Choose a subject", $_POST['contact_form_subject']);
+
 if($cUser->isLoggedOn()){
 	//load full member - for email address
 	$member = new cMember();
 	$member->Load("m.member_id=\"{$cUser->getMemberId()}\"");
+	$member_id = $member->getMemberId();
 	$contact_string = "
-		<input type=\"hidden\" id=\"contact_form_from_name\" name=\"contact_form_from_name\" value=\"{$member->getDisplayName()}\" />
-		<input type=\"hidden\" id=\"contact_form_from\" name=\"contact_form_from\" value=\"{$member->getPerson()->getEmail()}\" />
-	";
+		<p>You are logged in as {$member->getDisplayName()} ({$member->getPerson()->getMemberId()}).</p>
+		<input type=\"hidden\" id=\"contact_form_from_name\" name=\"contact_form_from_name\" value=\"{$member->getDisplayName()}\" />";
+
+	if(!empty($member->getPerson()->getEmail())){
+		$contact_string .= "<input type=\"hidden\" id=\"contact_form_from\" name=\"contact_form_from\" value=\"{$member->getPerson()->getEmail()}\" />";
+	}else{
+		$contact_string .= "<p>
+			<label for=\"contact_form_from_email\">
+				Your email (you do not have one associated with your member account) *<br />
+				<input maxlength=\"200\" name=\"contact_form_from_email\" id=\"contact_form_from_email\" type=\"text\" value=\"{$_POST['contact_form_from_email']}\">
+			</label>
+		</p>";
+	}
+	
 
 }else{
-
+	$member_id = "";
 	$contact_string = "
 		<p>
 			<label for=\"contact_form_from_name\">
@@ -94,27 +116,41 @@ if($cUser->isLoggedOn()){
 			</label>
 		</p>
 		<p>
-			<label for=\"contact_form_from\">
+			<label for=\"contact_form_from_email\">
 				Your email *<br />
-				<input maxlength=\"200\" name=\"contact_form_from\" id=\"contact_form_from\" type=\"text\" value=\"{$_POST['contact_form_from_name']}\">
+				<input maxlength=\"200\" name=\"contact_form_from_email\" id=\"contact_form_from_email\" type=\"text\" value=\"{$_POST['contact_form_from_email']}\">
 			</label>
 		</p>
 	";
 }
 
-
+$recaptcha = "";
+if(RECAPTCHA_VALIDATION && !$cUser->isLoggedOn()) {
+	$recaptcha ="<img id=\"captcha\" src=\"".HTTP_BASE."/vendor/securimage/securimage_show.php\" alt=\"CAPTCHA Image\" /> <button style=\"font-size:1.2em\" onclick=\"document.getElementById('captcha').src = '".HTTP_BASE."/vendor/securimage/securimage_show.php?' + Math.random(); return false\" title=\"Load another captcha image\">&#x21bb;</button><br />Enter the text you see *: <input type=\"text\" name=\"captcha_code\" id=\"captcha_code\" size=\"10\" maxlength=\"6\"  autocomplete=\"off\" />";
+}
 $output .= "
 	<form action=\"contact.php\" method=\"post\"  class=\"layout2\">
+		<input type=\"hidden\" id=\"contact_form_from_member_id\" name=\"contact_form_from_member_id\" value=\"{$member_id}\" />
 		{$contact_string}
-		{$subject_string}
+		<p>
+			<label for=\"contact_form_subject\">
+				Subject *<br />
+				{$subject_dropdown}
+			</label>
+		</p>
 				
 		<p>
-			<label for=\"description\">Your message *<br />
-				<textarea cols=\"80\" rows=\"20\" wrap=\"soft\" name=\"message\" id=\"message\">{$mail->getMessage()}</textarea>
+			<label for=\"contact_form_message\">Your message *<br />
+				<textarea cols=\"80\" rows=\"20\" wrap=\"soft\" name=\"contact_form_message\" id=\"contact_form_message\">{$_POST['contact_form_message']}</textarea>
 			</label>
 		</p>	
 			
-
+		<p>
+			<label for=\"contact_form_from_cc\">
+				<input name=\"contact_form_from_cc\" id=\"contact_form_from_cc\" type=\"checkbox\" value=\"contact_form_from_cc\" {$cc_me_string}\"> Send a copy also to my email address
+			</label>
+		</p>
+		{$recaptcha}
 		<p>
 			<input name=\"submit\" id=\"submit\" value=\"Submit\" type=\"submit\" />
 			* denotes a required field
@@ -172,41 +208,41 @@ $output .= "
 // }
 $p->DisplayPage($output);
 
-//CT: check email
-function checkEmail($element_name,$element_value, $domainCheck = false)
-{
-	$email=$element_value;
-    if (preg_match('/^[a-zA-Z0-9\._-]+\@(\[?)[a-zA-Z0-9\-\.]+'.
-                   '\.([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
-        if ($domainCheck && function_exists('checkdnsrr')) {
-            list (, $domain)  = explode('@', $email);
-            if (checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A')) {
-                return true;
-            }
-            return false;
-        }
-        return true;
-    }
-    return false;
-}
+// //CT: check email - with DNS
+// function checkEmail($element_name,$element_value, $domainCheck = false)
+// {
+// 	$email=$element_value;
+//     if (preg_match('/^[a-zA-Z0-9\._-]+\@(\[?)[a-zA-Z0-9\-\.]+'.
+//                    '\.([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/', $email)) {
+//         if ($domainCheck && function_exists('checkdnsrr')) {
+//             list (, $domain)  = explode('@', $email);
+//             if (checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A')) {
+//                 return true;
+//             }
+//             return false;
+//         }
+//         return true;
+//     }
+//     return false;
+// }
 
-//
-// The form has been submitted with valid data, so process it   
-//
+// //
+// // The form has been submitted with valid data, so process it   
+// //
 
-function process_data ($values) {
-	global $p;
-	// send mail and check for errors
-	$mailed = mail(EMAIL_ADMIN, "[" . SITE_SHORT_TITLE ."] Contact form", "From: ". $values["name"]."\n\n". wordwrap($values["message"], 64) , "From:". $values["email"]);
-	if(isset($mailed) && $mailed==true){
-		$output = "Thank you, your message has been sent. We'll get back to you soon.";
-	}else{
-		$output .= "There was a problem sending the email.";	
-	}
-	$output .= " <a href=\"javascript:location.reload()\">Go back</a>";
-	$p->page_content = $output;
-	//$p->DisplayPage();
-}
+// function process_data ($values) {
+// 	global $p;
+// 	// send mail and check for errors
+// 	$mailed = mail(EMAIL_ADMIN, "[" . SITE_SHORT_TITLE ."] Contact form", "From: ". $values["name"]."\n\n". wordwrap($values["message"], 64) , "From:". $values["email"]);
+// 	if(isset($mailed) && $mailed==true){
+// 		$output = "Thank you, your message has been sent. We'll get back to you soon.";
+// 	}else{
+// 		$output .= "There was a problem sending the email.";	
+// 	}
+// 	$output .= " <a href=\"javascript:location.reload()\">Go back</a>";
+// 	$p->page_content = $output;
+// 	//$p->DisplayPage();
+// }
 
 
 

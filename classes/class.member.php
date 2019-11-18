@@ -80,36 +80,50 @@ class cMember extends cBasic2
         // }
 	}
 
-    public function buildFieldArrayForJointMember($old_array){
+    public function buildFieldArrayForJointPerson($old_array){
         //cT CT check if they are all empty, then skip
         $field_array = array();
         $field_array['member_id'] = $old_array['member_id']; 
+        $field_array['person_id'] = $old_array['j_person_id']; 
         $field_array['first_name'] = $old_array['j_first_name']; 
         $field_array['last_name'] = $old_array['j_last_name']; 
         $field_array['directory_list'] = $old_array['j_directory_list']; 
+        $field_array['primary_member'] = "N"; 
         $field_array['email'] = $old_array['j_email']; 
         $field_array['phone1_number'] = $old_array['j_phone1_number']; 
         return $field_array;
     }
+    // public function buildFieldArrayForPerson($old_array){
+    //     //cT CT check if they are all empty, then skip
+    //     $field_array = array();
+    //     $field_array['member_id'] = $old_array['member_id']; 
+    //     $field_array['person_id'] = $old_array['person_id']; 
+    //     $field_array['first_name'] = $old_array['first_name']; 
+    //     $field_array['last_name'] = $old_array['last_name']; 
+    //     $field_array['phone1_number'] = $old_array['phone1_number']; 
+    //     $field_array['directory_list'] = "Y"; 
+    //     $field_array['primary_member'] = "Y"; 
+    //     $field_array['email'] = $old_array['email']; 
+    //     $field_array['phone1_number'] = $old_array['phone1_number']; 
+    //     return $field_array;
+    // }
 	public function Build($field_array){
         global $cDB;
         //print_r($field_array);
         parent::Build($field_array);
         // extra bits for convenience
-
-        $this->getPerson()->Build($field_array);  //CT call the build function for person
         $this->getPasswordReset()->Build($field_array);  //CT call the build function for password - will just set the member_id
+
+        //$person_field_array = $this->buildFieldArrayForPerson($field_array);
+        $this->getPerson()->Build($field_array);  //CT call the build function for person
         //CT presets - todo:change
-        if(empty($this->getPerson()->getAge())) $this->getPerson()->setAge(9);
-        if(empty($this->getPerson()->getSex())) $this->getPerson()->setSex(3);
+        //if(empty($this->getPerson()->getAge())) $this->getPerson()->setAge(9);
+        //if(empty($this->getPerson()->getSex())) $this->getPerson()->setSex(3);
         //print("mebmer" . $this->getPerson()->getMemberId());
         // secondary
         if($this->getAccountType() == "J"){
-            $new_array = $this->buildFieldArrayForJointMember($field_array);
-            if(sizeof($new_array) > 0) {
-                //if(!empty($this->getJointPerson())) print_r("tes");
-                $this->getJointPerson()->Build($new_array);         
-            }
+            $joint_person_field_array = $this->buildFieldArrayForJointPerson($field_array);
+            $this->getJointPerson()->Build($joint_person_field_array);         
         }
 
 
@@ -128,7 +142,7 @@ public function getDisplayName(){
 
         //make sure user is supposed to be visible
         if($this->getAccountType() == "J" AND $this->getJointPerson()->getDirectoryList() == "Y"){
-            $display_name .= " and " . $this->getJointPerson()->getFirstName(); 
+            $display_name .= " &amp; " . $this->getJointPerson()->getFirstName(); 
             $display_name .= " " . $this->getJointPerson()->getLastName();
         }
         
@@ -146,6 +160,39 @@ public function getDisplayName(){
 public function setDisplayName($display_name){
     $this->display_name = $display_name;
     return $this;
+}
+//CT this is a joyful useless function. Just greets people in different languages. that's it.
+public function greetMe($name){
+    $greeting_array = array();
+    $greeting_array[]=array("ar-AE", "Arabic", "اهلا (Ahlan) {$name}!");
+    $greeting_array[]=array("cy-GB", "Welsh", "Hylô, {$name}!");
+    $greeting_array[]=array("da-DK", "Danish", "Halløj {$name}!");
+    $greeting_array[]=array("de-DE", "German", "Hallo {$name}!");
+    $greeting_array[]=array("el-GR", "Greek", "Γεια σου (Yassou) {$name}!");
+    $greeting_array[]=array("en-AU", "Australian", "G’day Mate!");
+    $greeting_array[]=array("en-GB", "British English", "Hiya {$name}");
+    $greeting_array[]=array("es-ES", "Spanish", "¿Qué tal {$name}?");
+    $greeting_array[]=array("fa-IR", "Farsi", "درود (Salaam) {$name}!");
+    $greeting_array[]=array("fr-FR", "French", "Salut {$name}!");
+    $greeting_array[]=array("he-IL", "Hebrew", "שָׁלוֹם (Shalom) {$name}!");
+    $greeting_array[]=array("hi-IN", "Hindi", "Namaste {$name}!");
+    $greeting_array[]=array("it-IT", "Italian", "Ciao {$name}!");
+    $greeting_array[]=array("ja-JP", "Japanese", "今日は (Konnichiwa) {$name}!");
+    $greeting_array[]=array("ko-KR", "Korean", "안녕 (Anyoung), {$name}!");
+    $greeting_array[]=array("nb-NO", "Norwegian", "Hei, {$name}!");
+    $greeting_array[]=array("nl-NL", "Dutch", "Goedendag {$name}");
+    $greeting_array[]=array("pl-PL", "Polish", "Cześć {$name}!");
+    $greeting_array[]=array("pt-PT", "Portuguese", "Oi {$name}!");
+    $greeting_array[]=array("ru-RU", "Russian", "Privet {$name}!");
+    $greeting_array[]=array("se-SE", "Swedish", "Tjena {$name}!");
+    $greeting_array[]=array("sw-KE", "Swahili", "Habari {$name}!");
+    $greeting_array[]=array("ta-IN", "Tamil", "Selam {$name}!");
+    $greeting_array[]=array("uk-UK", "Ukranian", "Dobriy den, {$name}!");
+    $greeting_array[]=array("xh-ZA", "Xhosa (South Africa)", "Molo {$name}!");
+
+    $greeting_array[]=array("zh-CN", "Mandorin Chinese", "Nǐ hǎo {$name}!");
+    $n = rand(0,sizeof($greeting_array)-1);
+    return "<span title=\"A greeting in {$greeting_array[$n][1]}!\">" . $greeting_array[$n][2] . "</span>";
 }
 
     //helper function to make appropriate buttons for actions

@@ -1,12 +1,12 @@
 # WIP 2019-11-10 Clara Todd clarabara@gmail.com
 
 * html screener not working on page edits
-* -create info page UI  DONE
-* move all admin tools into admin menu
+* -create info page UI-  DONE
+* -move all admin tools into admin menu- DONE
 * -timeout for session login DONE
-* contact form - send to admin user, and option to send to sender
+* contact form - send to admins, and option to send to sender
 * member form - apply for membership
-* joint member - add, remove
+* -joint member - add, remove- DONE
 * take service charge, refund
 * news items - create, edit
 * include news items in weekly updates

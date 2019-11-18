@@ -19,21 +19,20 @@ abstract class cBasic2 {
             if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
                 //if(is_null($value)) $value = "";
                 $this->$method($value);
-                $i++;
             }
+            $i++;
         }
         return $i;
     } 
     public function LoadDatabaseTable ($string_query)  {
     	global $cDB;
-    	//print($string_query ."<br />");
         if($query = $cDB->Query($string_query)){
 			if($field_array = $cDB->FetchArray($query)){	
-				return $this->Build($field_array);
+				$is_success = $this->Build($field_array);
+				return $is_success;
 			} else{
 				return false;
-				//throw new Exception('Load - Could not build object from array.');
-				//CT results empty - don't throw an error - probably not a mistake, just no results found with the condition set.
+				//CT results empty - don't throw an error, just return false - probably not a mistake, just no results found with the condition set.
 			}
 
         }else{
@@ -59,8 +58,9 @@ abstract class cBasic2 {
 		$context = (DEBUG) ? "DB:{$db_table} " : "";
 		if($field_array=$this->makeFieldArrayFromKeys($keys_array)){
 			if($string_query = $cDB->BuildUpdateQuery($db_table, $field_array, $condition)){
-				if($success = $cDB->Query($string_query)){
-					return $success;
+				if($is_success = $cDB->Query($string_query)){
+					//print_r($string_query);
+					return $is_success;
 				}else{
 					throw new Exception('{$context} Update - Could not execute query.');
 				}

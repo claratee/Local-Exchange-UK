@@ -1,12 +1,8 @@
 <?php
 include_once("includes/inc.global.php");
 
-if($cUser->getMode()!="admin"){
-	$cStatusMessage->Error("You don't have permission for this action.");
-   // 		return false;
-	$redir_url="index.php";
-   include("redirect.php");
-}
+$cUser->MustBeLevel(2);
+
 if(empty($_REQUEST['member_id'])) {
 	$cStatusMessage->Error("No member_id specified.");
    // 		return false;

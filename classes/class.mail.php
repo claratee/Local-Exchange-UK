@@ -1,14 +1,14 @@
 <?php
 
-class cMail extends cBasic {
+class cMail extends cBasic2 {
 
 	//CT new class - attempt to fix the sender for all mails in system
     
     private $recipients;  // array of members to be sent. optimise for multiple recipient
 
     //email stuff
-	private $email_from;
-	private $email_from_name;
+	private $reply_to_name;
+	private $reply_to_email;
 	//private $php_version; 
     //private $to_name; 
     private $subject; 
@@ -42,20 +42,22 @@ newsletter - new download available (group->item)
 
 */
 
-
-	function __construct($field_array=null){
-        global $site_settings;
-		//evoke build with the known bits
-        $field_array['email_from'] = $site_settings->getKey('EMAIL_FROM');
-        $field_array['email_from_name'] = $site_settings->getKey('EMAIL_FROM_NAME');
-        //subject
-        //body
-        //recipients display name, email
-		$this->Build($field_array);
-	}
-	// function Build($variables){
-	//     parent::Build($variables);
+//CT dont need the constructor, it should be in basic.
+	// function __construct($field_array=null){
+ //        global $site_settings;
+	// 	//evoke build with the known bits
+ //        //$field_array['email_from'] = $site_settings->getKey('EMAIL_FROM');
+ //        //$field_array['email_from_name'] = $site_settings->getKey('EMAIL_FROM_NAME');
+ //        //print("email " . $site_settings->getKey('EMAIL_FROM'));
+ //        //subject
+ //        //body
+ //        //recipients display name, email
+ //        if(!empty)
+	// 	$this->Build($field_array);
 	// }
+	// // function Build($variables){
+	// //     parent::Build($variables);
+	// // }
 
 
 
@@ -73,12 +75,18 @@ newsletter - new download available (group->item)
         $success_count=0;
         foreach ($this->getRecipients() as $recipient) {
             //$to = "\"{$recipient['display_name']}\" {$recipient['email']}";
-            $to = "\"{$recipient['display_name']}\" {$recipient['email']}";
+            $to = "\"{$recipient['display_name']}\" <{$recipient['email']}>";
+            //$is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
+           // $is_success = mail($to, "$this->getFormattedSubject()", $this->getFormattedMessage(), $this->getHeaders());
+            print_r($to);
             $is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
             //$is_success = true;
             // print($this->getFormattedMessage());
             if($is_success) $success_count++;
-            else $fail_count++;
+            else {
+                $fail_count++;
+                if(!DEBUG) $cStatusMessage->Error("Could not send to " . $recipient['email'] . " ? " . $recipient['display_name']);
+            }
         }
         $total=sizeof($this->getRecipients());
         
@@ -103,10 +111,12 @@ newsletter - new download available (group->item)
         
 	}
     function makeHeaders(){
+        //CT always send FROM the domain it has authority to use, REPLY-TO can be dynamic 
+        global $site_settings;
         $string = "MIME-Version: 1.0\r\n";
         $string .= "Content-type: text/html; charset=iso-8859-1\r\n";
-        $string .= "From: \"{$this->getEmailFromName()}\" <{$this->getEmailFrom()}>\r\n";
-        $string .= "Reply-To: \"{$this->getEmailFromName()}\" <{$this->getEmailFrom()}>\r\n";
+        $string .= "From: \"{$site_settings->getKey('EMAIL_FROM_NAME')}\" <{$site_settings->getKey('EMAIL_FROM')}>\r\n";
+        $string .= "Reply-To: \"{$this->getReplyToName()}\" <{$this->getReplyToEmail()}>\r\n";
         $string .= "X-Mailer: " . phpversion();
         return $string;
     }
@@ -117,11 +127,14 @@ newsletter - new download available (group->item)
     function makeFormattedMessage(){
         //CT uses a template to make it look nice
         global $p;
-        $string = file_get_contents(TEMPLATES_PATH . '/mail_admin.html', TRUE);
+        //CT 
+        $string = $this->getMessage();
         $string = $p->ReplacePlaceholders($string);
-        $string = $p->stripLineBreaks($string);
-        //$string = $p->ReplaceVarInString($string, '$to_name', $this->getToName());
-        return $string;
+         
+        $template = file_get_contents(TEMPLATES_PATH . '/mail_admin.html', TRUE);
+        $template = $p->ReplaceVarInString($template, '$message', $string);
+        $template = $p->stripLineBreaks($string);
+       return $template;
     }
     function makeHtmlFromLineBreaks(){
         //CT uses a template to make it look nice
@@ -194,7 +207,7 @@ public function EmailListingUpdates($timeframe) {
                     $period = "week";
                 break;           
                 case MONTHLY:
-                    $period = "week";
+                    $period = "monthly";
                 break;
                 default:
                     $period = "all time";
@@ -282,9 +295,9 @@ public function EmailListingUpdates($timeframe) {
     /**
      * @return mixed
      */
-    public function getEmailFrom()
+    public function getReplyToEmail()
     {
-        return $this->email_from;
+        return $this->reply_to_email;
     }
 
     /**
@@ -292,9 +305,9 @@ public function EmailListingUpdates($timeframe) {
      *
      * @return self
      */
-    public function setEmailFrom($email_from)
+    public function setReplyToEmail($reply_to_email)
     {
-        $this->email_from = $email_from;
+        $this->reply_to_email = $reply_to_email;
 
         return $this;
     }
@@ -302,9 +315,9 @@ public function EmailListingUpdates($timeframe) {
     /**
      * @return mixed
      */
-    public function getEmailFromName()
+    public function getReplyToName()
     {
-        return $this->email_from_name;
+        return $this->reply_to_name;
     }
 
     /**
@@ -312,32 +325,32 @@ public function EmailListingUpdates($timeframe) {
      *
      * @return self
      */
-    public function setEmailFromName($email_from_name)
+    public function setReplyToName($reply_to_name)
     {
-        $this->email_from_name = $email_from_name;
+        $this->reply_to_name = $reply_to_name;
 
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getPhpVersion()
-    {
-        return $this->php_version;
-    }
+    // /**
+    //  * @return mixed
+    //  */
+    // public function getPhpVersion()
+    // {
+    //     return $this->php_version;
+    // }
 
-    /**
-     * @param mixed $php_version
-     *
-     * @return self
-     */
-    public function setPhpVersion($php_version)
-    {
-        $this->php_version = $php_version;
+    // *
+    //  * @param mixed $php_version
+    //  *
+    //  * @return self
+     
+    // public function setPhpVersion($php_version)
+    // {
+    //     $this->php_version = $php_version;
 
-        return $this;
-    }
+    //     return $this;
+    // }
 
     /**
      * @return mixed

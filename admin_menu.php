@@ -2,17 +2,10 @@
 include_once("includes/inc.global.php");
 //$p->site_section = ADMINISTRATION;
 
-if($cUser->getMode() != "admin"){
-	$cStatusMessage->Error('You do not have permission to view this page.');
-	$output = "";
-	if($cUser->getMemberRole() > 1) $output .= "<a href=\"admin_menu.php?mode=admin\" class=\"button large\"><i class=\"fas fa-lock\"></i>Turn on admin mode</a>";
-	$p->DisplayPage($output);
-	exit;
-}
+$cUser->MustBeLevel(1);
+
 
 $p->page_title = "Administration Menu";
-
-$cUser->MustBeLevel(1);
 
 $output ="";
 //CT hacky placeholder
@@ -30,9 +23,9 @@ $cBalance->checkBalance();
 // enrolment
 $menuArray = array();
 $menuArray[] = $p->MenuItemArray("Create new member account", "member_edit.php?action=create");
-$menuArray[] = $p->MenuItemArray("Edit a Member Account", "member_choose.php?action=member_edit&option=member");
-$menuArray[] = $p->MenuItemArray("Add a Joint Member to an Existing Account", "member_choose.php?action=member_contact_create");
-$menuArray[] = $p->MenuItemArray("Edit/Delete a Joint Member", "member_contact_to_edit.php");
+$menuArray[] = $p->MenuItemArray("Edit a member account", "member_choose.php?action=member_edit&option=member");
+// $menuArray[] = $p->MenuItemArray("Add a Joint Member to an Existing Account", "member_choose.php?action=member_contact_create"); // not needed - merged
+$menuArray[] = $p->MenuItemArray("Edit or remove a joint member", "member_choose.php?action=member_joint_edit");
 $menuHtml = $p->Menu($menuArray);
 $title = $p->Wrap("Enrolment", "h3");
 $output .= $p->Wrap($title . $menuHtml, "div", "col");

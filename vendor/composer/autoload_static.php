@@ -20,6 +20,11 @@ class ComposerStaticInit00ec368e7b7c7fa6de6ec48bb62e3314
             'Symfony\\Contracts\\Translation\\' => 30,
             'Symfony\\Component\\Validator\\' => 28,
         ),
+        'G' => 
+        array (
+            'Gettext\\Languages\\' => 18,
+            'Gettext\\' => 8,
+        ),
         'F' => 
         array (
             'FormManager\\' => 12,
@@ -42,6 +47,14 @@ class ComposerStaticInit00ec368e7b7c7fa6de6ec48bb62e3314
         'Symfony\\Component\\Validator\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/validator',
+        ),
+        'Gettext\\Languages\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gettext/languages/src',
+        ),
+        'Gettext\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/gettext/gettext/src',
         ),
         'FormManager\\' => 
         array (

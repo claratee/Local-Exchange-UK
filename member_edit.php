@@ -66,15 +66,66 @@ if ($_POST["submit"]){
 	// test out all the fields - make sure filled
 	//$is_saved = $member->ProcessData();
 		//redirect to page if saved
-    $is_saved = $member->Save();
+
+//CT TODO - validation. this is hokey and manual, will replace with proper validator sometime...
+    $error_message = "";
+
+    if($cUser->getMode()=="admin"){
+        
+
+        if(strlen($member->getJoinDate()) < 1) {
+            $error_message .= "Join date is missing";
+        }else{
+            //CT can't join in the future
+            if(!$p->isDateValid($member->getJoinDate(), LONG_LONG_AGO, date('Y-m-d', strtotime('+1 day')))) $error_message .= "Join date must be today or in the past";
+        }
+        //CT can't expire before they join
+        if(strlen($member->getExpireDate()) < 1) {
+            $error_message .= "Expire date is missing";
+        }else{
+            if(!$p->isDateValid($member->getExpireDate(), $member->getJoinDate(), FAR_FAR_AWAY)) $error_message .= "Expire date cannot be before the join date";
+        }
+         
+    }
+    //if(strlen($member->getMemberId()) < 4) $error_message .= "Member ID is missing or must be unique.";
+    //if(strlen($member->getJoinDate()) < 1) $error_message .= "First name is missing. ";
+    //CT validation - manual. sorry...
+    if(strlen($member->getPerson()->getFirstName()) < 1) $error_message .= "First name is missing. ";
+    if(strlen($member->getPerson()->getFirstName()) > 100) $error_message .= "First name is too long. ";
+    if(strlen($member->getPerson()->getLastName()) < 1) $error_message .= "Last name is missing. ";
+    if(strlen($member->getPerson()->getLastName()) > 100) $error_message .= "Last name is too long. ";
+    if(strlen($member->getPerson()->getEmail()) > 0 AND (!$p->isEmailValid($member->getPerson()->getEmail(), true) OR strlen($member->getPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
+    if(strlen($member->getPerson()->getAddressStreet2()) < 1) $error_message .= ADDRESS_LINE_2 . " is missing. ";
+    if(strlen($member->getPerson()->getAddressCity()) < 1) $error_message .= ADDRESS_LINE_3 . " is missing. ";
+    if(strlen($member->getPerson()->getAddressPostCode()) < 1) $error_message .= ZIP_TEXT . " is missing. ";
+    if(strlen($member->getPerson()->getPhone1Number()) > 0 && strlen($member->getPerson()->getPhone1Number()) < 11) $error_message .= "Include full telephone number including dialling code. ";
+    if(strlen($member->getPerson()->getEmail()) < 1 AND strlen($member->getPerson()->getPhone1Number()) < 1) $error_message .= "You must include at least a phone number or an email address so other members may contact you.";
+
+    $person_id = 0;
+    if(empty($error_message)) {
+        try{
+            $person_id = $member->Save();
+            if($person_id){
+                //redirect page if saved    
+                $cStatusMessage->Info("Your changes have been saved.");
+                $redir_url="member_detail.php?member_id={$member->getMemberId()}";
+                include("redirect.php");
+            } else{
+                $cStatusMessage->Error("Something went wrong - changes not saved.");
+
+            }
+        }catch(Exception $e){
+            $cStatusMessage->Info("Could not save person:" . $e->getMessage());
+        }
+    } else {
+        $cStatusMessage->Error($error_message);
+    }
 	if($is_saved){
 		//redirect page if saved	
         $cStatusMessage->Info("Your changes have been saved.");
 		$redir_url="member_detail.php?member_id={$member->getMemberId()}";
   		include("redirect.php");
-	} else{
-        $cStatusMessage->Error("Unknown error.");
-    }
+	} 
 }else{
     //build from fields, or build from loaded record
     if ($member->getAction() == "create"){
@@ -196,7 +247,7 @@ $adminElements="";
             </p>
             <p>
                 <label for=\"last_name\">
-                    <span>Last name  *</span>
+                    <span>Family name  *</span>
                     <input maxlength=\"200\" name=\"last_name\" id=\"last_name\" type=\"text\" value=\"{$member->getPerson()->getLastName()}\">
                 </label>
             </p>
@@ -222,7 +273,7 @@ $adminElements="";
    
             <p>
                 <label for=\"email\">
-                    <span>Email address *</span>
+                    <span>Email address</span>
                     <input maxlength=\"200\" name=\"email\" id=\"email\" type=\"text\" value=\"{$member->getPerson()->getEmail()}\">
                 </label>
             </p>            
@@ -237,7 +288,7 @@ $adminElements="";
             <p>Only you and the administrators of the site can see your full address. Everyone else will see just your neighbourhood and first part of the post code. We won't force you to set your full address here, it's up to you.</p>
             <p>
                 <label for=\"address_street1\">
-                    <span>Street address</span>
+                    <span>" . ADDRESS_LINE_1 . "</span>
                     <input maxlength=\"200\" name=\"address_street1\" id=\"address_street1\" type=\"text\" value=\"{$member->getPerson()->getAddressStreet1()}\">
                 </label>
             </p>

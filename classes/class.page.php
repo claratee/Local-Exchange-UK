@@ -88,6 +88,28 @@ class cPage {
 		return str_replace("{{" . $varname . "}}", $value, $string);
 	}
 
+	//CT thanks random stranger on the internet...
+	function add_querystring_var($url, $key, $value) {
+		$url = $this->remove_querystring_var($url, $key); //CT added removal - so this replaces
+
+		// $url = preg_replace('/(.*)(?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
+		// $url = substr($url, 0, -1);
+		
+		if (strpos($url, '?') === false) {
+			return ($url . '?' . $key . '=' . $value);
+		} else {
+			return ($url . '&' . $key . '=' . $value);
+		}
+		
+	}
+	//CT thanks random stranger on the internet...
+	function remove_querystring_var($url, $key) {
+		$url = preg_replace('/(.*)(\?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
+		$url = substr($url, 0, -1);
+		return $url;
+		
+	}
+
 
 	function AddTopButton ($button_text, $url) { // Top buttons aren't integrated into header yet...
 		$this->top_buttons[] = new cMenuItem($button_text, $url);
@@ -198,6 +220,49 @@ class cPage {
 		$content .= $title  . $this->MakeErrorContent() . $this->MakeInfoContent() . $this->page_content;
 		return $this->Wrap($content, "div", "content");
 	}
+	//CT validators for form inputs
+	// function isDateValid($date_string, $criteria=null){
+	// 	//CT datestring should be yyyy-mm-dd
+	// 	list($y, $m, $d) = array_pad(explode('-', $date_string, 3), 3, 0);
+	// 	if(ctype_digit("$y$m$d") && checkdate($m, $d, $y)){
+	// 		if ($criteria = paststrtotime("0:00")> strtotime($date_string)) return true;
+	// 	}
+	// 	return false;
+	// }
+
+
+	function isDateValid($date_string, $min_date_string=null, $max_date_string=null){
+		//CT datestring should be yyyy-mm-dd
+		list($y, $m, $d) = array_pad(explode('-', $date_string, 3), 3, 0);
+		if(ctype_digit("$y$m$d") && checkdate($m, $d, $y)){
+			//CT if set, can't be smaller than min, or larger than max. 
+			if (!empty($min_date_string) && (strtotime($date_string) < strtotime($min_date_string))) {
+				return false;
+			}
+			if (!empty($max_date_string) && (strtotime($date_string) > strtotime($max_date_string))) {
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+	function isEmailValid($email, $domain_check = false){
+			//CT: check email - with optional DNS
+	    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+	        if ($domain_check && function_exists('checkdnsrr')) {
+
+	            list (, $domain)  = explode('@', $email);
+	            if (checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A')) {
+	                return true;
+	            }
+	            return false;
+	        }
+	        return true;
+	    }
+	    return false;
+	}
+
+
 	function MakeErrorContent() {
 		//global $cUser;
 		global $cStatusMessage;
@@ -293,11 +358,12 @@ class cPage {
 	}
 	//CT removed forms from PEAR...so this is a faff, but I dont have alternative library
 	//create a form element
+	//CT dropdown or select form element
 	function PrepareFormSelector($selector_id, $array, $label_none=null, $selected_id=null, $css_class=null) {
 		//the value for nothing selected as first element.
 		$output = "";
 		// first option of select - none selected
-		if (!empty($label_none)) $output .= "<option value=\"\">{$label_none}</option>";
+		if (!empty($label_none)) $output .= "<option value=\"\">-- {$label_none} --</option>";
 		foreach($array as $key=>$item){
 			$selected_attribute = ($key == $selected_id) ? " selected=\"selected\"" : "";
 			$output .= "<option value=\"{$key}\" {$selected_attribute}>{$item}</option>";

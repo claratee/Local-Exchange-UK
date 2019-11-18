@@ -78,7 +78,7 @@ class cCategoryGroup
 
 		}
 		//$selector_id, $array, $label_none=null, $selected_id=null, $css_class=null
-        return $p->PrepareFormSelector($selector_name, $array, "-- Select category --", $selected_id);
+        return $p->PrepareFormSelector($selector_name, $array, "Select category", $selected_id);
 		// $vars = $categories->MakeCategoryArray();
 
 		// //print_r($vars);

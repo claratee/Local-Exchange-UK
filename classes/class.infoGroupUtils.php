@@ -89,7 +89,7 @@ class cInfoUtilsGroup {
 		$vars = array("bin" => "Put in bin");
 
 		$select_name = "action";
-		$output = $p->PrepareFormSelector($select_name, $vars, "-- Select --", null);
+		$output = $p->PrepareFormSelector($select_name, $vars, "Select action", null);
 		return $output;
 	}	
 

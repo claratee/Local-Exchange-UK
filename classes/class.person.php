@@ -104,8 +104,8 @@ class cPerson extends cBasic2
     public function  __construct ($field_array=null) {
         global $cUser;
         //init in case of creation
-        $this->setPrimaryMember="Y";
-        $this->setDirectoryList="Y";
+        //$this->setPrimaryMember="Y";
+        //$this->setDirectoryList="Y";
         //base constructor - build if values exist
         if(!empty($field_array)) $this->Build($field_array);
         print_r($field_array);
@@ -269,25 +269,27 @@ class cPerson extends cBasic2
         return $this;
     }
 	
-	function DeletePerson() {
-		global $cDB, $cStatusMessage;
+	// function DeletePerson() {
+	// 	//can only be done on joint members
+	// 	global $cDB, $cStatusMessage;
 		
-		if($this->primary_member == 'Y') {
-			$cStatusMessage->Error("Cannot delete primary member!");	
-			return false;
-		} 
+	// 	if($this->primary_member == 'Y') {
+	// 		$cStatusMessage->Error("Cannot delete primary member!");	
+	// 		return false;
+	// 	} 
 		
-		$delete = $cDB->Query("DELETE FROM ".DATABASE_PERSONS." WHERE person_id=". $cDB->EscTxt($this->getPersonId()));
+	// 	$delete = $cDB->Query("DELETE FROM ".DATABASE_PERSONS." WHERE person_id=". $cDB->EscTxt($this->getPersonId()));
 		
-		unset($this->person_id);
+	// 	unset($this->person_id);
 		
-		if (mysqli_affected_rows() == 1) {
-			return true;
-		} else {
-			$cStatusMessage->Error("Error deleting joint member.");
-		}
+	// 	if (mysqli_affected_rows() == 1) {
+	// 		return true;
+	// 	} else {
+	// 		$cStatusMessage->Error("Error deleting joint member.");
+	// 	}
 		
-	}
+	// }
+
 	/*					
 	function ShowPerson()
 	{

@@ -3,7 +3,7 @@
 class cListingUtils extends cListing {
 
 	private $form_action; 
-	private $form_mode; 
+	//private $form_mode; 
 
 		    /**
      * @param mixed $form_action
@@ -36,25 +36,25 @@ class cListingUtils extends cListing {
      * @return self
      */
 
-/**
-     * @return mixed
-     */
-    public function getFormMode()
-    {
-        return $this->form_mode;
-    }
+// /**
+//      * @return mixed
+//      */
+//     public function getFormMode()
+//     {
+//         return $this->form_mode;
+//     }
 
-    /**
-     * @param mixed $form_mode
-     *
-     * @return self
-     */
-    public function setFormMode($form_mode)
-    {
-        $this->form_mode = $form_mode;
+//     *
+//      * @param mixed $form_mode
+//      *
+//      * @return self
+     
+//     public function setFormMode($form_mode)
+//     {
+//         $this->form_mode = $form_mode;
 
-        return $this;
-    }
+//         return $this;
+//     }
 
 
 	// function Build($vars) {
@@ -95,7 +95,7 @@ class cListingUtils extends cListing {
 		$member_group = new cMemberGroup();
         list($condition, $label) = $member_group->makeCondition("active");
 		$member_group->Load($condition);
-        $output = $p->PrepareFormSelector("action", $vars, "-- Select action --", null);
+        $output = $p->PrepareFormSelector("action", $vars, "Select action", null);
 		return $member_group->PrepareMemberDropdown("member_id", $this->getMemberId());
 	}	
 		
@@ -114,6 +114,7 @@ class cListingUtils extends cListing {
         if($this->getMember()->getMemberId() == $cUser->getMemberId() || $cUser->getMemberRole() > 0){
             $keys_array = array(
                 "status",
+                "rate",
                 "title",
                 "description",
                 "category_id",
@@ -132,12 +133,15 @@ class cListingUtils extends cListing {
 			// $field_array["member_id"]=$this->getMemberId();
         
             $listing_id = 0;
+
             //can handle both create and update
             if($this->getFormAction() == "update"){
             	$condition = "`member_id`=\"{$this->getMemberId()}\" AND listing_id = \"{$this->getListingId()}\""; 
                 
                 //CT don't save the secondary member here, just the primary
-                return  $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                if($this->update(DATABASE_LISTINGS, $keys_array, $condition)){
+                    return $this->getListingId();
+                }
             } 
             else{
                 //TODO -
@@ -145,6 +149,7 @@ class cListingUtils extends cListing {
                 $keys_array[]="member_id";
                 return  $this->insert(DATABASE_LISTINGS, $keys_array); //CT should return the id 
             }
+            return false;
         }
     }
 

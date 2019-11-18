@@ -86,7 +86,8 @@ class cDatabase
 			}
 			
 		} else{
-			return false;
+			return $this->AffectedRows();
+			//return false;
 			//throw new Exception("Unexpected response from the database.");
 		}
 		 

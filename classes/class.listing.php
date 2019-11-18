@@ -39,7 +39,9 @@ class cListing extends cBasic2
         
         $string_query = $cQueries->getMySqlListing($condition);
         return $this->LoadDatabaseTable($string_query);
-        // if($query = $cDB->Query("{$cQueries->getMySqlMember($condition)}")){
+
+        //CT something is not worrking well - going back to manual process
+        // if($query = $cDB->Query($string_query)){
         //     if($field_array = $cDB->FetchArray($query)){    
         //         if($is_success = $this->Build($field_array)){    
         //             return $is_success;
@@ -73,17 +75,25 @@ class cListing extends cBasic2
     //         throw new Exception('Could not execute query');
     //     }
     // }
-    function Build($vars){
+    function Build($field_array){
         //print_r($vars);
         //$this->__set('type_description', $this->TypeDesc($this->getType()));
-        //lazy load of vars        
-        parent::Build($vars);
-        //print_r($vars);
-        $member = $this->makeMember();
-        if(!empty($vars['member_id'])) {
-            $member->Build($vars);
-            $this->setMember($member);
+        //lazy load of vars      
+//print_r($field_array);
+        $is_success=parent::Build($field_array);
+        //stop if not buided
+        if($is_success){
+            $member = $this->makeMember();
+            if(!empty($field_array['member_id'])) {
+                if($member->Build($field_array)){
+                    $this->setMember($member);
+                    return true;
+                }
+                
+            }
         }
+        return false;
+       
     }   
     function makeMember($field_array=null){
         return new cMember($field_array);

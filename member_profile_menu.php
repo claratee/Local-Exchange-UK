@@ -24,7 +24,7 @@ $member->Load("m.member_id=\"{$member_id}\" AND m.status !=\"I\"");
 
 
 $p->page_title = $page_title;
-$output = $p->Wrap("Hola, ". $member->getDisplayName() . "!", "h3");
+$output = $p->Wrap($member->greetMe($member->getPerson()->getFirstName()), "h3");
 
 //todo: message for restricted?
 if (!is_null($cUser->getRestriction())) $list .= LEECH_NOTICE;

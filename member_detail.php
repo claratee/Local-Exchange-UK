@@ -71,16 +71,24 @@ if(!$is_success){
             
             $joint_member_text ="";
             //print_r($member->getJointPerson()->getDirectoryList());
-            if ($member->getAccountType() == "J"){
-                
-                //CT strings for display, not meaning
-                if(!is_null($member->getJointPerson())) {
+            if ($member->getAccountType() == "J" AND !is_null($member->getJointPerson())) {
+
+                if($member->getJointPerson()->getDirectoryList() == "N"){
+                    if(($cUser->getMemberId() == $member->getMemberId()) OR $cUser->getMode()=="admin"){
+                        $joint_member_text ="
+                        <p class=\"line\">
+                            There is a joint member, but hidden from view. <a href=\"member_joint_edit.php?member_id=0634\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit or remove joint member</a>
+                        </p> 
+                        ";
+                    }
+                }else{
                     $sName = "{$member->getJointPerson()->getFirstName()} {$member->getJointPerson()->getLastName()}";
-               
+                
 
                     $joint_member_text ="
                         <h3>Joint Member</h3>
                         <div class=\"group contact\">
+                            <p><a href=\"member_joint_edit.php?member_id={$member->getMemberId()}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit or remove joint member</a></p>
                             <p class=\"line\">
                                 <span class=\"label\">Name: </span>
                                 <span class=\"value\">{$sName}</span>
@@ -93,8 +101,10 @@ if(!$is_success){
                                 <span class=\"value\">{$member->getJointPerson()->getAllPhones()}</span>
                             </p>
                         </div>  
-                    ";
-                 }
+                        ";
+                }
+                    
+                 
             } 
             // but yucky...but gets it done
             include_once (TEMPLATES_PATH . '/menu_quick_edit.php');

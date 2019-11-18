@@ -40,7 +40,9 @@ To install a new site:
 
 1) Upload the LocalExchange files to your local web server/dev environment.
 
-2) Install Composer in the directory through command line (instructions https://packagist.org/). NOTE: If you ONLY have access to your webserver with ftp or sftp, you cna either ignore this and only use the packages that come with this distro, or work somewhere where you do have access! You can always update the files, and then transfer to the server. 
+2) If you have command line access, and wish to keep your third party libraries up to date:
+	a. Install Composer in the directory  via instructions https://packagist.org/). 
+	b. In the project folder, open your terminal app and run "composer update" and "composer upgrade"
 
 3) Create a new database in MySQL and create at least one user account with full access to it.  You can call the database and user whatever you want, but you'll need to enter that information into the text configuration file "includes/inc.config.php".  
 
@@ -55,7 +57,8 @@ To install a new site:
 8) In order to use file uploading features (such as uploading a Newsletter), you will need to set the permissions on the "uploads" directory such that the web user account (often www-data) has access to write to it.
 
 Further Configuration:
-1) Edit style.css, print.css, inc.config.php and add graphics files to the "images" folder as needed to personalize the site.  The main site graphics can be modified be editing inc.config.php.
+1) Edit style.css, print.css, inc.config.php and add graphics files to the "images" folder as needed to personalize the site. Image for the logo, motto, and all the other bits are in the config.
+
 2) In the "info" folder are a number of essentially static html files that help to explain what local currency is.  Included among them is some information specific to the area the original developer of the system lives in (me, that is).  You may use these files as you like, of course, but you may want to tailor them to your needs.  The files themselves need to be edited with a text editor, there is no content editor included in the system currently. (RF: Update ver 0.4.0 - there *is* now an (optional) content editor built in for creating additional info pages which can be edited online - see includes/inc.config.php )
 3) Default listing categories were created by the create_db script.  You can edit these categories from the Administration menu.
 

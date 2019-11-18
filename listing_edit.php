@@ -12,7 +12,7 @@ $listing = new cListingUtils();
 //safely get values
 $is_loaded = false;
 
-$form_action = "create";
+//$form_action = "create";
 
 function createForValidMember($member_id){
 	//global $listing
@@ -27,8 +27,8 @@ function createForValidMember($member_id){
 
 if(!empty($_REQUEST["listing_id"])){
 	$listing_id =  $cDB->EscTxt($_REQUEST['listing_id']);
-	$form_action = "update";
-	$condition = "p.primary_member = 'Y' and m.status = 'A' AND listing_id={$listing_id}";
+	$listing->setFormAction("update");
+	$condition = "p.primary_member = \"Y\" and m.status = \"A\" AND listing_id=\"{$listing_id}\"";
 	$is_loaded = $listing->Load($condition);
 	if(!$is_loaded){
 		$cStatusMessage->Error("Cannot load id '{$listing_id}'");
@@ -38,23 +38,21 @@ if(!empty($_REQUEST["listing_id"])){
 	// only allow committee and above to edit other people's ads
 	if(($cUser->getMode() !== "admin") && ($listing->getMemberId() != $cUser->getMemberId())){
 		$cStatusMessage->Error("You don't have permission to edit this listing");
-		$redir_url="listing_detail.php?listing_id={$listing_id}&status=success_listing_edit";
-	  	include("redirect.php");
+		
+		//$redir_url="listing_detail.php?listing_id={$listing_id}&status=success_listing_edit";
+	  	//include("redirect.php");
 	}
-	//$member_id = $listing->getMemberId();
-	$listing->setFormAction("update");
+	$member = $cUser;
 
 }else{
+	$listing->setFormAction("create");
 	if($_REQUEST["type"] == OFFER_LISTING_CODE){
 		$listing->setType(OFFER_LISTING_CODE);
 	}else{
 		$listing->setType(WANT_LISTING_CODE);
 	}
 	if(!empty($_REQUEST["category_id"])) $listing->setCategoryId($_REQUEST["category_id"]);
-	$listing->setFormAction("create");
-}
 
-if($form_action == "create"){
 	if($cUser->getMode() == "admin" && $_REQUEST['member_id'] && $_REQUEST['member_id'] != $cUser->getMemberId()){
 	
 		try{
@@ -70,10 +68,10 @@ if($form_action == "create"){
 	}else{
 		$member = $cUser;
 	}
-	$listing->setMemberId($member->getMemberId());
+	
 }
 
-
+$listing->setMemberId($member->getMemberId());
 
 $type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING : WANT_LISTING;
 
@@ -92,9 +90,9 @@ $type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING 
 
 
 //allow extra controls
-if(!empty($form_mode)) $listing->setFormMode($form_mode);
+//if(!empty($form_action)) $listing->setFormMode($form_action);
 
-if(!empty($listing_id)){
+if($listing->getFormAction() == "update"){
 
 	// CT user must match
 	$page_title = "Edit '{$type_description}': {$listing->getTitle()} " . $page_title;
@@ -135,7 +133,7 @@ if ($_POST["submit"]){
 		$cStatusMessage->Error($error_message);
 	}
 
-	if($listing_id){
+	if(!empty($listing_id)){
 		//redirect page if saved	
 		$cStatusMessage->Info("Changes to the Listing were saved.");
 		$redir_url="listing_detail.php?listing_id={$listing_id}";
