@@ -86,7 +86,7 @@ class cDatabase
 			}
 			
 		} else{
-			return $this->AffectedRows();
+			return false;
 			//return false;
 			//throw new Exception("Unexpected response from the database.");
 		}
@@ -101,8 +101,10 @@ class cDatabase
 			if($_REQUEST['debug']) $debug = true;
 		}
 		if($debug) $cStatusMessage->Info("Q.{$this->count_query}: {$string_query} {$result_message}");
-		
-		return $result;
+		if(gettype($result) == "object" ){
+			return $result;
+		}
+		return $this->AffectedRows();
 		//CT: uncomment when finishing demo
 	
 

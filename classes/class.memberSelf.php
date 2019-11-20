@@ -146,7 +146,8 @@ class cMemberSelf extends cMember {
 
             $_SESSION["user_login"] = $this->getMemberId();
             $_SESSION["expires"] = $this->getExpires();
-            $_SESSION["mode"] = "default";
+            //CT wnat to retain mode by admin?
+            if($this->getMemberRole() == 0) $_SESSION["mode"] = "default";
 
             $this->refreshSession();
 
@@ -306,6 +307,7 @@ class cMemberSelf extends cMember {
         
         // user isn't logged on, but is in a section of the site where they should be logged on.
         $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
+        //if($cUser->getMode() ==  "admin") $_SESSION['request_uri'] . "?mode=admin"
         $cStatusMessage->SaveMessages();
         header("location:" . HTTP_BASE . "/login_redirect.php");
                 

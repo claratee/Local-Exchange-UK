@@ -4,23 +4,24 @@ include_once("includes/inc.global.php");
 $cUser->MustBeLevel(2);
 
 
-$member = new cMemberUtils;
+$member = new cMemberUtils; //CT load the extended
 
 try{
+
+
+	$condition = "m.member_id={$_REQUEST["member_id"]}";
+	$member->Load($condition);
 
 	if($_POST['submit']){
 		processData($_POST);
 	}
-
-	$condition = "m.member_id={$_REQUEST["member_id"]}";
-	$success = $member->Load($condition);
 
 
 
 
 	if($member->getStatus() == 'A'){
 		$p->page_title = "Inactivate member {$member->getDisplayName()} ({$member->getMemberId()})";
-		$output = "<p>This member is currently active. If you make them INACTIVE, they will no longer be able to log in or trade. Other members will not be able to find them or their listings. You may do this if the member does not with to be a part of the community. It is usual to give a grace period described in the community terms, and then remove the personal information and take the balance to 0.</p>";
+		$output = "<p>By them INACTIVE, they will no longer be able to log in or trade. Other members will not be able to find them or their listings. You may do this if the member does not with to be a part of the community. It is usual to give a grace period described in the community terms, and then remove the personal information and take the balance to 0.</p>";
 	}
 	else{
 		$p->page_title = "Re-activate member {$member->getDisplayName()} ({$member->getMemberId()})";
@@ -62,6 +63,7 @@ function displayStatusChangeButton($member) { // TODO: Should use SaveMember and
             <form action=\"{$_SERVER['PHP_SELF']}?member_id={$member->getMemberId()}\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
 	            {$archive_dropdown}
                 <input name=\"member_id\" id=\"member_id\" type=\"hidden\" value=\"{$member->getMemberId()}\">
+                <input name=\"action\" id=\"action\" type=\"hidden\" value=\"change_status\">
                 <input name=\"status\" id=\"status\" type=\"hidden\" value=\"{$status}\">
                 <p><input name=\"submit\" id=\"submit\" class=\"large\" value=\"{$button_text}\" type=\"submit\" /></p>
             </form>";
@@ -89,13 +91,16 @@ function displayStatusChangeButton($member) { // TODO: Should use SaveMember and
 	// 	$p->DisplayPage($form->toHtml());
 	// }
 
-	function processData ($field_array) {
+	function processData () {
 		global $p, $member;
-		$build_array = array();
-		$build_array['status'] = $field_array['status'];
-		$member->Build($build_array);
-		print_r($member->getStatus());
-		$member->Save();
+		$field_array = array();
+		$field_array['status'] = $_POST['status'];
+		$field_array['action'] = $_POST['action'];
+		$member->Build($field_array);
+		//print_r($member->getStatus());
+		if($member->Save()){
+			
+		}
 		// if($field_array['status'] == 'I') {
 
 		// 	$success = $member->DeactivateMember();

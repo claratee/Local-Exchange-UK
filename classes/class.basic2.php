@@ -48,7 +48,7 @@ abstract class cBasic2 {
 		foreach ($keys_array as $key) {
 			$method = 'get'.$this->pascalcasify($key);
 			if(is_array($this->$method())) {
-				$field_array[$key] = print_r($this->$method(), true); //CT captures the value if its an array - 
+				$field_array[$key] = print_r($this->$method(), true); //CT captures the value if its an array - used for quickly capturing recipient array for sendmail. generally, not great to use - just for development.
 			}else{
 				$field_array[$key] = $this->$method();
 			}
@@ -57,7 +57,7 @@ abstract class cBasic2 {
 		}
     	return $field_array;
 	}
-	//CT abstract class for updating a record
+	//CT abstract class function for updating a record - solar naming
 	function update($db_table, $keys_array, $condition) {
         //CT saves all the properties that you pass in on the key array. table columns must have the same names
 		global $cDB, $cStatusMessage;
@@ -68,18 +68,18 @@ abstract class cBasic2 {
 					//print_r($string_query);
 					return $is_success;
 				}else{
-					throw new Exception('{$context} Update - Could not execute query.');
+					throw new Exception("{$context} Update - Could not execute query.");
 				}
 			}else{
-				throw new Exception('{$context} Update - Could not build query from array.');
+				throw new Exception("{$context} Update - Could not build query from array.");
 			}
         	 
 		}else{
-			throw new Exception('{$context} Update - No recognized properties found in array.');
+			throw new Exception("{$context} Update - No recognized properties found in array.");
 		}
 
 	}	
-	//CT abstract class for creating a record
+	//CT abstract class function for creating a record - solar naming
 	function insert($db_table, $keys_array) {
         
 		global $cDB, $cStatusMessage;

@@ -3,7 +3,7 @@
 class cMemberUtils extends cMember {
     
     //var $mode;
-    private $action;
+    private $action; //CT this is the switch to allwo certain behaviours 
 
 
    // public function  __construct ($field_array=null) {
@@ -119,6 +119,10 @@ class cMemberUtils extends cMember {
                     //}catch (Exception $e){
                     //} 
                 break;
+                case "change_status":
+                    $keys_array[] = 'status';
+                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
+                break;
                 case "joint_create":
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array[] = 'member_id';
@@ -147,13 +151,16 @@ class cMemberUtils extends cMember {
             return false;
         }
         try{
+            //CT so far so good - member table changes done. Now do the person table changes
             $this->getPerson()->setMemberId($this->getMemberId());
             switch($this->getAction()){
                 case "create":
                 case "update":
                     $this->getPerson()->setAction($this->getAction());
-
                     $is_success = $this->getPerson()->Save();
+                break;
+                case "change_status":
+                    //CT do nothing - all good.
                 break;
                 case "joint_create":
                     $this->getJointPerson()->setAction('create');
