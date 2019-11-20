@@ -34,7 +34,7 @@ if(!$is_success){
 
     if($is_success){
 
-        $p->page_title = "{$member->getDisplayName()} (#{$member_id})";
+        $p->page_title = "{$member->getDisplayName()} ({$member_id})";
 
     		$stats = new cTradeSummary();
             //$condition = "m.member_id=\"{$member_id}\"";
@@ -194,7 +194,8 @@ if(!$is_success){
                 
     $is_success = false;
     //$member = new cMemberSummary();
-    $listing_id = $cDB->UnEscTxt($_REQUEST['listing_id']);
+    $listing_id = (empty($_REQUEST['listing_id'])) ? "" : $_REQUEST['listing_id'];
+
     if(!empty($listing_id)){
         $condition = "listing_id={$listing_id}";
         $listing->Load($condition);
@@ -207,7 +208,7 @@ if(!$is_success){
     	$output .= "<h2>" . OFFER_LISTING_HEADING . "</h2>";
         
     	$listings = new cListingGroup();
-        // Load($member_id, $category_id, $since, $include_expired, $status, $type)
+        // Load($member_id, $category_id, $timeframe, $include_expired, $status, $type)
 
         $condition = $listings->makeFilterCondition($member_id, OFFER_LISTING_CODE, null, null, null, null);
     	$listings->Load($condition);

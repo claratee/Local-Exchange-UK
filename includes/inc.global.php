@@ -136,28 +136,28 @@ define("ARRAY_RESTRICTION",
 //define("TRADE","T"); // CT replaced with TRADE_TYPE_TRANSFER
 
 //note new column "member_id_author" gives record of who did the strade -so we can repurpose "type" to show direction and anything else needed
-//USED also for logging admin_activity as category
+//types - also for logging admin_activity as category
 define("TRADE_TYPE_TRANSFER","T"); //CT transfer
 define("TRADE_TYPE_INVOICE","I"); //CT NEW invoice
 define("TRADE_TYPE_MONTHLY_FEE","M"); //CT admin did it
-//types reversals.for info only (status will be I)
+//types -reversals.for info only (status will be I)
 define("TRADE_TYPE_REVERSAL","R"); //CT NEW info only - record. 
 define("TRADE_TYPE_MONTHLY_FEE_REVERSAL", "N");
+//Status
+define("TRADE_STATUS_REVERSED","R"); //CT - REVERSED. new
+define("TRADE_STATUS_APPROVED","V"); //CT - valid - meaning active, done, approved.
 //CT 
-//status - whether they are counted or not
-//define("TRADE_STATUS_PENDING","P"); //CT - new - for trade table? not used yet
-define("TRADE_STATUS_PENDING_OPEN","O"); //CT - open in pending table
-define("TRADE_STATUS_PENDING_FINAL","F"); //CT - as above. final in pending table 
-define("TRADE_STATUS_PENDING_CANCELLED","W"); //CT - withdrawn NEW - cancelled. hide from everywhere.
+//pending status - whether they are counted or not
+define("TRADE_PENDING_STATUS_OPEN","O"); //CT - open in pending table
+define("TRADE_PENDING_STATUS_FINAL","F"); //CT - as above. final in pending table 
+define("TRADE_PENDING_STATUS_CANCELLED","W"); //CT - withdrawn NEW - cancelled. hide from everywhere.
 
+//Pending decision - moved from pending hardcode
  define("TRADE_PENDING_DECISION_DEFAULT","1"); //1 = Member hasn't made a decision regarding this trade - either it is Open or it has been Fulfilled (see 'status' column)
  define("TRADE_PENDING_DECISION_REMOVED","2"); //2 = Member has removed trade from his own records
  define("TRADE_PENDING_DECISION_REJECTED","3"); //3 = Member (payee) has rejected this trade
  define("TRADE_PENDING_DECISION_ACCEPTED_REJECTED","4"); //4 = Member has accepted that this trade has been rejected
 
-
-define("TRADE_STATUS_REVERSED","R"); //CT - REVERSED. new
-define("TRADE_STATUS_APPROVED","V"); //CT - valid - meaning active, done, approved.
 //define("TRADE_STATUS_REJECTED","J"); //CT - rejected. new
 
 //CT new
@@ -249,7 +249,7 @@ require_once("inc.config-local.php");
 //include_once("inc.config-local.php");
 //include_once("inc.config-remote.php");
 
-/* ct third party cleaner for html - prevent xss atttack. */
+/* CT third party cleaner for html - prevent xss atttack. */
 require_once VENDOR_PATH .  'ezyang/htmlpurifier/library/HTMLPurifier.auto.php';
 
 
@@ -339,9 +339,9 @@ $cUser->RegisterWebUser();
 include_once(CLASSES_PATH ."class.page.php");
 
 
-
+//CT this should be done in the php ini, or on the local config. not global
 // The following is necessary because of a PHP 4.4 bug with passing references
-error_reporting( E_ALL & ~E_NOTICE );
+//error_reporting( E_ALL & ~E_NOTICE );
 
 // For maintenance, see inc.config.php
 if(DOWN_FOR_MAINTENANCE and !$running_upgrade_script) {

@@ -17,10 +17,10 @@ if($_REQUEST["mode"] == "admin") {
 	$member = $cUser;
 }
 
-$since_date = new cDateTime("-". DAYS_REQUEST_FEEDBACK ." days");
+$timeframe_date = new cDateTime("-". DAYS_REQUEST_FEEDBACK ." days");
 
 //CT I think this is broken
-$tradegrp = new cTradeGroup($member->member_id, $since_date->MySQLDate()); 
+$tradegrp = new cTradeGroup($member->member_id, $timeframe_date->MySQLDate()); 
 $tradegrp->LoadTradeGroup();
 
 $output = "<B>For which Exchange?</B><BR>";

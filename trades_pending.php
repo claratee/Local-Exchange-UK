@@ -87,7 +87,7 @@ function displayTrade($field_array, $filter) {
 
 		//CT work out what actions are available
 		$action_text = "";
-		if ($field_array["status"]==TRADE_STATUS_PENDING_OPEN) {
+		if ($field_array["status"]==TRADE_PENDING_STATUS_OPEN) {
 
 			$css_status = "open";
 			//confirm payments
@@ -413,7 +413,7 @@ function doPageAction(){
 				throw new Exception('The trade has not been rejected to be re-sent.');
 			}			
 			// Check this is not a 'still Open' trade
-			if ($row["status"]!=TRADE_STATUS_PENDING_OPEN) {
+			if ($row["status"]!=TRADE_PENDING_STATUS_OPEN) {
 				
 				throw new Exception('Only Open trades can be rejected or resent.');
 			}			
@@ -439,7 +439,7 @@ function doPageAction(){
 		
 			$success_message = "Trade was cancelled";
 			// Do we have permission to act on this trade?
-			if ($row["status"] !=TRADE_STATUS_PENDING_OPEN){
+			if ($row["status"] !=TRADE_PENDING_STATUS_OPEN){
 				throw new Exception('Only Open pending trades can be cancelled.');
 			}
 			if ($cUser->getMode() != "admin"){
@@ -450,7 +450,7 @@ function doPageAction(){
 
 			if ((($row["member_id_to"]==$member_id && $row["type"]==TRADE_TYPE_INVOICE) OR ($row["member_id_from"]==$member_id && $row["type"]==TRADE_TYPE_TRANSFER)) AND ($row["member_to_decision"] == TRADE_PENDING_DECISION_DEFAULT AND $row["member_from_decision"] == TRADE_PENDING_DECISION_DEFAULT)){
 				$field_array = array(
-					"status"=>TRADE_STATUS_PENDING_CANCELLED,
+					"status"=>TRADE_PENDING_STATUS_CANCELLED,
 				 	"member_to_decision"=>TRADE_PENDING_DECISION_REMOVED, 
 				 	"member_from_decision"=>TRADE_PENDING_DECISION_REMOVED
 				 );
@@ -470,7 +470,7 @@ function doPageAction(){
 				throw new Exception('The trade has not been rejected to be re-sent.');
 			}			
 			// Check this is not a 'still Open' trade
-			if ($row["status"]!=TRADE_STATUS_PENDING_OPEN) {
+			if ($row["status"]!=TRADE_PENDING_STATUS_OPEN) {
 				
 				throw new Exception('You can only do this on open trades');
 			}			
@@ -488,7 +488,7 @@ function doPageAction(){
 			}else{
 				$field_array["member_to_decision"] = TRADE_PENDING_DECISION_ACCEPTED_REJECTED;
 			}
-			$field_array["status"] = TRADE_STATUS_PENDING_CANCELLED;
+			$field_array["status"] = TRADE_PENDING_STATUS_CANCELLED;
 			
 			
 			
@@ -499,7 +499,7 @@ function doPageAction(){
 			$success_message = "You've rejected the trade. Please get in touch with them to explain your reasons, if not already known by them. ";
 
 			// Check this is not a 'still Open' trade
-			if ($row["status"]!=TRADE_STATUS_PENDING_OPEN) {
+			if ($row["status"]!=TRADE_PENDING_STATUS_OPEN) {
 				
 				throw new Exception('This trade is marked as Open and the notice cannot be removed.');
 			}
@@ -528,10 +528,10 @@ function doPageAction(){
 			$success_message = "You've removed the confirmation notice";
 	
 			// Check this is not a 'still Open' trade
-			if ($row["status"]==TRADE_STATUS_PENDING_OPEN) {
+			if ($row["status"]==TRADE_PENDING_STATUS_OPEN) {
 				throw new Exception('This trade is marked as Open and the notice cannot be removed.');
 			}
-			elseif ($row["status"]==TRADE_STATUS_PENDING_FINAL) {
+			elseif ($row["status"]==TRADE_PENDING_STATUS_FINAL) {
 				if ($row["member_id_from"]==$member_id) { // Our sent payment can be removed!
 					$field_array = array("member_from_decision"=>TRADE_PENDING_DECISION_REMOVED);
 				} elseif($row["member_id_to"]==$member_id) { // Our received payment can be removed!
@@ -547,7 +547,7 @@ function doPageAction(){
 			$success_message = "You've confirmed the trade";
 		
 
-			if ($row["status"]!=TRADE_STATUS_PENDING_OPEN) {
+			if ($row["status"]!=TRADE_PENDING_STATUS_OPEN) {
 				
 				throw new Exception('This trade had already been confirmed and is now closed.');
 			}
@@ -565,7 +565,7 @@ function doPageAction(){
 					//CT append pending trade info just in case something goes wrong
 					if ($trade_id = confirmTrade($row)){	
 						$field_array = array(
-							"status"=>TRADE_STATUS_PENDING_FINAL,
+							"status"=>TRADE_PENDING_STATUS_FINAL,
 							"description"=>"{$row['description']} [confirmed to trade_id #{$trade_id}]"
 						);					
 					} else {
@@ -590,7 +590,7 @@ function doPageAction(){
 					*/
 					if ($trade_id = confirmTrade($row)){
 						$field_array = array(
-							"status"=>TRADE_STATUS_PENDING_FINAL,
+							"status"=>TRADE_PENDING_STATUS_FINAL,
 							"description"=>$row['description'] . " (committed to trade #{$trade_id})"
 						);					
 					} else {

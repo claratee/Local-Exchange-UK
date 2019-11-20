@@ -9,11 +9,15 @@ $member = new cMemberUtils; //CT load the extended
 try{
 
 
-	$condition = "m.member_id={$_REQUEST["member_id"]}";
+	$condition = "m.member_id=\"{$_REQUEST["member_id"]}\"";
 	$member->Load($condition);
 
 	if($_POST['submit']){
-		processData($_POST);
+		if(ProcessData($_POST)){
+			$cStatusMessage->Info("The changes were saved.");
+			$redir_url="admin_menu.php";
+    	  	include("redirect.php");
+		}
 	}
 
 
@@ -21,11 +25,11 @@ try{
 
 	if($member->getStatus() == 'A'){
 		$p->page_title = "Inactivate member {$member->getDisplayName()} ({$member->getMemberId()})";
-		$output = "<p>By them INACTIVE, they will no longer be able to log in or trade. Other members will not be able to find them or their listings. You may do this if the member does not with to be a part of the community. It is usual to give a grace period described in the community terms, and then remove the personal information and take the balance to 0.</p>";
+		$output = "<p>By them INACTIVE, they will no longer be able to log in or trade. All listings will be expired. You can choose what to do with the record, depending on the reason whiy the account is being set to inactive.</p>";
 	}
 	else{
 		$p->page_title = "Re-activate member {$member->getDisplayName()} ({$member->getMemberId()})";
-		$output = "<p>This member is currently inactive. If you make them ACTIVE, they will be able to log in, and start trading. Depending on how the record was kept, you may have to populate the data again, befor the member can have access. Any trading record will still be retained.</p>";
+		$output = "<p>This member is currently inactive. If you make them ACTIVE, they will be able to log in, and start trading.</p>";
 
 	}
 	$output .= displayStatusChangeButton($member);	
@@ -43,7 +47,7 @@ try{
 function displayStatusChangeButton($member) { // TODO: Should use SaveMember and should reset $this->password
        global $p;
        if($member->getStatus() == "A"){
-			$options = array('0'=>'Leave record intact', '1'=>'Archive account - transfer balance to fund account and delete PII');
+			$options = array('0'=>'Temporary. Keep personal information and balance.', '1'=>'Permanent. Delete personal information and balance.');
 			$archive_dropdown = "<p>
 	                <label for=\"archve\">
 	                    How do you want to treat the record?<br />" . $p->PrepareFormSelector('archive', $options, null, $_POST['archive']) . "
@@ -91,39 +95,32 @@ function displayStatusChangeButton($member) { // TODO: Should use SaveMember and
 	// 	$p->DisplayPage($form->toHtml());
 	// }
 
-	function processData () {
-		global $p, $member;
+	function ProcessData () {
+		global $member, $cStatusMessage;
 		$field_array = array();
 		$field_array['status'] = $_POST['status'];
 		$field_array['action'] = $_POST['action'];
 		$member->Build($field_array);
 		//print_r($member->getStatus());
-		if($member->Save()){
+		$success = $member->Save();
+		if(!$success) return false;
+		if($member->getStatus()=="I"){
 			
-		}
-		// if($field_array['status'] == 'I') {
+			
 
-		// 	$success = $member->DeactivateMember();
-		// 	$listings = new cListingGroup(OFFER_LISTING);
-		// 	$listings->LoadListingGroup(null,null,$member->member_id);
-		// 	$date = new cDateTime("yesterday");
-		// 	if($success)
-		// 		$success = $listings->ExpireAll($date);
-		// 	if($success) {
-		// 		$listings = new cListingGroup(WANT_LISTING);
-		// 		$listings->LoadListingGroup(null,null,$member->member_id);
-		// 		$success = $listings->ExpireAll($date);
-		// 	}
-		// } else {
-		// 	$success = $member->ReactivateMember();
-		// }
-
-		// if($success)
-		// 	$output = "Changes to member status saved.";
-		// else
-		// 	$output = "There was an error changing the member's status.  Please try again later.";	
-				
-		
+			if($_POST['archive'] == 1){
+				//archive the record - delete personal data for GDPR.
+				$member->setAction("archive");
+				$success = $member->Save();
+			} else{
+				$listings = new cListingGroupUtils();
+				$condition = "member_id = \"{$member->getMemberId()}\"";
+				$count = $listings->ExpireAll($condition);
+				//$date = new cDateTime("yesterday");
+				$cStatusMessage->Info($count . " listings expired.");
+			}
+		} 	
+		return $success;
 	}
 
 

@@ -43,16 +43,15 @@ class cLoginHistory extends cBasic2{
         return str_replace('_', '', ucwords($snakecase, '_'));
     }
     function Build ($field_array)  {
+        $count=0;
         foreach ($field_array as $key => $value) {
             if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
                 //if(is_null($value)) $value = "";
                 $this->$method($value);
+                $count++;
             }
         }
-        
-        
-        
-        return $is_success;
+        return $count;
     } 
 //CT replace this with the one on basic2 class - from keys
 	function makeFieldArrayFromObject(){

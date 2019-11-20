@@ -7,7 +7,7 @@ class cListingGroupUtils extends cListingGroup
 	
 	//though this is per listing, its only for context of group
 
-
+	//CT todo - dont use this. if member goes on holiday, the listings should just be excluded from results. Dont change the listing...
 	function InactivateAll($reactivate_date) {
 		global $cStatusMessage;
 		
@@ -28,23 +28,20 @@ class cListingGroupUtils extends cListingGroup
 		return true;
 	}
 
-	function ExpireAll($expire_date) {
-		global $cStatusMessage;
-		
-		if (empty($this->getListing()))
-			return true;
-		
-		foreach($this->getListing() as $listing)	{
-			$listing->getExpireDate($expire_date->MySQLDate());
-			$success = $listing->SaveListing(false);
-				
-			if(!$success)
-				$cStatusMessage->Error("Could not expire listing: '".$listing->getTitle()."'");
-		}
-		return true;
+	function ExpireAll($condition) {
+		//CT works on all matchin query. so be careful...
+		global $cStatusMessage, $cDB;
+		$array = array("status"=>"E");
+		$string_query = $cDB->BuildUpdateQuery(DATABASE_LISTINGS, $array, $condition);	
+		//print_r($string_query);	
+		return $cDB->Query($string_query);
 	}	
-		// todo - keywords
-
+	//CT bit like a factory - returns new listing object. rerouting opportunity for extend classes
+	public function makeListing($field_array=null)
+    {
+        return new cListingUtils($field_array);
+    }
+//CT this shouldnd be used?
 	function Display($show_ids=true)
 	{
 		
@@ -63,7 +60,7 @@ class cListingGroupUtils extends cListingGroup
 				$memInfo = "";
 				$details .=  $this->ListingLink($listing->getListingId(), $listing->getTitle());
 				
-				$output .= "<li>{$details} <a href=\"edit\"</li>";
+				$output .= "<li>{$details} <a href=\"edit\">hmm?</a></li>";
 			
 						
 				// Rate

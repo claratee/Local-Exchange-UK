@@ -107,7 +107,7 @@ if ($_POST["submit"]){
 	//if (JS_MEMBER_SELECT==true)
 
 	//$dropdown_member_from = $members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom());
-	$dropdown_member_to = $members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo());
+	//$dropdown_member_to = $members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo(), null);
 
 	$categories = new cCategoryGroup();
 	//no condition
@@ -137,7 +137,7 @@ if ($_POST["submit"]){
 		<p>
 	    	<label for=\"member_id_to\">
 	            <span>Pay member: *</span>
-	            {$members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo())} ({$members->getCount()} members) 
+	            {$members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo(), $member->getMemberId())} ({$members->getCount()} members) 
 	        </label>
 	    </p>";
 	}elseif($trade->getType() == TRADE_TYPE_INVOICE){
@@ -148,7 +148,7 @@ if ($_POST["submit"]){
 			$member_options = "<p>
 	        	<label for=\"member_id_from\">
 		            <span>Invoice member: *</span>
-		            {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom())} ({$members->getCount()} members) 
+		            {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom(), $member->getMemberId())} ({$members->getCount()} members) 
 		        </label>
 	    	</p>";
 		

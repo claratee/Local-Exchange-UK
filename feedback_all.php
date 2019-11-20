@@ -25,13 +25,9 @@ if(!$member_exists){
 if($member->getStatus() == "I") {
     $cStatusMessage->Info("This member is INACTIVE. They cannot log in and their profile and listings are hidden from view for non-admin users.");
 }
-$p->page_title = "Feedback for {$member->getDisplayName()}";
+$p->page_title = "Feedback for {$member->getDisplayName()} ({$member->getMemberId()})";
 
-	
-// $p->site_section = SECTION_FEEDBACK;
-// $p->page_title = "Feedback for member (#{$member_id})";
 
-//$output = "<h2>Feedback</h2>";
 $condition = "`member_id_about`=\"{$member_id}\"";
 $feedback_group_about = new cFeedbackGroup($condition);
 //$feedback_group_as_seller->LoadFeedbackGroup($member_id, SELLER);

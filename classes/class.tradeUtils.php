@@ -77,7 +77,7 @@ class cTradeUtils extends cTrade{
 
                 //$field_array["trade_type"]=$this->getType(); 
                 // CT if pending, use pending db
-                if($this->getStatus() == TRADE_STATUS_PENDING_OPEN){
+                if($this->getStatus() == TRADE_PENDING_STATUS_OPEN){
                     $database = DATABASE_TRADES_PENDING;
                 }else{
                     $database = DATABASE_TRADES;
@@ -402,7 +402,7 @@ class cTradeUtils extends cTrade{
         // set correct status
         //echo $this->getType();
         if(($this->getType()== TRADE_TYPE_TRANSFER && $member_to->getConfirmPayments()) OR ($this->getType() == TRADE_TYPE_INVOICE)) {
-            $this->setStatus(TRADE_STATUS_PENDING_OPEN); //pending status
+            $this->setStatus(TRADE_PENDING_STATUS_OPEN); //pending status
         }
         else {
             $this->setStatus(TRADE_STATUS_APPROVED);
@@ -418,7 +418,7 @@ class cTradeUtils extends cTrade{
             //CT continue if valid trade id.
         //CT pending trades you the same table as normal trades. just a different status. Saves faff.
 
-            if($this->getStatus() == TRADE_STATUS_PENDING_OPEN && $this->getType() == TRADE_TYPE_INVOICE) {
+            if($this->getStatus() == TRADE_PENDING_STATUS_OPEN && $this->getType() == TRADE_TYPE_INVOICE) {
                      //CT send to joint members too. 
                     $message_array = array();
                     //CT todo - put in a template.
@@ -438,7 +438,7 @@ class cTradeUtils extends cTrade{
                         Leave <a href=\"feedback.php?author={$this->getMemberIdFrom()}&about={$this->getMemberIdTo()}&trade_id={$this->getTradeId()}\">feedback</a> for this trade?";
             
             }else{
-                if($this->getStatus() == TRADE_STATUS_PENDING_OPEN && $member_to->getConfirmPayments()) {
+                if($this->getStatus() == TRADE_PENDING_STATUS_OPEN && $member_to->getConfirmPayments()) {
                     //CT make better - this is rubbish. put in a function
                    
                     $message_array = array();

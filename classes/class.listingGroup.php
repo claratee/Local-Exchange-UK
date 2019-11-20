@@ -15,7 +15,7 @@ class cListingGroup extends cBasic2
 	// function __construct($values=null) {
 	// 	if(!empty($values)) $this->Build($values);
 	// }
-//function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
+//function makeFilterCondition($member_id=null, $category_id=null, $timeframe=null, $timeframe=null, $type_code=null){
 	function makeFilterCondition($member_id=null, $type=null, $status=null, $category_id=null, $timeframe=null, $keywords=null){
 		global $cDB;
 		//CT note - listings from members that are not active are not explicity excluded from the results. 
@@ -69,7 +69,7 @@ class cListingGroup extends cBasic2
 		return $condition;
 
 	}
-	// function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
+	// function makeFilterCondition($member_id=null, $category_id=null, $timeframe=null, $timeframe=null, $type_code=null){
 	// 	global $cDB;
 	// 	if($category_id == null){
 	// 		$category_id = "%";
@@ -81,7 +81,7 @@ class cListingGroup extends cBasic2
 			
 	// 	if(empty($timeframe)){ 
 	// 		$timeframe = null;
-	// 		//$since = ;
+	// 		//$timeframe = ;
 	// 	} 
 	// 	// default to offers
 	// 	if(empty($type_code)) {
@@ -122,7 +122,7 @@ class cListingGroup extends cBasic2
 
 		// instantiate new cOffer objects and load them
 		$i = 0;		
-		$vars = array();
+		$field_array = array();
 		while ($row = $cDB->FetchArray($query)){
 			$field_array[] = $row;			
 		}

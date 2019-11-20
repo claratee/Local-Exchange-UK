@@ -268,7 +268,7 @@ public function getDisplayEmail(){
 public function getDisplayLocation(){
 
     //CT TODO - other options - like firstnames only?
-    $string .="{$this->getPerson()->getAddressStreet2()}";
+    $string ="{$this->getPerson()->getAddressStreet2()}";
     if (!empty(trim($this->getPerson()->getAddressStreet2())) AND !empty(trim($this->getPerson()->getAddressCity()))){
         $string  .= ", ";
     }

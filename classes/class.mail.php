@@ -243,13 +243,14 @@ public function EmailListingUpdates($timeframe) {
             //CT dont send if nothing to send. to_send gets set to true if there is something to send, otherwise no.
             $to_send=false;
 
-            $listings = new cListingGroup();
-            $condition = $listings->makeFilterCondition(null,null, null, $timeframe*2, "O");
+            $listings = new cListingGroup();  
+            $condition = $listings->makeFilterCondition(null, "O", "A", null, $timeframe*2, null);
+
            if($listings->Load($condition)){
-                $offered_text .= $listings->Display(true);
+                $offered_text = $listings->Display(true);
                 $to_send=true;
             }else{
-                 $offered_text .= "<p>No new offered listings posted in last {$period}.</p>";
+                 $offered_text = "<p>No new offered listings posted in last {$period}.</p>";
             }
 
             //CT UX - the period should be double what was specified...give bugger to items, so they are visible for 2 weeks not 1 week. still gets sent out at the interval specified.
@@ -258,7 +259,7 @@ public function EmailListingUpdates($timeframe) {
             $wanted_text = "<h2>Wanted listings</h2><a href=\"" . HTTP_BASE ."/listings.php?type=W\">View all wanted listings</a>";
             //show_id=true
             $listings = new cListingGroup();
-            $condition = $listings->makeFilterCondition(null,null, null, $timeframe*2, "W");
+            $condition = $listings->makeFilterCondition(null, "W", "A", null, $timeframe*2, null);
            if($listings->Load($condition)){
                 $wanted_text .= $listings->Display(true);
                 $to_send=true;

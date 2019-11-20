@@ -85,7 +85,7 @@ class cMemberSelf extends cMember {
     */
 
     //c
-
+    //CT todo - move out of this class - should be on page.
     public function Login($member_id, $password, $from_cookie=false) {
         global $cDB, $cStatusMessage;
         //stash the member_id in object for later
@@ -299,14 +299,17 @@ class cMemberSelf extends cMember {
 
     public function MustBeLoggedOn()
     {
-        global $p, $cStatusMessage;
+        global $cUser, $p, $cStatusMessage;
         
+        if($cUser->getMode()=="admin") {
+            $url = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "mode", "admin");
+        }
         if ($this->IsLoggedOn()){
             return true;
         }
         
         // user isn't logged on, but is in a section of the site where they should be logged on.
-        $_SESSION['request_uri'] = $_SERVER['REQUEST_URI'];
+        $_SESSION['request_uri'] = $url;
         //if($cUser->getMode() ==  "admin") $_SESSION['request_uri'] . "?mode=admin"
         $cStatusMessage->SaveMessages();
         header("location:" . HTTP_BASE . "/login_redirect.php");
@@ -344,8 +347,8 @@ class cMemberSelf extends cMember {
             $output = "";
             if(!$this->getMemberRole() < $level) {
                 $request_uri = $_SERVER['REQUEST_URI'];
-                //your add_querystring_var() returns the new url, it doesn't echo it to the screen
-                $request_uri= $p->add_querystring_var($request_uri,"mode","admin");
+                //your addQueryStringVar() returns the new url, it doesn't echo it to the screen
+                $request_uri= $p->addQueryStringVar($request_uri,"mode","admin");
 
                 $output .= "<a href=\"" . $request_uri . "\" class=\"button large\"><i class=\"fas fa-lock\"></i>Turn on admin mode</a>";
             }

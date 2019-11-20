@@ -13,14 +13,20 @@ $p->page_title = "Reverse an Exchange";
 // Define form elements
 //
 
-
+try{
 $trades = new cTradeGroup;
-$trades->LoadTradeGroup();
-$form->addElement("select", "trade_id", "Choose the exchange to reverse", $trades->MakeTradeArray());
-$form->addElement("html", "<TR></TR>");
-$form->addElement('static', null, 'Enter a brief explanation. Information about the original exchange will be automatically included.', null);
-$form->addElement('textarea', 'description', null, array('cols'=>50, 'rows'=>2, 'wrap'=>'soft', 'maxlength' => 75));
-$form->addElement('submit', 'btnSubmit', 'Reverse');
+
+$condition = "trade_date > (CURDATE() - INTERVAL 3 MONTHS) AND `status`=\"V\"";
+$trades->Load($condition);
+$output = "hello";
+}catch(Exception $e){
+	$cStatusMessage->Error($e->getMessage());
+}
+// $form->addElement("select", "trade_id", "Choose the exchange to reverse", $trades->MakeTradeArray());
+// $form->addElement("html", "<TR></TR>");
+// $form->addElement('static', null, 'Enter a brief explanation. Information about the original exchange will be automatically included.', null);
+// $form->addElement('textarea', 'description', null, array('cols'=>50, 'rows'=>2, 'wrap'=>'soft', 'maxlength' => 75));
+// $form->addElement('submit', 'btnSubmit', 'Reverse');
 
 //
 // Define form rules
@@ -31,12 +37,13 @@ $form->addElement('submit', 'btnSubmit', 'Reverse');
 //
 // Then check if we are processing a submission or just displaying the form
 //
-if ($form->validate()) { // Form is validated so processes the data
-   $form->freeze();
- 	$form->process('process_data', false);
-} else {
-   $p->DisplayPage($form->toHtml());  // just display the form
-}
+// if ($form->validate()) { // Form is validated so processes the data
+//    $form->freeze();
+//  	$form->process('process_data', false);
+// } else {
+//    $p->DisplayPage($form->toHtml());  // just display the form
+// }
+$p->DisplayPage($output);
 
 function process_data ($values) {
 	global $p, $cStatusMessage;
@@ -50,7 +57,7 @@ function process_data ($values) {
 	else
 		$list = "<i>There was an error reversing the trade!<i>";
 	
-   $p->DisplayPage($list);
+   
 }
 
 

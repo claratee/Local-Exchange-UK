@@ -60,7 +60,7 @@ class cMemberUtils extends cMember {
 
     public function Save(){
         
-        global $cDB, $cUser, $cStatusMessage; 
+        global $cDB, $cUser, $cStatusMessage, $site_settings; 
         // if($cUser->getMemberId() != $this->getMemberId()) {
         //     //CT hardstop if user not authorized
         //     $cUser->MustBeLevel(1);
@@ -96,6 +96,7 @@ class cMemberUtils extends cMember {
         try{
             switch($this->getAction()){
                 case "create":
+                    $cUser->MustBeLevel(1);
                     //TODO -
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array=array();
@@ -121,10 +122,25 @@ class cMemberUtils extends cMember {
                     //} 
                 break;
                 case "change_status":
+                    $cUser->MustBeLevel(1);
                     $keys_array[] = 'status';
                     $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
                 break;
+                case "archive":
+                    $cUser->MustBeLevel(1);
+                        if($this->getMemberId() == $site_settings->getKey('SITE_MEMBER_ID')) throw new Exception("You cannot archive permanently the central site account.", 1);
+                        
+                        $trade_field_array = $this->makeTradeArrayForBalanceTransfer();
+                        //CT commit trade
+                        $trade = new cTradeUtils($trade_field_array);
+                        $is_success = $trade->ProcessData($trade_field_array);
+                    // $field_array = array;
+                    // $this->Build($field_array);
+
+                    // $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
+                break;
                 case "joint_create":
+                    $cUser->MustBeLevel(1);
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array[] = 'member_id';
                     $this->setAccountType("J");
@@ -133,12 +149,12 @@ class cMemberUtils extends cMember {
 
                 break;
                 case "joint_delete":
-                    
                     $this->setAccountType("S");
                     $keys_array[] = 'account_type';
                     $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
 
-                break;              
+                break; 
+
                 case "joint_update":
                     //no change for member - so just behave as if it was successful
                     $is_success = true;
@@ -184,7 +200,31 @@ class cMemberUtils extends cMember {
         return $is_success;
     }
 
+    public function makeTradeArrayForBalanceTransfer(){
 
+        global $site_settings;
+        $trade_field_array = array();
+        if($this->getBalance() > 0){
+            $trade_field_array["member_id_to"]=$site_settings->getKey("SITE_MEMBER_ID"); 
+            $trade_field_array["member_id_from"]=$this->getMemberId(); 
+
+        }elseif($this->getBalance() < 0){
+            $trade_field_array["member_id_from"]=$site_settings->getKey("SITE_MEMBER_ID"); 
+            $trade_field_array["member_id_to"]=$this->getMemberId(); 
+        }      
+        else{
+            return false;
+        }
+    //CT only do donation if more than 1 unit - safety for recursion error
+        $trade_field_array["action"]="create"; 
+        $trade_field_array["member_id_author"]="system"; //automatic 
+        //$field_array["status"]=$this->getStatus(); 
+        $trade_field_array["amount"]=abs($this->getBalance()); //make sure the amount is an absoulte number...ie not negative
+        $trade_field_array["category_id"]="43"; //system business 
+        $trade_field_array["description"]="Transfer of " . UNITS . " balance of {$this->getMemberId()} on archive of account."; 
+        $trade_field_array["type"]=TRADE_TYPE_TRANSFER; 
+        return $trade_field_array;      
+    }
     public function DefaultPassworForNewMember(){
         global $cDB;
         //CT this puts rubbish in the password field so no one can log in without going through password reset process. Needed for when you are creating an account, and don't want to expose pw to anyone but the user.

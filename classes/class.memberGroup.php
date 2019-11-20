@@ -97,16 +97,18 @@ class cMemberGroup extends cBasic2 {
     }   
     
 
-    function PrepareMemberDropdown($select_name = "member_id", $member_id=null){
+    function PrepareMemberDropdown($select_name = "member_id", $member_id=null, $excluded_member_id=null){
         global $p, $cUser;
         $array = array();
         foreach($this->getMembers() as $member) {
             //print_r($category->getCategoryName());
             $status_text =  ($member->getStatus()=="I") ? " - INACTIVE" : "";
-            //$array[$member->getMemberId()] = "#{$member->getMemberId()}: {$member->getDisplayName()}";
-            $array[$member->getMemberId()] = "{$member->getDisplayName()} (#{$member->getMemberId()}{$status_text})";
+            if(empty($excluded_member_id) OR !($member->getMemberId() == $excluded_member_id)){
+                //$array[$member->getMemberId()] = "#{$member->getMemberId()}: {$member->getDisplayName()}";
+                $array[$member->getMemberId()] = "{$member->getDisplayName()} ({$member->getMemberId()}{$status_text})";
+            }
         }
-        $output = $p->PrepareFormSelector($select_name, $array, "-- Select member --", $member_id);
+        $output = $p->PrepareFormSelector($select_name, $array, "Select member", $member_id);
         return $output;
     }   
 

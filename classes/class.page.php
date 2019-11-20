@@ -87,9 +87,9 @@ class cPage {
 		return str_replace("{{" . $varname . "}}", $value, $string);
 	}
 
-	//CT thanks random stranger on the internet...
-	function add_querystring_var($url, $key, $value) {
-		$url = $this->remove_querystring_var($url, $key); //CT added removal - so this replaces
+	//CT adds a new key/value to querystring, replacing an old one if exists.
+	function addQueryStringVar($url, $key, $value) {
+		$url = $this->removeQueryStringVar($url, $key); //CT added removal - so this replaces
 
 		// $url = preg_replace('/(.*)(?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
 		// $url = substr($url, 0, -1);
@@ -102,7 +102,7 @@ class cPage {
 		
 	}
 	//CT thanks random stranger on the internet...
-	function remove_querystring_var($url, $key) {
+	function removeQueryStringVar($url, $key) {
 		$url = preg_replace('/(.*)(\?|&)' . $key . '=[^&]+?(&)(.*)/i', '$1$2$4', $url . '&');
 		$url = substr($url, 0, -1);
 		return $url;
@@ -176,6 +176,7 @@ class cPage {
 			//print($cUser->getMode());
 
 			$location = $_SERVER['PHP_SELF'];
+			$queries ="";
 			foreach ($_GET as $key => $value) {
 				if($key != "mode") $queries .=  "&{$key}={$value}";
 			}
@@ -194,7 +195,7 @@ class cPage {
 				$class="off";
 			}
 			$toggle_button ="<div class=\"switch-strip {$class}\"><label class=\"switch\">
-				  <input type=\"checkbox\" {$checked} onclick=\"javascript:window.location='{$location}?mode={$desired_mode}{$queries}'\">
+				  <input type=\"checkbox\" {$checked} onclick=\"javascript:window.location='{$location}?mode={$desired_mode}'\">
 				  <span class=\"slider round\"></span> 
 				</label> {$admin_toggle_text}</div>";
 			return "{$toggle_button}";
@@ -332,12 +333,10 @@ class cPage {
 	//CT: new funtion for layout of text
 
     function Wrap($string, $elementName, $cssClass=null, $link=null){
-		if(!empty($link)){
-			$string = $this->Link($string, $link);
-		}
-		if(!empty($cssClass)){
-			$cText=" class='{$cssClass}'";
-		}
+		if (!empty($link)) $string=$this->Link($string, $link);
+		
+		$cText = (!empty($cssClass)) ? " class='{$cssClass}'" : "";
+		
 		return "<{$elementName} {$cText}>{$string}</{$elementName}>";
 	}
 	//CT todo - make better. bit of a hack

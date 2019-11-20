@@ -3,7 +3,7 @@ class cFeedbackGroup extends cBasic2 {
 	//private $member_id;
 	private $member_id;		// for convenience
 	private $context;		// Buyer or Seller or Both
-//	private $since_date;
+//	private $timeframe_date;
 	private $num_positive;
 	private $num_negative;
 	private $num_neutral;
@@ -232,13 +232,13 @@ class cFeedbackGroup extends cBasic2 {
     }
 
     /**
-     * @param mixed $since_date
+     * @param mixed $timeframe_date
      *
      * @return self
      */
-    public function setSinceDate($since_date)
+    public function setSinceDate($timeframe_date)
     {
-        $this->since_date = $since_date;
+        $this->since_date = $timeframe_date;
 
         return $this;
     }

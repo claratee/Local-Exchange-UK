@@ -51,7 +51,7 @@ if ($_POST["submit"]){
 
 
 $listings = new cListingGroupUtils();
-//Load($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null)
+//Load($member_id=null, $category_id=null, $timeframe=null, $timeframe=null, $type_code=null)
 //$condition = $listings->makeFilterCondition($member_id, null, null, null, $type_code);
 //$condition = $listings->makeFilterCondition($member_id, null, null, null, $type);
 $condition = $listings->makeFilterCondition($member_id, $type, "%", null, null, null);
