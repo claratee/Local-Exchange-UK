@@ -298,6 +298,7 @@ $p->page_title = $page_title;
 
 $p->DisplayPage($output);
 
+
 function processData(){
     global $member, $cUser, $cStatusMessage, $p;
     //CT TODO - validation. this is hokey and manual, will replace with proper validator sometime...

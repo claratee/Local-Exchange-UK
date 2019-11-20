@@ -15,42 +15,95 @@ class cListingGroup extends cBasic2
 	// function __construct($values=null) {
 	// 	if(!empty($values)) $this->Build($values);
 	// }
-
-	function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
+//function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
+	function makeFilterCondition($member_id=null, $type=null, $status=null, $category_id=null, $timeframe=null, $keywords=null){
 		global $cDB;
-		if($category_id == null){
-			$category_id = "%";
+		//CT note - listings from members that are not active are not explicity excluded from the results. 
+		if(empty($status)) $status = "A"; // default state - hide expired
+		//CT to match all status (in case of listing management) pass in %
+		$condition = "p.primary_member =\"Y\" ";
+		if(!empty($member_id)){
+			// if(stlen($condition)>0) $condition .= " AND ";
+			$condition .= "AND l.member_id =\"{$member_id}\" ";
+		}		
+		if(!empty($type)){
+			// if(stlen($condition)>0) $condition .= " AND ";
+			if(preg_match("/%/", $type)) {
+				$condition .= "AND l.type LIKE \"{$type}\" ";
+			}else{
+				$condition .= "AND l.type = \"{$type}\" ";
+			}
 		}
-
-		if(empty($member_id)){
-			$member_id = "%";
+		if(!empty($status)){
+			// if(stlen($condition)>0) $condition .= " AND ";
+			if(preg_match("/%/", $status)) {
+				$condition .= "AND l.status LIKE \"{$status}\" ";
+			}else{
+				$condition .= "AND l.status = \"{$status}\" ";
+			}
 		}
-			
-		if(empty($timeframe)){ 
-			$timeframe = null;
-			//$since = ;
+		if(!empty($category_id)){
+			// if(stlen($condition)>0) $condition .= " AND ";
+			$condition .= "AND l.category_id =\"{$category_id}\" ";
+		}	
+		if(!empty($timeframe)){ 
+			$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY ";
 		} 
-		// default to offers
-		if(empty($type_code)) {
-			$type_code = "O";
-		}
-				
-		// // todo - keywords
-		// $condition = "p.primary_member = 'Y' and 
-		// m.status = 'A' and l.member_id LIKE \"{$cDB->EscTxt($member_id)}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
+		if(!empty($keywords)){ 
+			//CT TODO - include search for keywords
+			//$condition .= ";
+		} 
+	
+		
 
 		// todo - keywords
-		$condition = "p.primary_member = 'Y' AND m.status = 'A' AND l.member_id LIKE \"{$member_id}\" AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
+		//$condition = "p.primary_member = 'Y' AND m.status = 'A' AND l.member_id LIKE \"{$member_id}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
+		//$condition = "p.primary_member = 'Y' AND l.member_id LIKE \"{$member_id}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\" AND l.status=\"{$status}\"";
 
 		// show listings that are outside of expiry window
-		$condition .= " AND (l.expire_date IS NULL OR l.expire_date > CURDATE() OR (l.expire_date < CURDATE() AND l.reactivate_date < CURDATE())) and l.status != 'I'";
+		//$condition .= " AND (l.expire_date IS NULL OR l.expire_date > CURDATE() OR (l.expire_date < CURDATE() AND l.reactivate_date < CURDATE()))";
 
-		if(!empty($timeframe)){ 
-			$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY";
-		} 
+		// if(!empty($timeframe)){ 
+		// 	$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY";
+		// } 
 		return $condition;
 
 	}
+	// function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
+	// 	global $cDB;
+	// 	if($category_id == null){
+	// 		$category_id = "%";
+	// 	}
+
+	// 	if(empty($member_id)){
+	// 		$member_id = "%";
+	// 	}
+			
+	// 	if(empty($timeframe)){ 
+	// 		$timeframe = null;
+	// 		//$since = ;
+	// 	} 
+	// 	// default to offers
+	// 	if(empty($type_code)) {
+	// 		$type_code = "O";
+	// 	}
+				
+	// 	// // todo - keywords
+	// 	// $condition = "p.primary_member = 'Y' and 
+	// 	// m.status = 'A' and l.member_id LIKE \"{$cDB->EscTxt($member_id)}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
+
+	// 	// todo - keywords
+	// 	$condition = "p.primary_member = 'Y' AND m.status = 'A' AND l.member_id LIKE \"{$member_id}\" AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
+
+	// 	// show listings that are outside of expiry window
+	// 	$condition .= " AND (l.expire_date IS NULL OR l.expire_date > CURDATE() OR (l.expire_date < CURDATE() AND l.reactivate_date < CURDATE())) and l.status != 'I'";
+
+	// 	if(!empty($timeframe)){ 
+	// 		$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY";
+	// 	} 
+	// 	return $condition;
+
+	// }
 
 		// todo - keywords
 
@@ -63,7 +116,8 @@ class cListingGroup extends cBasic2
 
 		$order_by = "c.description ASC, l.listing_date DESC, l.member_id ASC";
 		
-		$query = $cDB->Query($cQueries->getMySqlListing($condition, $order_by));
+		$string_query = $cQueries->getMySqlListing($condition, $order_by);
+		$query = $cDB->Query($string_query);
 
 
 		// instantiate new cOffer objects and load them

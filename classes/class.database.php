@@ -70,10 +70,9 @@ class cDatabase
 
 	function Query($string_query)
 	{
-		//CT: 
+		//CT: returns something useful when executed correctly
 		global $cStatusMessage;
 		// CT iterate
-
 		if (!$this->isConnected) $this->Connect();
 
 		$result_message="";
@@ -104,13 +103,10 @@ class cDatabase
 		if(gettype($result) == "object" ){
 			return $result;
 		}
-		return $this->AffectedRows();
-		//CT: uncomment when finishing demo
-	
-
-//		       or die ("Query failed: ".mysqli_errno() . ": " . mysqli_error()); // TODO: fix error messages
-		//$this->Disconnect();
-		//showMessage($this->NumRows($ret));
+		//CT return affected rows if more than 0
+		if(!empty($this->AffectedRows())) return $this->AffectedRows();
+		//CT in case of updates where no data is changed, still want to report its done correctly
+		return $this->MatchedRows();
 		
 	}
 
@@ -147,6 +143,13 @@ class cDatabase
 	{
 		//return mysqli_affected_rows($this->$db_link);
 		return mysqli_affected_rows($this->db_link);
+	}
+	//CT in the case of update where data is unchanged, but you still want it to return true
+	function MatchedRows() {
+		// "Rows matched: {n} <- ya want this bit
+	   $exploded_array=explode(' ', mysqli_info($this->db_link));
+	   //print_r($array);
+	   return $exploded_array[2];
 	}
 
 	function NumRows($thequery)

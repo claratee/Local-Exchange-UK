@@ -13,36 +13,38 @@ $cUser->MustBeLoggedOn();
 $search_title = "";
 /* make slightly safer by at least having a catch - too much trust on query strings! */
 
-if($_REQUEST["type"] == WANT_LISTING_CODE){
-	$type = WANT_LISTING_CODE;
-	$search_title = WANT_LISTING_HEADING;
-}elseif($_REQUEST["type"] == OFFER_LISTING_CODE){
-	$type = OFFER_LISTING_CODE;
-	$search_title = OFFER_LISTING_HEADING;
-}
 
 try{
+	//CT filter conditions all initiated and overwritted as relevant
+	$member_id = null;
+	$type = "O"; //default
+	$category_id = null;
+	$keyword = null;
+	$timeframe = null;
+
+
+	if(!empty($_REQUEST["type"]) AND (strtolower($_REQUEST["type"]) == "want" || strtolower($_REQUEST["type"])=="w")){
+			$type_code = "W";
+			$search_title = WANT_LISTING_HEADING;
+		
+	} else{
+		$search_title = OFFER_LISTING_HEADING;
+	}
 	if(!empty($_REQUEST["member_id"]) and $_REQUEST["member_id"] !="%") {
 		$member_id = $_REQUEST["member_id"];
-		$search_title .= ", member id " . $member_id;
-	} else{
-		$member_id = "%";
-	}
+		$search_title .= " for member \"" . $member_id . "\"";
+	} 	
 	if(!empty($_REQUEST["category_id"]) and $_REQUEST["category_id"] !="%") {
 		$category_id = $_REQUEST["category_id"];
 		// todo change to english
 		$search_title .= ", in category";
-	} else{
-		$category_id = "%";
-	}
+	} 
 
 	if(!empty($_REQUEST["keyword"])) {
 		$keyword = $_REQUEST["keyword"];
 		// todo change to english
 		$search_title .= ", keywords " . $keyword;
-	} else{
-		$keyword = "%";
-	}
+	} 
 
 
 
@@ -72,20 +74,18 @@ try{
 
 		$search_title .= " in last {$period}";
 
-	} else{
-		$timeframe = null;
-		//$search_title .= " for all time";
-	}
+	} 
 
 
 	$listings = new cListingGroup();
 
-	$condition = $listings->makeFilterCondition($member_id, $category_id, $keyword, $timeframe, $type);
+	
+	$condition = $listings->makeFilterCondition($member_id, $type, $status, $category_id, $timeframe, $keywords);
 	// instantiate new cOffer objects and load them
-
+	//print_r($condition);
 	$listings->Load($condition);
 
-	$listing_id = 0;
+	//$listing_id = 0;
 	/*
 	if ($listings->listing && KEYWORD_SEARCH_DIR==true && strlen($_GET["keyword"])>0) { // Keyword specified
 		

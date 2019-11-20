@@ -208,14 +208,15 @@ if(!$is_success){
         
     	$listings = new cListingGroup();
         // Load($member_id, $category_id, $since, $include_expired, $status, $type)
-        $condition = $listings->makeFilterCondition($member_id, null, null, null, OFFER_LISTING_CODE);
+
+        $condition = $listings->makeFilterCondition($member_id, OFFER_LISTING_CODE, null, null, null, null);
     	$listings->Load($condition);
 
     	$output .= $listings->Display(false);
     	// 	// CT Show want
         $output .= "<h2>" . WANT_LISTING_HEADING . "</h2>";
     	$listings = new cListingGroup();
-        $condition = $listings->makeFilterCondition($member_id, null, null, null, WANT_LISTING_CODE);
+        $condition = $listings->makeFilterCondition($member_id, WANT_LISTING_CODE, null, null, null, null);
         $listings->Load($condition);
     	$output .= $listings->Display(false);
      }

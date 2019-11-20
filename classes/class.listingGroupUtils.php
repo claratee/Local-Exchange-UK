@@ -4,53 +4,10 @@
 class cListingGroupUtils extends cListingGroup
 	{
 
-	function makeFilterCondition($member_id=null, $category_id=null, $since=null, $timeframe=null, $type_code=null){
-		global $cDB;
-		if($category_id == null){
-			$category_id = "%";
-		}
-
-		if(empty($member_id)){
-			$member_id = "%";
-		}
-			
-		if(empty($timeframe)){ 
-			$timeframe = null;
-			//$since = ;
-		} 
-		// default to offers
-		if(empty($type_code)) {
-			$type_code = "O";
-		}
-				
-		
-
-		// todo - keywords
-		$condition = "p.primary_member = 'Y' AND m.status = 'A' AND l.member_id LIKE \"{$member_id}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
-
-		// show listings that are outside of expiry window
-		//$condition .= " AND (l.expire_date IS NULL OR l.expire_date > CURDATE() OR (l.expire_date < CURDATE() AND l.reactivate_date < CURDATE()))";
-
-		// if(!empty($timeframe)){ 
-		// 	$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY";
-		// } 
-		return $condition;
-
-	}
+	
 	//though this is per listing, its only for context of group
-	function PrepareCheckbox($listing_id, $selected=false){
-		$selectedText = ($selected) ? "selected" : "";
-		return "<input type=\"checkbox\" name=\"select_id[]\" value=\"{$listing_id}\" selected=\"{$selectedText}\" />";
-	}
-	function PrepareActionDropdown(){
-        global $p;
-        //same as listingUtils status - but with added "delete"
-        // relabelled "expire" and "active" to make more robust and uderstandable - "hide" and "show"
-        $vars = array("D" => "Delete", "E" => "Hide", "A" => "Show");
-        $select_name = "action";
-        $output = $p->PrepareFormSelector("action", $vars, "Select action", null);
-        return $output;
-    }
+
+
 	function InactivateAll($reactivate_date) {
 		global $cStatusMessage;
 		

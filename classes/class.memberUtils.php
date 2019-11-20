@@ -116,6 +116,7 @@ class cMemberUtils extends cMember {
                     // print_r($keys_array);
                     //try{
                     $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                    
                     //}catch (Exception $e){
                     //} 
                 break;
