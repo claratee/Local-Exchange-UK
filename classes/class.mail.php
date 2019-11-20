@@ -61,7 +61,7 @@ newsletter - new download available (group->item)
 
 
 
-	function sendMail() {
+	function sendMail($save_copy=false) {
 		global $cStatusMessage, $site_settings;
 
         //test if it can be done
@@ -75,13 +75,17 @@ newsletter - new download available (group->item)
         $success_count=0;
         foreach ($this->getRecipients() as $recipient) {
             //$to = "\"{$recipient['display_name']}\" {$recipient['email']}";
-            $to = "\"{$recipient['display_name']}\" <{$recipient['email']}>";
+            $to = "{$recipient['email']}";
             //$is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
            // $is_success = mail($to, "$this->getFormattedSubject()", $this->getFormattedMessage(), $this->getHeaders());
-            print_r($to);
+            //print_r($to);
             $is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
             //$is_success = true;
-            // print($this->getFormattedMessage());
+            // CT debug
+            //print($to);
+            // print("<br />message: " . $this->getFormattedMessage());
+            // print("<br />subject: " . $this->getFormattedSubject());
+            // print("<br />headers: " . $this->getHeaders() . "is success" .$is_success . "<br />");
             if($is_success) $success_count++;
             else {
                 $fail_count++;
@@ -105,19 +109,29 @@ newsletter - new download available (group->item)
              $log_entry = new cLogging ($field_array);
              $log_entry->Save();
         }*/
-    
+        if($save_copy == true){
+            $this->logMessage();
+        }
 
         return empty($fail_count);
         
 	}
+    function logMessage(){
+        $keys_array = array('recipients', 'reply_to_name', 'reply_to_email', 'subject', 'message', 'headers');
+        $contact_id = $this->insert(DATABASE_CONTACT, $keys_array);
+        return $contact_id;
+       
+    }
     function makeHeaders(){
         //CT always send FROM the domain it has authority to use, REPLY-TO can be dynamic 
         global $site_settings;
-        $string = "MIME-Version: 1.0\r\n";
+
+
+        $string  = "MIME-Version: 1.0\r\n";
         $string .= "Content-type: text/html; charset=iso-8859-1\r\n";
-        $string .= "From: \"{$site_settings->getKey('EMAIL_FROM_NAME')}\" <{$site_settings->getKey('EMAIL_FROM')}>\r\n";
-        $string .= "Reply-To: \"{$this->getReplyToName()}\" <{$this->getReplyToEmail()}>\r\n";
-        $string .= "X-Mailer: " . phpversion();
+        $string .= "From: {$site_settings->getKey('EMAIL_FROM')}\r\n";
+        $string .= "Reply-To: {$this->getReplyToEmail()}\r\n";
+        $string .= "X-Mailer:" . phpversion();
         return $string;
     }
     function makeFormattedSubject(){
@@ -129,12 +143,13 @@ newsletter - new download available (group->item)
         global $p;
         //CT 
         $string = $this->getMessage();
-        $string = $p->ReplacePlaceholders($string);
          
         $template = file_get_contents(TEMPLATES_PATH . '/mail_admin.html', TRUE);
+        $template = $p->ReplacePlaceholders($template);
+        //CT put in the message 
         $template = $p->ReplaceVarInString($template, '$message', $string);
-        $template = $p->stripLineBreaks($string);
-       return $template;
+        $template = $p->stripLineBreaks($template);
+        return $template;
     }
     function makeHtmlFromLineBreaks(){
         //CT uses a template to make it look nice

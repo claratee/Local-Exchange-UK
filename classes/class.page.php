@@ -27,7 +27,6 @@ class cPage {
 		//print_r($site_settings->getKey('SITE_SHORT_TITLE'));
 		$variables = $site_settings->getStrings();
 
-//		print_r($variables);
 		$string = file_get_contents(TEMPLATES_PATH . 'header.php', TRUE);
 		$this->page_header = $this->ReplacePlaceholders($string);
 

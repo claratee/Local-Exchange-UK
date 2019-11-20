@@ -260,13 +260,13 @@ $adminElements="";
             <p>
                 <label for=\"age\">
                     <span>Age range *</span>
-                    {$p->PrepareFormSelector('age', ARRAY_AGE, '-- Select age range --', $member->getPerson()->getAge())} 
+                    {$p->PrepareFormSelector('age', ARRAY_AGE, 'Select age range', $member->getPerson()->getAge())} 
                 </label>
             </p>
             <p>
                 <label for=\"gender\">
                     Gender<br />
-                    {$p->PrepareFormSelector('sex', ARRAY_SEX, "-- Select gender --", $member->getPerson()->getAge())}
+                    {$p->PrepareFormSelector('sex', ARRAY_SEX, "Select gender", $member->getPerson()->getSex())}
                 </label>
             </p>
             <h3>Contact details</h3>

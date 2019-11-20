@@ -108,11 +108,11 @@ define("ARRAY_ACCOUNT_ROLE",
 );
 define("ARRAY_CONTACT_SUBJECT", 
     array(
-        "join" => "Membership enquiry",
-        "login_issues" => "Lost login details",
-        "question_about_lets" => "General question about LETS and complementary currencies",
-        "press" => "Press or local networking opportunities",
-        "other" => "Other"
+        "Membership enquiry" => "Membership enquiry",
+        "Lost login details" => "Lost login details",
+        "General question about LETS and complementary currencies" => "General question about LETS and complementary currencies",
+        "Press or local networking opportunities" => "Press or local networking opportunities",
+        "Other" => "Other"
     )
 );
 define("ARRAY_RESTRICTION", 
@@ -224,6 +224,7 @@ define ("DATABASE_UPLOADS", "lets_uploads");
 define ("DATABASE_SESSION", "lets_session");
 define ("DATABASE_SETTINGS", "lets_settings");
 define ("DATABASE_PAGE", "lets_cdm_pages");
+define ("DATABASE_CONTACT", "lets_contact"); //record of emails sent by system - when logging turned on
 // CT views for speed
 define ("DATABASE_VIEW_CONTACTS", "lets_view_emails");
 define ("DATABASE_VIEW_MEMBER", "lets_view_member");
@@ -244,7 +245,7 @@ $global = ""; 	// $global lets other includes know that
 					// inc.global.php has been included
 
 //CT use this to map to the config appropriate for your context
-include_once("inc.config-local.php");
+require_once("inc.config-local.php");
 //include_once("inc.config-local.php");
 //include_once("inc.config-remote.php");
 
@@ -351,9 +352,10 @@ if(DOWN_FOR_MAINTENANCE and !$running_upgrade_script) {
 // [chris] Uncomment this line to surpress non-fatal Warning and Notice errors
 //error_reporting(E_ALL &~ (E_NOTICE | E_WARNING));	
 //CT: todo - put somewhere better. create site class
-function showMessage($msg){
-	echo "<p>" . $msg . "</p>";
-}
+// function showMessage($msg){
+// 	echo "<p>" . $msg . "</p>";
+// }
+//CT Replaced with statusMessage error class
 
 
 ?>

@@ -1,8 +1,7 @@
-<?php session_start(); ?> 
 <?php
 include_once("includes/inc.global.php");
 
-if(RECAPTCHA_VALIDATION) include_once(VENDOR_PATH. "/securimage/secureimage.php");
+//if(RECAPTCHA_VALIDATION) include_once(VENDOR_PATH. "/securimage/secureimage.php");
 
 //$p->site_section = SECTION_EMAIL;
 $p->page_title = "Contact Us";
@@ -34,12 +33,12 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 	    $field_array['reply_to_email'] = $_POST['contact_form_from_email'];
 
 	    //$field_array['recipients'] = array();
-	    $field_array['recipients'][0] = array('display_name'=>"Admin", 'email'=>EMAIL_ADMIN);
+	    $field_array['recipients'][0] = array('display_name'=>"Admin", 'email'=>$site_settings->getKey('EMAIL_ADMIN'));
 	    if(!empty($_POST['contact_form_from_cc'])){
 		    $field_array['recipients'][1] = array('display_name'=>$_POST['contact_form_from_name'], 'email'=>$_POST['contact_form_from_email']);
 	    }
 	    $field_array['message'] = "From: {$_POST['contact_form_from_name']}<br />
-			Email: {$_POST['contact_form_from']}<br />
+			Email: {$_POST['contact_form_from_email']}<br />
 			<br />
 			{$_POST['contact_form_message']}
 			";
@@ -47,7 +46,7 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 		$mail->Build($field_array);
 		//TODO allow user to be mailed a copy
 
-		$is_sent = $mail->sendMail();
+		$is_sent = $mail->sendMail(true);
 	} else {
 		$cStatusMessage->Error($error_message);
 	}
@@ -56,8 +55,8 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 	if($is_sent){
 		$cStatusMessage->Info("Message was sent. Someone will get back to you shortly.");
 		//redirect page if saved	
-		//$redir_url="listing_detail.php?listing_id={$listing->getListingId()}&";
-  		//include("redirect.php");
+		$redir_url="index.php";
+  		include("redirect.php");
 	} 
 }
 
@@ -95,7 +94,7 @@ if($cUser->isLoggedOn()){
 		<input type=\"hidden\" id=\"contact_form_from_name\" name=\"contact_form_from_name\" value=\"{$member->getDisplayName()}\" />";
 
 	if(!empty($member->getPerson()->getEmail())){
-		$contact_string .= "<input type=\"hidden\" id=\"contact_form_from\" name=\"contact_form_from\" value=\"{$member->getPerson()->getEmail()}\" />";
+		$contact_string .= "<input type=\"hidden\" id=\"contact_form_from_email\" name=\"contact_form_from_email\" value=\"{$member->getPerson()->getEmail()}\" />";
 	}else{
 		$contact_string .= "<p>
 			<label for=\"contact_form_from_email\">
@@ -125,9 +124,9 @@ if($cUser->isLoggedOn()){
 }
 
 $recaptcha = "";
-if(RECAPTCHA_VALIDATION && !$cUser->isLoggedOn()) {
-	$recaptcha ="<img id=\"captcha\" src=\"".HTTP_BASE."/vendor/securimage/securimage_show.php\" alt=\"CAPTCHA Image\" /> <button style=\"font-size:1.2em\" onclick=\"document.getElementById('captcha').src = '".HTTP_BASE."/vendor/securimage/securimage_show.php?' + Math.random(); return false\" title=\"Load another captcha image\">&#x21bb;</button><br />Enter the text you see *: <input type=\"text\" name=\"captcha_code\" id=\"captcha_code\" size=\"10\" maxlength=\"6\"  autocomplete=\"off\" />";
-}
+// if(RECAPTCHA_VALIDATION && !$cUser->isLoggedOn()) {
+// 	$recaptcha ="<img id=\"captcha\" src=\"".HTTP_BASE."/vendor/securimage/securimage_show.php\" alt=\"CAPTCHA Image\" /> <button style=\"font-size:1.2em\" onclick=\"document.getElementById('captcha').src = '".HTTP_BASE."/vendor/securimage/securimage_show.php?' + Math.random(); return false\" title=\"Load another captcha image\">&#x21bb;</button><br />Enter the text you see *: <input type=\"text\" name=\"captcha_code\" id=\"captcha_code\" size=\"10\" maxlength=\"6\"  autocomplete=\"off\" />";
+// }
 $output .= "
 	<form action=\"contact.php\" method=\"post\"  class=\"layout2\">
 		<input type=\"hidden\" id=\"contact_form_from_member_id\" name=\"contact_form_from_member_id\" value=\"{$member_id}\" />

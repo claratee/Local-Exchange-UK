@@ -47,7 +47,13 @@ abstract class cBasic2 {
 		$field_array = array();
 		foreach ($keys_array as $key) {
 			$method = 'get'.$this->pascalcasify($key);
-			$field_array[$key] = $this->$method();
+			if(is_array($this->$method())) {
+				$field_array[$key] = print_r($this->$method(), true); //CT captures the value if its an array - 
+			}else{
+				$field_array[$key] = $this->$method();
+			}
+			//print($this->$method());
+			
 		}
     	return $field_array;
 	}

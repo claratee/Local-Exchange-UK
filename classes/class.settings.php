@@ -15,17 +15,18 @@ if (!isset($global))
 }
 
 class cSettings {
-	private $strings; // Current site settings are stored here
+	private $strings; // array of settings
 	//public $currentVar; // Current site settings are stored here
 	
 	
 	// Constructor - we want to get current site settings
-	function __construct($settings=null) {
+	function __construct($strings=null) {
 		//$this->getCurrent();
-		if (is_null($settings)){
+		if (is_null($strings)){
 			$this->Load();
 		}else{
-			$this->Build();
+			$this->setStrings($strings);
+			//$this->Build();
 		}
 		//print_r($this->strings);
 	}
@@ -99,7 +100,13 @@ class cSettings {
 		
 		//if (!$query) throw new Exception("Can't read settings");
 		if (!$query) false;
-        $field_array = array();
+        $strings = array();
+        //CT replace
+        $strings['HTTP_BASE'] = HTTP_BASE;
+		$strings['IMAGES_PATH'] = IMAGES_PATH;
+		$strings['STYLES_PATH'] = STYLES_PATH;
+		$strings['LOCALX_VERSION'] = LOCALX_VERSION;
+		//
         while($row = $cDB->FetchArray($query)) {
         	$name = $row['name'];
         	$value = $row['current_value'];
@@ -108,7 +115,7 @@ class cSettings {
 			if(strtolower($value) == "true") $value=1;
 			else if(strtolower($value) == "false") $value=0;
 
-        	$field_array[$name] = $value;
+        	$strings[$name] = $value;
         }
 		//$num_results = mysqli_num_rows($result);
 		//foreach $row = mysqli_fetch_object($result)
@@ -124,13 +131,10 @@ class cSettings {
 		// 	}
 		
 		// } 
-		$field_array['HTTP_BASE'] = HTTP_BASE;
-		$field_array['IMAGES_PATH'] = IMAGES_PATH;
-		$field_array['STYLES_PATH'] = STYLES_PATH;
-		$field_array['LOCALX_VERSION'] = LOCALX_VERSION;
+		
 
 		//CT ugh, sorry about this. dont like setting loads of top level variables, but are shoved in a rray to access. not the most elegant.
-		$this->setStrings($field_array);
+		$this->setStrings($strings);
 	}
 	//CT It doesnt feel ok to be writing a bunch of global constants on the site...so not using this (rewrite of an older function). but could in future, if I get convinced
 	function makeConstant($field_array){

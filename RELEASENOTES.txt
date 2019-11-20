@@ -9,6 +9,9 @@
 Updated to PHP 7.1+, Mysql 5.6, needed to modernise for security, safety, efficiency:
 * [CHANGE] Replaced all DB calls to use mysqli and use single db calls where possible (using joins and subqueries), overall reduced load on db by 90%
 * [CHANGE] Create and upgrade scripts for mysql now with feedback
+* [CHANGE] Income share is now working - fixed bug that caused out of balance error on invoices
+* [CHANGE] Out of balance error now logged in admin activity logging table (instead of just sending emails several times a day), so you now know when it was detected. The test for it happens directly after a trade, not just before, which helps.
+* [CHANGE] Contact: save a record of emails that come thorugh the site. missing - a UI to manage on site - you have to access direct with database
 * [CHANGE] Pages: show last updated and who can see it at the bottom of the page if you are logged in
 * [CHANGE] Rewrote many functions, split classes, rewrote to with private properties with getters and setters (ongoing process). 
 * [ADDED] Throw exceptions and handle errors nicely with try/catch

@@ -4,7 +4,7 @@
 * -create info page UI-  DONE
 * -move all admin tools into admin menu- DONE
 * -timeout for session login DONE
-* contact form - send to admins, and option to send to sender
+* -contact form - send to admins, and option to send to sender. plus logging-
 * member form - apply for membership
 * -joint member - add, remove- DONE
 * take service charge, refund

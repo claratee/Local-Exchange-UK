@@ -36,7 +36,8 @@ $menuArray[] = $p->MenuItemArray("View members not logged in", "report_no_login.
 //$menuArray[] = $p->MenuItemArray("Member Going on Holiday", "member_choose.php?action=holiday");
 //$menuArray[] = $p->MenuItemArray("Edit a Member Photo", "photo_to_edit.php");
 if ($cUser->getMemberRole() > 1) { // if admin 
-	$menuArray[] = $p->MenuItemArray("Inactivate/Re-activate a Member Account", "member_choose.php?action=member_status_change&option=all");
+	$menuArray[] = $p->MenuItemArray("Inactivate a Member Account", "member_choose.php?action=member_status_change&option=member");
+	$menuArray[] = $p->MenuItemArray("Re-activate a Member Account", "member_choose.php?action=member_status_change&option=inactive");
 	$menuArray[] = $p->MenuItemArray("Send welcome mail and password reset", "member_choose.php?action=member_unlock");
 }
 $menuHtml = $p->Menu($menuArray);
