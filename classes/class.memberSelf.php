@@ -284,9 +284,18 @@ class cMemberSelf extends cMember {
 //$table_name, $array, $condition
             $query_string = $cDB->BuildUpdateQuery(DATABASE_MEMBERS, $fieldArray, $condition);
             $is_success = $cDB->Query($query_string);
+ 
+            if($is_success){
+                 //CT delete the token from the password reset table
+                $query_string = $cDB->BuildDeleteQuery(DATABASE_PASSWORD_RESET, $condition);
+                $is_success = $cDB->Query($query_string);
+            }
+            if($is_success){
+                //after done, reset auth to false
+                $this->setAuthChangePassword(false);
+            }
+           
             
-            //after done, reset auth to false
-            $this->setAuthChangePassword(false);
         }
         
         return $is_success;

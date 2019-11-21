@@ -4,10 +4,11 @@ include_once("includes/inc.global.php");
 $p->page_title = "Set a new password";
 
 //if logged in, log out. pass on any vars
-if(!empty($_GET['logout']) && $_GET['logout']==true && $cUser->IsLoggedOn()){
-    $cUser->logout();
-    $redir_url = "password_reset.php";
-    if (!empty($_GET['member_id'])) $redir_url .= "?member_id={$_GET['member_id']}";
+if(!empty($_GET['logout'])){
+    if($cUser->IsLoggedOn()) {
+        $cUser->logout();
+    }
+    $redir_url = $p->removeQueryStringVar($_SERVER['REQUEST_URI'], "logout");
     include_once("redirect.php");
 }
 
@@ -97,6 +98,7 @@ function displayPasswordResetButton() { // TODO: Should use SaveMember and shoul
             $output = "
             <form action=\"". HTTP_BASE ."/password_reset.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
                 <p>You are setting a new password. When you click the button below, a use-once link will be sent to your email address, and you will be logged out of your account.</p>
+                <p>This email will be sent to: {$member->getPerson()->getEmail()}</p>
                 <input name=\"member_id\" id=\"member_id\" type=\"hidden\" value=\"{$member->getMemberId()}\">
                 <input name=\"email\" id=\"email\" type=\"hidden\" value=\"{$member->getPerson()->getEmail()}\">
                 <p><input name=\"submit\" id=\"submit\" class=\"large\" value=\"Send me a password reset link\" type=\"submit\" /></p>

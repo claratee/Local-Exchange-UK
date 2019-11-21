@@ -25,8 +25,17 @@ class cMemberUtils extends cMember {
         
 
             $message_array = array();
-            $message_array['subject'] = "Welcome to {{$site_settings->getKey('SITE_SHORT_TITLE')}}!";
-            $message_array['message'] = "<p>Welcome to {$site_settings->getKey('SITE_LONG_TITLE')}!!</p><p>Your unique member ID is <b>{$this->getMemberId()}</b>. You will need this when you log in and when you communicate to other members for trading.</p><p>An account has been created for you at <a href=\"". HTTP_BASE . "/member_profile_menu.php?member_id={$this->getMemberId()}&logout=true\">" . SERVER_DOMAIN ."</a>. Before you can log in, you must reset your password.</p><p><font size=\"4\"><a href=\"". HTTP_BASE ."/password_reset.php?member_id={$this->getMemberId()}&member_id={$this->getPerson()->getEmail()}&logout=true\">Set a password now</a></font>.</p><p>Thank you for joining us, and we look forward to seeing you at the next trade meeting.</p><p>Need help? You can reply to this email or contact the site admin at any time.</p><p>Happy trading!</p>";
+            $message_array['subject'] = "Welcome to our community!";
+            $message_array['message'] = "
+                <p>Welcome to {$site_settings->getKey('SITE_LONG_TITLE')}!</p>
+                <p>An account has been created for you. Take note of your unique member ID, as you will need this when you log in and when you communicate to other members for trading.</p> Before you can log in, you must create a password.</p>
+                <ul>
+                    <li>Member ID: {$this->getMemberId()}</li>
+                    <li>Website: <a href=\"". HTTP_BASE ."?logout=true\">" . HTTP_BASE ."</a></li>
+                </ul>
+                <p>IMPORTANT: Before you can start using your account, you need to set a new password.</p>
+                <p><font size=\"4\"><a href=\"". HTTP_BASE ."/password_reset.php?member_id=" . urlencode($this->getMemberId()) . "&email=" . urlencode($this->getPerson()->getEmail()) . "&logout=true\">Set a password now</a></font>.</p>
+                <p>Thank you for joining us, and we look forward to seeing you at the next trade meeting.</p><p>Need help? You can reply to this email or contact the site admin at any time.</p><p>Happy trading!</p>";
             //CT
 
             $mailer = new cMail($message_array);

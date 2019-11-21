@@ -2,22 +2,29 @@
 //CT this page can only be viewed when there is a valid token and member_id. changed teh way that passwords work - so user must reset their own account, its not assigned or shared with anyone.
 include_once("includes/inc.global.php");
 $is_success = false;
-$token = $_REQUEST['token'];
+if(!empty($_GET['token'])) {
+	$token = urldecode($_GET['token']);
+}elseif(!empty($_POST['token'])) {
+	$token = urldecode($_POST['token']);
+}else{
+	$output = "Token is missing.";
+}
 // if(empty($token)) {
 // 	$cUser->MustBeLoggedOn();
 // 	$is_success = true;
 // }else{
 	//print_r($cUser);
-	
+$field_array = array();
+if(!empty($_GET['member_id'])) {
+	$field_array['member_id'] = urldecode($_GET['member_id']);
+}elseif(!empty($_POST['token'])) {
+	$field_array['member_id'] = urldecode($_POST['member_id']);
+}else{
+	$output = "Member ID is missing.";
+}
 
-	if(!empty($_REQUEST['member_id'])) {
-		//CT cant directly set the member ID
-		$field_array = array();
-		$field_array['member_id'] = $_REQUEST['member_id'];
-		$cUser->Build($field_array);
-		//print_r($cUser->getMemberId());
-	} 
-	$is_verified_token = $cUser->verifyToken($token);
+$cUser->Build($field_array);
+$is_verified_token = $cUser->verifyToken($token);
 //}
 //$p->site_section = SITE_SECTION_OFFER_LIST;
 
@@ -57,7 +64,7 @@ $list .= $form->toHtml();
 //
 
 
-if ($_POST["submit"]){
+if (!empty($_POST["submit"])){
 	// $vars = array();
 	// $vars['old_passwd'] = $_POST["old_passwd"];
 	// $vars['new_passwd'] = $_POST["new_passwd"];
@@ -98,13 +105,13 @@ function displayPasswordForm($token) { // TODO: Should use SaveMember and should
             <p>
                 <label for=\"password\">
                     <span>New password  *</span>
-                    <input maxlength=\"200\" name=\"password\" id=\"password\" type=\"password\" value=\"\">
+                    <input maxlength=\"200\" name=\"password\" id=\"password\" type=\"password\" value=\"\" autocomplete=\"false\"\" />
                 </label>
             </p>
             <p>
                 <label for=\"repeat_password\">
                     <span>Repeat new password  *</span>
-                    <input maxlength=\"200\" name=\"repeat_password\" id=\"repeat_password\" type=\"password\" value=\"\">
+                    <input maxlength=\"200\" name=\"repeat_password\" id=\"repeat_password\" type=\"password\"  value=\"\" autocomplete=\"false\" />
                 </label>
             </p>
             
@@ -127,6 +134,7 @@ function processData() {
 	if (strlen($field_array['password'])<8) $errors[] = "A password must be at least 8 characters long.";
 	if ($field_array['password'] != $field_array['repeat_password']) $errors[] = "Make sure the repeated password matches.";
 	if(sizeof($errors)==0){
+		//print_r($cUser->getMemberId());
 		if($cUser->ChangePassword($field_array['password'])){
 			$cStatusMessage->Info('Password successfully changed.');
 			return true;

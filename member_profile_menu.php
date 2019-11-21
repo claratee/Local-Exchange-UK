@@ -55,7 +55,7 @@ $output .= "
 		<h3>Member settings</h3>
 		<ul>
 			<li><a href=\"member_detail.php?member_id={$member_id}\">View my profile</a></li>
-			<li><a href=\"member_edit.php\">Edit my personal information</a></li>
+			<li><a href=\"member_edit.php\">Edit my profile and settings</a></li>
 			<li><a href=\"member_joint_edit.php\">Add or edit a joint member to my account</a></li>
 			<li><a href=\"password_reset.php\">Change my password</a></li>
 		</ul>
