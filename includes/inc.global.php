@@ -122,6 +122,13 @@ define("ARRAY_RESTRICTION",
     )
 );
 
+define("ARRAY_FEEDBACK", array(
+        "1" => "Negative (1 star)", 
+        "2" => "Neutral (2 stars)", 
+        "3" => "Positive (3 stars)",
+    )
+);
+
 
 // The following constants are used for logging. Add new categories if
 // needed, but edit existing ones with caution.
@@ -137,36 +144,59 @@ define("ARRAY_RESTRICTION",
 
 //note new column "member_id_author" gives record of who did the strade -so we can repurpose "type" to show direction and anything else needed
 //types - also for logging admin_activity as category
+//ACTION in trade table
 define("TRADE_TYPE_TRANSFER","T"); //CT transfer
-define("TRADE_TYPE_INVOICE","I"); //CT NEW invoice
-define("TRADE_TYPE_MONTHLY_FEE","M"); //CT admin did it
-//types -reversals.for info only (status will be I)
+define("TRADE_TYPE_INVOICE","I"); //CT NEW invoice. yes, we are tracking how the trade was done - as a transfer or invoice. 
+define("TRADE_TYPE_MONTHLY_FEE","M"); //
+
+//TYPE in trade table -reversals. for info only (status will be I)
 define("TRADE_TYPE_REVERSAL","R"); //CT NEW info only - record. 
-define("TRADE_TYPE_MONTHLY_FEE_REVERSAL", "N");
-//Status
+define("TRADE_TYPE_MONTHLY_FEE_REVERSAL", "N"); //CT dont see whoy this is not just a reversal.
+
+//STATUS in trade table
 define("TRADE_STATUS_REVERSED","R"); //CT - REVERSED. new
 define("TRADE_STATUS_APPROVED","V"); //CT - valid - meaning active, done, approved.
 //CT 
-//pending status - whether they are counted or not
+//STATUS in pending table - whether they are counted or not
 define("TRADE_PENDING_STATUS_OPEN","O"); //CT - open in pending table
 define("TRADE_PENDING_STATUS_FINAL","F"); //CT - as above. final in pending table 
 define("TRADE_PENDING_STATUS_CANCELLED","W"); //CT - withdrawn NEW - cancelled. hide from everywhere.
 
-//Pending decision - moved from pending hardcode
+//DECISION -Pending  - moved from pending hardcode
  define("TRADE_PENDING_DECISION_DEFAULT","1"); //1 = Member hasn't made a decision regarding this trade - either it is Open or it has been Fulfilled (see 'status' column)
  define("TRADE_PENDING_DECISION_REMOVED","2"); //2 = Member has removed trade from his own records
  define("TRADE_PENDING_DECISION_REJECTED","3"); //3 = Member (payee) has rejected this trade
  define("TRADE_PENDING_DECISION_ACCEPTED_REJECTED","4"); //4 = Member has accepted that this trade has been rejected
 
-//define("TRADE_STATUS_REJECTED","J"); //CT - rejected. new
+//CATEGORIES for logging 
+define("LOG_TRADE","T"); //CT transfer
+define("LOG_ACCOUNT","A"); //CATEGORY new. category for account admin events.
+define("LOG_SEND","S"); //CATEGORY CT new. category for mail events.
 
-//CT new
-define("LOG_SEND_ANNOUNCEMENT","S"); //Logging system event category. so far not used
-// System events
-define("ACCOUT_EXPIRATION","E"); // Logging event category - System Event
-define("DAILY_LISTING_UPDATES","D"); // Logging event category - System Event
-define("WEEKLY_LISTING_UPDATES","W"); // Logging event category - System Event
-define("MONTHLY_LISTING_UPDATES","M"); // Logging event category - System Event
+//ACTIONS for logging.
+//CT note - actions come from the trade object - TRADE_TYPE_TRANSFER etc
+define("LOG_ACCOUNT_CREATE","C"); // new. create
+define("LOG_ACCOUNT_ACTIVATE","A"); // new. make active. corresponds with the status in member table
+define("LOG_ACCOUNT_INACTIVATE","I"); // new. make inactive. corresponds with the status in member table.
+define("LOG_ACCOUNT_INACTIVATE_AUTO","E"); // refactor of ACCOUT_EXPIRATION
+define("LOG_ACCOUNT_ARCHIVE","X"); // new. archiving account for GDPR
+//CT actions
+define("LOG_SEND_UPDATE_DAILY","D"); // daily email update - refactor of DAILY_LISTING_UPDATES
+define("LOG_SEND_UPDATE_WEEKLY","W"); // weekly email update - refactor of WEEKLY_LISTING_UPDATES
+define("LOG_SEND_UPDATE_MONTHLY","M"); // monthly email update - refactor of MONTHLY_LISTING_UPDATES
+
+//
+define("LOG_SEND_OUT_OF_BALANCE","B"); // new. Out of balance warning mail
+define("LOG_SEND_WELCOME","W"); // send mail on creation of account or admin action password reset
+define("LOG_SEND_PASSWORD_RESET","P"); // send mail on password reset
+
+//these as above, but content and recipient gets saved
+define("LOG_SEND_ALL","A"); // send mail to all members - refactored LOG_SEND_ALL
+define("LOG_SEND_CONTACT","C"); // send mail via contact form
+//define("LOG_SEND_TRADE","trade"); // send mail on trade
+//define("LOG_SEND_TRADE","T"); // send mail 
+//define("LOG_SEND_TRADE","trade"); // send mail on trade
+
 
 //types
 
@@ -350,7 +380,7 @@ if(DOWN_FOR_MAINTENANCE and !$running_upgrade_script) {
 }
 
 // [chris] Uncomment this line to surpress non-fatal Warning and Notice errors
-//error_reporting(E_ALL &~ (E_NOTICE | E_WARNING));	
+error_reporting(E_ALL &~ (E_NOTICE | E_WARNING));	
 //CT: todo - put somewhere better. create site class
 // function showMessage($msg){
 // 	echo "<p>" . $msg . "</p>";

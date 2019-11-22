@@ -116,7 +116,7 @@ class cTradeUtils extends cTrade{
             $field_array=array();
             $field_array['admin_id'] = $cUser->getMemberId();
             $field_array['category'] = $this->getType();
-            $field_array['action'] = $this->getType();
+            $field_array['action'] = $this->getStatus();
             $field_array['ref_id'] = $this->getTradeId();
             $field_array['note'] = "";
             $log_entry = new cLogging ($field_array);
@@ -429,7 +429,7 @@ class cTradeUtils extends cTrade{
                     //CT a bit awkward, but set recipients after object already instantiated
                     $mailer->buildRecipientsFromMemberObject($member_to);
                     //CT should be try catch
-                    $mailer->sendMail();
+                    $mailer->sendMail($this->getType());
 
                     //CT 
                     $confirmation_message = "Invoice for {$this->getAmount()} " . UNITS . " has been 
@@ -446,9 +446,9 @@ class cTradeUtils extends cTrade{
                     $message_array['message'] = "<p>Hi {$member_to->getDisplayName()},</p><p>You have received a request from {$member_from->getDisplayName()} ({$member_from->getMemberId()}) to transfer a payment of {$this->getAmount()} " . UNITS . " to your account.  Please confirm or reject this payment using the following URL</p><p><a href=\"".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=incoming\">".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=incoming</a></p>";
                     $mailer = new cMail($message_array);
                     $mailer->buildRecipientsFromMemberObject($member_to);
-                    $mailer->sendMail();
+                    $mailer->sendMail($this->getType());
 
-                    //print_r($mailer->sendMail());
+                    //print_r($mailer->sendMail($this->getType()));
 
                     //CT todo - make notification thing instead of error thing
                     $confirmation_message = "Requested to transfer {$this->getAmount()} " . UNITS . " 
@@ -470,8 +470,8 @@ class cTradeUtils extends cTrade{
                     $mailer->buildRecipientsFromMemberObject($member_from);
                     //CT should be try catch
 
-                    //print_r($mailer->sendMail());
-                    $mailer->sendMail();
+                    //print_r($mailer->sendMail($this->getType()));
+                    $mailer->sendMail($this->getType());
                     */
 
                     //get joint members too. 

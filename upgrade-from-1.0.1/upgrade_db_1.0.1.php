@@ -162,6 +162,11 @@ $string_queries = array();
 $string_queries[]="ALTER TABLE " . DATABASE_MEMBERS . "
   ADD UNIQUE KEY `member_id` (`member_id`);";
 
+//CT sets up more useful categories of actions - all "send mail" events are category S, and action remains the original value.
+$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set category='" . LOG_SEND . "' where category='" . LOG_SEND_UPDATE_WEEKLY . "' or category='" . LOG_SEND_UPDATE_DAILY . "' or category='" . LOG_SEND_UPDATE_MONTHLY . "';";
+
+//$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set `admin_id`='" . SYSTEM_ACCOUNT_ID . "' where `admin_id`='EVENT_SYSTEM';";
+
 try{
   $complete = doCreateScript();
 

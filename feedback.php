@@ -62,9 +62,8 @@ $cUser->MustBeLoggedOn();
 			$member_id_about = $trade->getMemberIdFrom();
 		}
 
-		$vars = array("1" => "Negative", "2" => "Neutral", "3" => "Positive");
   
-        $dropdown_rating = $p->PrepareFormSelector("rating", $vars, "-- Select action --", $feedback->getRating());
+        $dropdown_rating = $p->PrepareFormSelector("rating", ARRAY_FEEDBACK, "-- Select action --", $feedback->getRating());
 		$member_about = new cMember();
 			
 		$member_about->Load("m.member_id =\"{$member_id_about}\" AND m.status=\"A\"");
@@ -75,7 +74,7 @@ $cUser->MustBeLoggedOn();
 		
 
 
-		$output .= "<p class=\"summary\">This feedback will be shown on trade listings. It will contribute to the rating of {$member_about->getDisplayName()} ({$member_about->getMemberId()}).</p><p>All feedback is public. Before leaving <i>negative</i> feedback, we recommend trying to address your concerns with the other community member.  Often misunderstandings can be resolved to the benefit of both parties. </p>
+		$output .= "<p>This feedback will be shown on trade listings. It will contribute to the rating of {$member_about->getDisplayName()} ({$member_about->getMemberId()}).</p><p>All feedback is public. Before leaving <i>negative</i> feedback, we recommend trying to address your concerns with the other community member.  Often misunderstandings can be resolved to the benefit of both parties. </p>
 			<p>{$role_text}</p>";
 
 			$output .= "

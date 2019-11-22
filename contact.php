@@ -46,7 +46,7 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 		$mail->Build($field_array);
 		//TODO allow user to be mailed a copy
 
-		$is_sent = $mail->sendMail(true);
+		$is_sent = $mail->sendMail(LOG_SEND_CONTACT);
 	} else {
 		$cStatusMessage->Error($error_message);
 	}

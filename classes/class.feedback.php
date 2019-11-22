@@ -24,19 +24,18 @@ class cFeedback extends cBasic2 {
 	//private $category;			// category of the associated trade
 
     
-	// not stored anywhere - purely for display
+	// display of feedback. 
 	public function showRatingAsStars(){
-		switch ($this->getRating()) {
-			case 1:
-                $stars ='<i class="fas fa-star"></i><i class="fas fa-star off"></i><i class="fas fa-star off"></i>';
-				break;
-			case 2:
-                $stars ='<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star off"></i>';
-				break;
-			default:
-				$stars ='<i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>';
-				break;
-		}
+        $i=1;
+        $stars = "";
+        while($i<=$this->getRating()){
+            $stars .= '<i class="fas fa-star"></i>';
+            $i++;
+        }
+        while($i<=sizeof(ARRAY_FEEDBACK)){
+            $stars .= '<i class="fas fa-star off"></i>';
+            $i++;
+        }
 		return "<span class=\"stars\">{$stars}</span>";
 	}
 

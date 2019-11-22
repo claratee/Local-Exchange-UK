@@ -60,8 +60,8 @@ newsletter - new download available (group->item)
 	// // }
 
 
-
-	function sendMail($save_copy=false) {
+//save_copy will save to the db - good for auditing  stuff like contacts from web or broadcast mails. 
+	function sendMail($action) {
 		global $cStatusMessage, $site_settings;
 
         //test if it can be done
@@ -109,19 +109,50 @@ newsletter - new download available (group->item)
              $log_entry = new cLogging ($field_array);
              $log_entry->Save();
         }*/
-        if($save_copy == true){
-            $this->logMessage();
+        $contact_id=null;
+        //timed update events
+        //print($action . "<br />");
+        //print("<br />action: " . $action);
+        //LOG contact 
+
+        if(LOG_LEVEL>0 OR ($action==LOG_SEND_UPDATE_DAILY OR $action==LOG_SEND_UPDATE_WEEKLY OR $action==LOG_SEND_UPDATE_MONTHLY)){
+            if($action == LOG_SEND_CONTACT OR $action == LOG_SEND_ALL){ 
+                //CT saves the content too of broadcast or contact_us email
+                    $contact_id = $this->logMessage($action);
+                    $this->LogSendEvent($action, $contact_id);
+                //print($action);
+            }else{
+                //updates
+                $this->LogSendEvent($action, null);
+            }
         }
 
         return empty($fail_count);
         
 	}
-    function logMessage(){
+    function LogMessage(){
+        //exclude some updates from saving contact
         $keys_array = array('recipients', 'reply_to_name', 'reply_to_email', 'subject', 'message', 'headers');
-        $contact_id = $this->insert(DATABASE_CONTACT, $keys_array);
-        return $contact_id;
-       
+        return $this->insert(DATABASE_CONTACT, $keys_array);
     }
+    function LogSendEvent($action, $contact_id=null, $note=null){
+        //print_r($action);
+        //exclude some updates from saving contact
+        $log_event = new cLoggingSystemEvent();
+        //CreateSystemEvent($action, $ref_id=null, $note=null)
+        //CreateSystemEvent($category, $action, $ref_id=null, $note=null)
+        $log_event->CreateSystemEvent(LOG_SEND, $action, $contact_id, $note);
+        $log_event->Save();
+    }
+    // function logMessage($action){
+    //     //exclude some updates from saving contact
+    //     if($action != LOG_SEND_UPDATE_DAILY AND $action != LOG_SEND_UPDATE_WEEKLY AND $action != LOG_SEND_UPDATE_MONTHLY){
+    //         $keys_array = array('recipients', 'reply_to_name', 'reply_to_email', 'subject', 'message', 'headers');
+    //         $contact_id = $this->insert(DATABASE_CONTACT, $keys_array);
+    //     }
+    //     $log_event = cLoggingSystemEvent::CreateSystemEvent(LOG_SEND, $action, $contact_id);
+    //     $log_event->Save();
+    // }
     function makeHeaders(){
         //CT always send FROM the domain it has authority to use, REPLY-TO can be dynamic 
         global $site_settings;
@@ -208,26 +239,33 @@ newsletter - new download available (group->item)
 
 
     //CT not sure if this should be here...but best place for now.
-public function EmailListingUpdates($timeframe) {
+public function EmailListingUpdates($action) {
         global $cStatusMessage, $site_settings;
 
         //$mailer = new cMail();
         //load members if not loaded
+        //print_r($action);
         try{
-            switch ($timeframe) {
-                case DAILY:
+            switch ($action) {
+                case LOG_SEND_UPDATE_DAILY:
                     $period = "day";
-                break;
-                case WEEKLY:
-                    $period = "week";
-                break;           
-                case MONTHLY:
+                break;          
+                case LOG_SEND_UPDATE_MONTHLY:
                     $period = "monthly";
                 break;
-                default:
-                    $period = "all time";
+                case WEEKLY: 
                 
+                //
+                    //$action = 7;
+                    $period = "week";
+                //break; 
+                //default:
+                    //$period = "all time";
+               break;
+               default:
             }
+        //print_r($action);
+        //print_r($action);
             //CT get listings conditional vars
             $member_id = "%";
             $category_id = "%";
@@ -237,14 +275,14 @@ public function EmailListingUpdates($timeframe) {
             $listings = new cListingGroup();
             //CT UX - the period should be double what was specified...give better view to items, so they are visible for 2 weeks not 1 week.
             //CT O=offered
-            //makeFilterCondition(null, null, null, $timeframe);
+            //makeFilterCondition(null, null, null, $action);
             //offered
             // instantiate new cOffer objects and load them
             //CT dont send if nothing to send. to_send gets set to true if there is something to send, otherwise no.
             $to_send=false;
 
             $listings = new cListingGroup();  
-            $condition = $listings->makeFilterCondition(null, "O", "A", null, $timeframe*2, null);
+            $condition = $listings->makeFilterCondition(null, "O", "A", null, $action*2, null);
 
            if($listings->Load($condition)){
                 $offered_text = $listings->Display(true);
@@ -259,7 +297,7 @@ public function EmailListingUpdates($timeframe) {
             $wanted_text = "<h2>Wanted listings</h2><a href=\"" . HTTP_BASE ."/listings.php?type=W\">View all wanted listings</a>";
             //show_id=true
             $listings = new cListingGroup();
-            $condition = $listings->makeFilterCondition(null, "W", "A", null, $timeframe*2, null);
+            $condition = $listings->makeFilterCondition(null, "W", "A", null, $action*2, null);
            if($listings->Load($condition)){
                 $wanted_text .= $listings->Display(true);
                 $to_send=true;
@@ -276,9 +314,10 @@ public function EmailListingUpdates($timeframe) {
                 //print_r($message_array['message']);
                 //$mailer = new cMail($message_array);
                 //CT send to ALL users with role ADMIN - so security risk user "admin" can go away.
-                $condition="`email_updates`={$timeframe} ORDER BY member_id";
+                $condition="`email_updates`={$action} ORDER BY member_id";
                 $this->loadRecipients($condition);
-                return $this->sendMail();
+                return $this->sendMail($action);
+
             }
 
         } catch(Exception $e){

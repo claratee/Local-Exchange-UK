@@ -328,7 +328,7 @@ function processData(){
     if(strlen($member->getPerson()->getFirstName()) > 100) $error_message .= "First name is too long. ";
     if(strlen($member->getPerson()->getLastName()) < 1) $error_message .= "Last name is missing. ";
     if(strlen($member->getPerson()->getLastName()) > 100) $error_message .= "Last name is too long. ";
-    if(strlen($member->getPerson()->getEmail()) > 0 AND (!$p->isEmailValid($member->getPerson()->getEmail(), true) OR strlen($member->getPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
+    if(strlen($member->getPerson()->getEmail()) > 0 AND (!$p->isEmailValid($member->getPerson()->getEmail()) OR strlen($member->getPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
     if(strlen($member->getPerson()->getAddressStreet2()) < 1) $error_message .= ADDRESS_LINE_2 . " is missing. ";
     if(strlen($member->getPerson()->getAddressCity()) < 1) $error_message .= ADDRESS_LINE_3 . " is missing. ";
     if(strlen($member->getPerson()->getAddressPostCode()) < 1) $error_message .= ZIP_TEXT . " is missing. ";

@@ -53,7 +53,7 @@ class cPersonUtils extends cPerson
             $keys_array[] = 'primary_member';
             $person_id = $this->insert(DATABASE_PERSONS, $keys_array);        
         }else{
-            $condition = "member_id=\"{$this->getMemberId()}\"";  
+            $condition = "`member_id`=\"{$this->getMemberId()}\" AND `person_id`=\"{$this->getPersonId()}\"";  
             $person_id = $this->update(DATABASE_PERSONS, $keys_array, $condition);
         }
 
@@ -62,7 +62,7 @@ class cPersonUtils extends cPerson
     function DeleteJointPerson() {
         //CT can only be done on joint members, ie not primary - safety is in the db call
         global $cDB, $cStatusMessage;
-        $is_success = $cDB->Query("DELETE FROM ".DATABASE_PERSONS." WHERE member_id={$cDB->EscTxt($this->getMemberId())} AND primary_member = \"N\" AND person_id = \"{$this->getPersonId()}\"");
+        $is_success = $cDB->Query("DELETE FROM ".DATABASE_PERSONS." WHERE `member_id`=\"{$cDB->EscTxt($this->getMemberId())}\" AND `primary_member` = \"N\" AND `person_id` = \"{$this->getPersonId()}\"");
         //if($is_success) print("halloooooo");
         return $is_success;
     }

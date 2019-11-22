@@ -10,7 +10,7 @@ class cTradeGroup extends cBasic{
 	
 	function Load($condition, $member_id=null) {
 
-		global $cDB, $cStatusMessage, $site_settings, $cQueries;
+		global $cUser, $cDB, $cStatusMessage, $site_settings, $cQueries;
 
 		//$to_date = strtotime("+1 days", strtotime($this->getToDate()));
 		$this->setMemberId($member_id);
@@ -33,11 +33,19 @@ class cTradeGroup extends cBasic{
         // $condition ="(member_id_from LIKE \"{$member_id}\" 
         // OR member_id_to LIKE \"{$member_id}\")
         // AND trade_date > {$from_date} AND trade_date < {$to_date} AND type != '{$trade_type_refund}'";
-        if(SHOW_GLOBAL_FEES !=true){
-            $trade_type_refund = TRADE_TYPE_REVERSAL;
-            $trade_type = TRADE_TYPE_MONTHLY_FEE;
-            $trade_type_monthly_refund = TRADE_TYPE_MONTHLY_FEE_REVERSAL;
-            $condition .= " AND type !='S' AND type != '{$trade_type}' AND type != '{$trade_type_monthly_refund}'";
+        // if(SHOW_GLOBAL_FEES !=true){
+        //     $trade_type_refund = TRADE_TYPE_REVERSAL;
+        //     $trade_type = TRADE_TYPE_MONTHLY_FEE;
+        //     $trade_type_monthly_refund = TRADE_TYPE_MONTHLY_FEE_REVERSAL;
+        //     $condition .= " AND type !='S' AND type != '{$trade_type}' AND type != '{$trade_type_monthly_refund}'";
+        // }
+        //print();
+        if(!($site_settings->getKey('SHOW_GLOBAL_FEES')) AND $cUser->getMemberId() != $member_id){
+            $condition .= " 
+                AND NOT t.type = '" . TRADE_TYPE_REVERSAL. "' 
+                AND NOT t.type = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL. "' 
+                AND NOT t.status = '" . TRADE_STATUS_REVERSED . "' 
+                AND NOT t.status = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL . "'"; 
         }
        
 		$query = $cDB->Query($cQueries->getMySqlTrade($condition));
@@ -93,22 +101,35 @@ class cTradeGroup extends cBasic{
 			$hname = "t{$trade->getTradeId()}";			
             $currentbalance = number_format((float)$runningbalance, 2, '.', '');
             $note = "";
+            switch($trade->getStatus()){
+                case TRADE_STATUS_REVERSED:
+                case TRADE_TYPE_MONTHLY_FEE_REVERSAL: 
+                    $note .= "<div>--This trade was reversed.</div>";
+                break;
+                // case "A":
+                //  //$note .= "This trade was brokered by an admin.";
+                // break;
+                default:
+                    //
+            }
+            switch($trade->getType()){
+                case TRADE_TYPE_MONTHLY_FEE_REVERSAL:
+                case TRADE_TYPE_REVERSAL:
+                    //$note .= "Reversal action.<br />";
+                break;
+                // case "A":
+                //  //$note .= "This trade was brokered by an admin.";
+                // break;
+                default:
+                    //
+            }
             if(!empty($trade->getFeedback())){
                 $note .= "From #{$trade->getFeedback()->getMemberIdAuthor()}: {$trade->getFeedback()->showRatingAsStars()}";
                 if(!empty($trade->getFeedback()->getComment())) {
                     $note .= " &quot;{$trade->getFeedback()->getComment()}&quot; ";
                 }
             }
-            switch($trade->getStatus()){
-            	case "R":
-            		$note .= "This trade was reversed.";
-            	break;
-            	case "A":
-            		$note .= "This trade was brokered by an admin.";
-            	break;
-            	default:
-            		//
-            }
+            
             if(!empty($note)) $note = "<div class=\"trade-note\">{$note}</div>";
             $amount = "{$trade->getAmount()}";
             $traded_from = "<a href='member_detail.php?member_id={$trade->getMemberIdFrom()}#{$hname}'>#{$trade->getMemberIdFrom()}</a>";
@@ -136,10 +157,10 @@ class cTradeGroup extends cBasic{
 				//$traded_to = "<a href='member_detail.php?member_id={$trade->getMemberIdTo()}#{$hname}'>{$trade->getMemberIdTo()}</a>";
 			}
 			//print_r($trade->getStatus());
-			$reversalText = "";
-			if($trade->getStatus() == TRADE_TYPE_REVERSAL){
-				$statusclass = "{$statusclass} reversal";
-				//$reversalText = " (reversed)";
+            if($trade->getStatus() == strval(TRADE_STATUS_REVERSED) OR $trade->getStatus() == strval(TRADE_TYPE_MONTHLY_FEE_REVERSAL) OR ($trade->getType() == strval(TRADE_TYPE_REVERSAL) OR $trade->getType() == strval(TRADE_TYPE_MONTHLY_FEE_REVERSAL))){
+                //$statusclass = "{$statusclass} reversal";
+                $amount = $trade->getAmount(); //CT dont show the format or styling if it's a reversed or reversal
+                $statusclass = "reversal";
 
 			}
 				

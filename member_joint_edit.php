@@ -7,11 +7,11 @@ include_once("includes/inc.global.php");
 //
 
 try{
-	if($cUser->getMode()=="admin" && !empty($_GET['member_id'])){
+	if($cUser->getMode()=="admin" && !empty($_REQUEST['member_id'])){
 		//CT can manage someone else's income shares - inactive users too, just in case
 		//CT TODO should be able to search active users to make sure that their inclme shares are not benefitting inactive account - sweep
 		$member = new cMemberUtils();
-		$condition="m.member_id=\"{$_GET['member_id']}\" AND status=\"A\"";
+		$condition="m.member_id=\"{$_REQUEST['member_id']}\" AND status=\"A\"";
 		$member->Load($condition);
 		$page_title = "Joint member for {$member->getPerson()->getFirstName()} {$member->getPerson()->getLastName()} ({$member->getMemberId()})";
 
@@ -43,6 +43,7 @@ if($_POST["delete"]){
 }
 
 	if ($_POST["submit"]){
+		//print_r($_POST);
 		$field_array = $_POST;
 		$member->Build($field_array);
 		//CT TODO - validation. this is hokey and manual, will replace with proper validator sometime...
@@ -52,7 +53,7 @@ if($_POST["delete"]){
 	    if(strlen($member->getJointPerson()->getFirstName()) > 100) $error_message .= "First name is too long. ";
 	    if(strlen($member->getJointPerson()->getLastName()) < 1) $error_message .= "Last name is missing. ";
 	    if(strlen($member->getJointPerson()->getLastName()) > 100) $error_message .= "Last name is too long. ";
-	    if(strlen($member->getJointPerson()->getEmail()) > 0 AND (!$p->isValidEmail($member->getPerson()->getEmail(), true) OR strlen($member->getJointPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
+	    if(strlen($member->getJointPerson()->getEmail()) > 0 AND (!$p->isEmailValid($member->getPerson()->getEmail()) OR strlen($member->getJointPerson()->getEmail()) > 100) ) $error_message .= "Email is not formed correctly.";
 	    if(strlen($member->getJointPerson()->getPhone1Number()) > 0 && strlen($member->getJointPerson()->getPhone1Number()) < 11) $error_message .= "Include full telephone number including dialling code. ";
 	    if(strlen($member->getJointPerson()->getEmail()) < 1 AND strlen($member->getJointPerson()->getPhone1Number()) < 1) $error_message .= "You must include at least a phone number or an email address so other members may contact you.";
 
@@ -60,8 +61,9 @@ if($_POST["delete"]){
 		$person_id = 0;
 		if(empty($error_message)) {
 			try{
-				$person_id = $member->Save();
-				if($person_id){
+				$member_id = $member->Save();
+				//exit();
+				if($member_id){
 					//redirect page if saved	
 			        $cStatusMessage->Info("Your changes have been saved.");
 					$redir_url="member_detail.php?member_id={$member->getMemberId()}";
@@ -118,21 +120,16 @@ if($member->getAction() == "joint_create") {
 			<h3>Update joint member</h3>";  
 	}
 
-$directory_array = array("Y"=>"Show in directory and listings", "N"=>"Hidden from directory and listings");
+$directory_array = array("Y"=>"Show ", "N"=>"Hide");
 $output .= "
     <form action=\"". HTTP_BASE ."/member_joint_edit.php\" method=\"post\" name=\"form\" id=\"form\" class=\"layout2\">
         <input type=\"hidden\" id=\"member_id\" name=\"member_id\" value=\"{$member->getMemberId()}\" />
         <input type=\"hidden\" id=\"account_type\" name=\"account_type\" value=\"J\" />
         <input type=\"hidden\" id=\"j_person_id\" name=\"j_person_id\" value=\"{$member->getJointPerson()->getPersonId()}\" />        
         <input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$member->getAction()}\" />
-        <p>The joint member can be shown or hidden from directory and listings. In either case, they will receive emails from the system just like you do. </p>
         
-		<p>
-		    <label for=\"j_directory_list\">  
-		        <span>Display of joint member *</span>
-		        {$p->PrepareFormSelector('j_directory_list', $directory_array, null, $member->getJointPerson()->getDirectoryList())}
-		    </label>
-		</p>
+        
+		
         <p>
             <label for=\"j_first_name\">
                 <span>First name  *</span>
@@ -160,8 +157,14 @@ $output .= "
                 <input maxlength=\"200\" name=\"j_phone1_number\" id=\"j_phone1_number\" type=\"text\" value=\"{$member->getJointPerson()->getPhone1Number()}\">
             </label>
         </p>
+        <p>The joint member can be shown or hidden from directory and listings. In either case, they will receive emails from the system just like you do. </p>
 
-        
+        <p>
+		    <label for=\"j_directory_list\">  
+		        <span>Display of joint member in directory and listings *</span>
+		        {$p->PrepareFormSelector('j_directory_list', $directory_array, null, $member->getJointPerson()->getDirectoryList())}
+		    </label>
+		</p>
 
         <div>* Required field</div>
         <p class=\"summary\">

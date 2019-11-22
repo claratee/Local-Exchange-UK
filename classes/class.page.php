@@ -168,7 +168,7 @@ class cPage {
 		return preg_replace( "/\r|\n/", "", $string);
 	}
 
-	//CT admin mode needs to be entered in specifically by the user.
+	//CT admin mode needs to be entered in specifically by the user. strip at the top of the page
 	function makeModeToggleButton(){
 		global $cUser;
 		//CT put somewhere sensible - this aint it

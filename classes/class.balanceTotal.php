@@ -58,13 +58,13 @@ class cBalanceTotal  {
     		//mail admin 
 			$message_array = array();
 	        $message_array['subject'] = "System is out of balance";
-	        $message_array['message'] = "<p>Hi Admin,</p><p>The system is out of balance by {$this->getSystemBalance()}. This was first detected on " . date("Y-m-d H:i:s", time() - date("Z")) . "</p>";
+	        $message_array['message'] = "<p>Hi Admin,</p><p>The system is out of balance by {$this->getSystemBalance()}. This was detected on " . date("Y-m-d H:i:s", time() - date("Z")) . "</p>";
 	        $mailer = new cMail($message_array);
 	        //CT send to ALL users with role ADMIN - so security risk user "admin" can go away.
 	        $condition = "member_role=\"2\"";
 	        $mailer->loadRecipients($condition);
 	        //CT commented out  temp
-	        //$mailer->sendMail();
+	        $mailer->sendMail(LOG_SEND_OUT_OF_BALANCE);
 			// Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
     	}
 		

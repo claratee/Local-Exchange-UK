@@ -21,41 +21,47 @@ class cTradeSummary{
 	}
 //this doesnt take condition but the member_id...
 	public function Load($member_id){
+
 		global $cDB, $site_settings, $cQueries;
+
+        $condition = "(`member_id_from`  = \"{$member_id}\" OR `member_id_to`  = \"{$member_id}\")";
+        //CT exclude reversals
+        //if(!($site_settings->getKey('SHOW_GLOBAL_FEES'))){
+        //CT GLOBAL fees and reversals should never be counted int he summaries
+        $condition .= " 
+            AND NOT type = '" . TRADE_TYPE_REVERSAL. "' 
+            AND NOT type = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL. "' 
+            AND NOT status = '" . TRADE_STATUS_REVERSED . "' 
+            AND NOT status = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL . "'"; 
+        //}
        // $this->setMemberId($member_id);
         $string_query = "SELECT
-            m.member_id AS member_id,
-            m.balance AS balance,
-            f.amount AS amount,
-            f.count AS count,
-            t.trade_date AS last_date
+            `m`.`member_id` AS member_id,
+            `m`.`balance` AS balance,
+            `f`.`amount` AS amount,
+            `f`.`count` AS count,
+            `t`.`trade_date` AS last_date
         FROM
-            lets_member m
+            `" . DATABASE_MEMBERS . "` m
         LEFT JOIN(
             SELECT
                 \"{$member_id}\" as member_id,
                 SUM(amount) AS amount,
                 COUNT(1) AS count
             FROM
-                lets_trades
-            WHERE (member_id_from  = \"{$member_id}\" OR member_id_to  = \"{$member_id}\") 
-            AND 
-            NOT TYPE = \"R\" 
-            AND NOT STATUS = \"R\"
-        ) f ON m.member_id=f.member_id
+                `" . DATABASE_TRADES . "`
+            WHERE {$condition}) f ON `m`.`member_id`=`f`.`member_id`
         LEFT JOIN(
             SELECT
                 \"{$member_id}\" as member_id,
-                trade_date as trade_date
+                trade_date
             FROM
-                lets_trades
-            WHERE (member_id_from  = \"{$member_id}\" OR member_id_to  = \"{$member_id}\") 
-            AND 
-            NOT TYPE = \"R\" 
-            AND NOT STATUS = \"R\" ORDER BY trade_date DESC LIMIT 1
-        ) t ON m.member_id=t.member_id
+                `" . DATABASE_TRADES . "`
+            WHERE {$condition} ORDER BY trade_date DESC LIMIT 1
+        ) t ON `m`.`member_id`=`t`.`member_id`
         WHERE
             m.member_id = \"{$member_id}\" LIMIT 1";
+        //print($string_query);
 		$query = $cDB->Query($string_query);
 		if($row = $cDB->FetchArray($query)) {
 			$this->Build($row);

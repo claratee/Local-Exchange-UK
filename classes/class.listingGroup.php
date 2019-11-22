@@ -122,7 +122,7 @@ class cListingGroup extends cBasic2
 
 		// instantiate new cOffer objects and load them
 		$i = 0;		
-		$field_array = array();
+		$field_array	 = array();
 		while ($row = $cDB->FetchArray($query)){
 			$field_array[] = $row;			
 		}

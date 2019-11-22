@@ -180,36 +180,36 @@ function getMySqlFeedbackSummary($condition){
 }
 
 
-    function getMySqlTradeSummary($condition){
-        $query = "
-            SELECT 
-            m.member_id as member_id, 
-            m.balance as balance, 
-            f.amount as from_amount, 
-            f.count as from_count, 
-            t.amount as to_amount, 
-            t.count as to_count 
-            from " . DATABASE_MEMBERS . " m
-            left join 
-                (SELECT 
-                    sum(amount) as amount, 
-                    count(1) as count, 
-                    member_id_from as member_id
-                 FROM " . DATABASE_TRADES . "
-                 WHERE 
-                    NOT type=\"R\" AND NOT status=\"R\" GROUP BY member_id_from 
-                ) f on m.member_id=f.member_id
-            left join (
-                SELECT 
-                    sum(amount) as amount, 
-                    count(1) as count,
-                    member_id_to as member_id 
-                FROM " . DATABASE_TRADES . "
-                WHERE 
-                    NOT type=\"R\" AND NOT status=\"R\" GROUP BY member_id_to
-                ) t on m.member_id=t.member_id where {$condition}";
-        return $query;
-    }
+    // function getMySqlTradeSummary($condition){
+    //     $query = "
+    //         SELECT 
+    //         m.member_id as member_id, 
+    //         m.balance as balance, 
+    //         f.amount as from_amount, 
+    //         f.count as from_count, 
+    //         t.amount as to_amount, 
+    //         t.count as to_count 
+    //         from " . DATABASE_MEMBERS . " m
+    //         left join 
+    //             (SELECT 
+    //                 sum(amount) as amount, 
+    //                 count(1) as count, 
+    //                 member_id_from as member_id
+    //              FROM " . DATABASE_TRADES . "
+    //              WHERE 
+    //                 NOT type=\"R\" AND NOT status=\"R\" GROUP BY member_id_from 
+    //             ) f on m.member_id=f.member_id
+    //         left join (
+    //             SELECT 
+    //                 sum(amount) as amount, 
+    //                 count(1) as count,
+    //                 member_id_to as member_id 
+    //             FROM " . DATABASE_TRADES . "
+    //             WHERE 
+    //                 NOT type=\"R\" AND NOT status=\"R\" GROUP BY member_id_to
+    //             ) t on m.member_id=t.member_id where {$condition}";
+    //     return $query;
+    // }
     //put 'trade_' prefix to stop name collisions, this table often joined
     function getMySqlTrade($condition){
         $query="SELECT 
@@ -220,7 +220,7 @@ function getMySqlFeedbackSummary($condition){
             t.member_id_to as member_id_to, 
             t.amount as amount, 
             t.description as description, 
-            t.type as trade_type, 
+            t.type as type, 
             t.category_id as category_id, 
             t.member_id_author as member_id_author, 
             c.description as category_name,

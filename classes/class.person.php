@@ -108,7 +108,7 @@ class cPerson extends cBasic2
         //$this->setDirectoryList="Y";
         //base constructor - build if values exist
         if(!empty($field_array)) $this->Build($field_array);
-        print_r($field_array);
+        //print_r($field_array);
     }
 //CT not used - generally uses member load to get member and instantiate from there. Here for completeness
 	public function Load($condition)

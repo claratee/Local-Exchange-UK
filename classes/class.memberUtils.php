@@ -149,7 +149,6 @@ class cMemberUtils extends cMember {
                     // $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
                 break;
                 case "joint_create":
-                    $cUser->MustBeLevel(1);
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array[] = 'member_id';
                     $this->setAccountType("J");

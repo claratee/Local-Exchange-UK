@@ -21,6 +21,10 @@ class cLogging extends cBasic2 {
 		$log_id = $this->insert(DATABASE_LOGGING, $keys_array);
 		return $log_id;
 	}
+        //you can only save new entries
+    function Build($field_array){
+        return $is_success=parent::Build($field_array);
+    }
 /*
 	function __construct ($field_array=null) {
 		global $cUser;

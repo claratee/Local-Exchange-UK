@@ -86,10 +86,10 @@ define("MEMBER_PHOTO_WIDTH",200); // in pixels
 define("UPSCALE_SMALL_MEMBER_PHOTO",false);
 
 // The options available in the 'How old is you?' dropdown (trying to be as innocuous as possible here with the defaults (e.g. 40's)- but feel free to provide more specific options)
-$agesArr = array('---','Under 18', '18-30','30\'s','40\'s','50\'s','60\'s','70\'s','Over 80','n/a',);
+// $agesArr = array('---','Under 18', '18-30','30\'s','40\'s','50\'s','60\'s','70\'s','Over 80','n/a',);
 
-// The options available in the 'What Sex are you?' dropdown. At the time of writing (01-12-2008) the defaults should be fine
-$sexArr = array("---", "Male","Female","n/a");
+// // The options available in the 'What Sex are you?' dropdown. At the time of writing (01-12-2008) the defaults should be fine
+// $sexArr = array("---", "Male","Female","n/a");
 
 // Enable JavaScript bits on the Dropdown Member Select Box?
 // This applies to the Transfer form; the idea is that it makes it simpler to find the member we're after if the dropdown list is lengthy
@@ -259,7 +259,7 @@ define ("DAYS_REQUEST_FEEDBACK", "30");
 define ("DEBUG", false);
 
 // Should adminstrative activity be logged?  Set to 0 for no logging; 1 to 
-// log trades recorded by administrators; 2 to also log changes to member 
+// log trades recorded by administrators and certain mail events (also in contact table); 2 to also log changes to member 
 // settings (LEVEL 2 NOT YET IMPLEMENTED)
 define ("LOG_LEVEL", 1);
 
@@ -282,7 +282,7 @@ $CONTENT_TABLE = array("id"=>"contenttable", "cellspacing"=>"0", "cellpadding"=>
 // System Event Codes (such as ACCOUNT_EXPIRATION) are defined in inc.global.php
 // System Event Frequency (how many minutes between triggering of events)
 $SYSTEM_EVENTS = array (
-	ACCOUT_EXPIRATION => 1440);  // Expire accounts once a day (every 1440 minutes)
+	LOG_ACCOUNT_INACTIVATE_AUTO => 1440);  // Expire accounts once a day (every 1440 minutes)
 
 // The following relates to the create_db.php install script
 // As of MySQL 5 'TYPE' has been deprecated in favour of 'ENGINE' for specifying the database engine to use. 
