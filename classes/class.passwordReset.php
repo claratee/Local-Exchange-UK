@@ -109,9 +109,9 @@ class cPasswordReset extends cBasic2{
             //CT 
             $mailer = new cMail($message_array);
             //CT a bit awkward, but set recipients after object already instantiated
-            $mailer->buildRecipientsFromMemberObject($member);
+            $mailer->buildRecipientsFromMemberObject($member, "primary");
             //CT should be try catch
-            $is_success=$mailer->sendMail();
+            $is_success=$mailer->sendMail(LOG_SEND_PASSWORD_RESET);
         }else{
             throw new Exception('Could not send email.');   
         }

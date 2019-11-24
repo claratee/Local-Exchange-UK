@@ -41,7 +41,11 @@ class cPage {
 			$login_toggle_link = 'login.php';
 			$login_toggle_text = 'Log in';
 		}
-		
+		if(!($site_settings->getKey('USER_MODE') && $cUser->getMemberRole() > 0)){
+			$admin_menu_link = "<li><a href=\"" . HTTP_BASE . "/admin_menu.php\">Administration menu</a></li>";
+		}else{
+			$admin_menu_link="";
+		}
 		//you can switch mode via url
 		if (!empty($_REQUEST['mode'])) $cUser->changeMode($_REQUEST['mode']);
 	
@@ -50,13 +54,26 @@ class cPage {
 		$variables = new stdClass();
 		$variables = (object) [
 		    'login_toggle_link' => $login_toggle_link,
-		    'login_toggle_text' => $login_toggle_text
+		    'login_toggle_text' => $login_toggle_text,
+		    'admin_menu_link' => $admin_menu_link
 		];
 
 
 
 		//$string = file_get_contents(TEMPLATES_PATH . '/sidebar.php', TRUE);
-		$string = file_get_contents(TEMPLATES_PATH . 'menu_main.php', TRUE);
+		$string = "<!--START include navigation -->
+			<div class=\"navigation\">
+					<input type=\"checkbox\" id=\"nav\" class=\"hidden\" />
+					<label for=\"nav\" class=\"nav-open\"><i></i><i></i><i></i></label>
+					<div class=\"nav-container\">
+						<nav>
+							<ul class=\"menu\">
+								{$site_settings->getKey("MAIN_MENU")}
+							</ul>
+						</nav>
+					</div>
+				</div>
+			<!--END include navigation -->";
 		$this->page_sidebar = $this->ReplacePlaceholders($string, $variables);
 			
 	}	
@@ -170,9 +187,9 @@ class cPage {
 
 	//CT admin mode needs to be entered in specifically by the user. strip at the top of the page
 	function makeModeToggleButton(){
-		global $cUser;
+		global $cUser, $site_settings;
 		//CT put somewhere sensible - this aint it
-		if($cUser->getMemberRole() > 0 AND $cUser->IsLoggedOn()){
+		if($cUser->getMemberRole() > 0 AND $cUser->IsLoggedOn() AND $site_settings->getKey('USER_MODE')){
 			//put links into admin mode
 
 			$location = $_SERVER['PHP_SELF'];
@@ -183,7 +200,7 @@ class cPage {
 
 			//$querystring = $_SERVER['QUERY_STRING'];
 
-			if($cUser->getMode() == "admin") {
+			if($cUser->getMode() == USER_MODE_ADMIN) {
 				$desired_mode="default";
 				$admin_toggle_text="Admin mode is ON. <a href=\"admin_menu.php\">Admin menu</a>";
 				$checked = "checked";

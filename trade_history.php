@@ -9,7 +9,7 @@
 	$member = new cMember();
 
 
-	if($cUser->getMode() == "admin"){
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
 	    $condition = "m.member_id=\"{$member_id}\"";
 	} else{
 		//only show active users
@@ -46,8 +46,6 @@
 		//$output .= $trades->Display($member->getBalance());
 		//CT without running balance
 		$output .= $trades->Display();
-		
-		$output .= "CT: show record of reversals";
 	}
 
 	$p->page_title = $page_title;

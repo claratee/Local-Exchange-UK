@@ -111,7 +111,7 @@ class cTradeUtils extends cTrade{
         $this->setTradeId($trade_id);
 
         //log events done by admins
-        if($cUser->getMode() == "admin" AND LOG_LEVEL > 0){
+        if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) AND LOG_LEVEL > 0){
             //      $keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
             $field_array=array();
             $field_array['admin_id'] = $cUser->getMemberId();
@@ -366,7 +366,8 @@ class cTradeUtils extends cTrade{
             $errors[] = "Amount is missing or not a number.";
         }
         // CT safety for members - admin can complete large trades
-        if(!empty($field_array['amount']) AND is_numeric($field_array['amount']) AND $field_array['amount'] > 1000 AND $cUser->getMode() != "admin") {
+        if(!empty($field_array['amount']) AND is_numeric($field_array['amount']) AND $field_array['amount'] > 1000 AND (($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)))  {   
+
             $errors[] = "Amount is too large. You've hit the max safety size for members. Contact an admin for trades bigger than 1000.";
         }        
         if(!empty($field_array['description']) AND strlen($field_array['description']) > 300) {

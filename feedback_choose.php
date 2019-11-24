@@ -5,7 +5,7 @@ include_once("includes/inc.global.php");
 
 
 try{
-	if($cUser->getMode() == "admin" && !empty($_REQUEST["member_id"])) {  // Administrator is creating listing for another member
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) && !empty($_REQUEST["member_id"])) {  // Administrator is creating listing for another member
 		$member = new cMember();
 		
 			$member->Load("m.member_id =\"{$_REQUEST["member_id"]}\"");

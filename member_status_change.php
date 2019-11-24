@@ -106,19 +106,18 @@ function displayStatusChangeButton($member) { // TODO: Should use SaveMember and
 		if(!$success) return false;
 		if($member->getStatus()=="I"){
 			
-			
-
+			//CT expire listings
+			$listings = new cListingGroupUtils();
+			$condition = "member_id = \"{$member->getMemberId()}\"";
+			$count = $listings->ExpireAll($condition);
+			//$date = new cDateTime("yesterday");
+			$cStatusMessage->Info($count . " listings expired.");
+			//CT if expired too...
 			if($_POST['archive'] == 1){
 				//archive the record - delete personal data for GDPR.
 				$member->setAction("archive");
 				$success = $member->Save();
-			} else{
-				$listings = new cListingGroupUtils();
-				$condition = "member_id = \"{$member->getMemberId()}\"";
-				$count = $listings->ExpireAll($condition);
-				//$date = new cDateTime("yesterday");
-				$cStatusMessage->Info($count . " listings expired.");
-			}
+			} 
 		} 	
 		return $success;
 	}

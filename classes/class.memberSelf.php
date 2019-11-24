@@ -176,7 +176,7 @@ class cMemberSelf extends cMember {
     public function changeMode($mode="default"){
         global $cUser;
         if($this->getMemberRole()<1) $mode="default";
-        if($mode != "admin" && $this->getMemberRole()<1){
+        if($mode != USER_MODE_ADMIN && $this->getMemberRole()<1){
             //fallback to the default mode for the user
             $mode = ($cUser->IsLoggedOn()) ? "member" : "guest";
         }
@@ -308,10 +308,10 @@ class cMemberSelf extends cMember {
 
     public function MustBeLoggedOn()
     {
-        global $cUser, $p, $cStatusMessage;
+        global $cUser, $p, $cStatusMessage, $site_settings, $site_settings;
         
-        if($cUser->getMode()=="admin") {
-            $url = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "mode", "admin");
+        if($site_settings->getKey('USER_MODE') == true && $cUser->getMode()==USER_MODE_ADMIN) {
+            $url = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "mode", USER_MODE_ADMIN);
         }
         if ($this->IsLoggedOn()){
             return true;
@@ -319,7 +319,6 @@ class cMemberSelf extends cMember {
         
         // user isn't logged on, but is in a section of the site where they should be logged on.
         $_SESSION['request_uri'] = $url;
-        //if($cUser->getMode() ==  "admin") $_SESSION['request_uri'] . "?mode=admin"
         $cStatusMessage->SaveMessages();
         header("location:" . HTTP_BASE . "/login_redirect.php");
                 
@@ -349,15 +348,15 @@ class cMemberSelf extends cMember {
     // }
     //CT a replacement to the function above - as admin mode should be explicitly entered into - like SUPER USER mode for unix - even if you are an admin. Safety first!
     public function MustBeLevel($level){
-        global $p, $cStatusMessage;
+        global $p, $cStatusMessage, $site_settings;
         $this->MustBeLoggedOn();
-        if($this->getMode() != "admin"){
+        if(($site_settings->getKey('USER_MODE') == true && $this->getMode() != USER_MODE_ADMIN) or ($site_settings->getKey('USER_MODE') == false && $this->getMode() == USER_MODE_ADMIN)){
             $cStatusMessage->Error('You do not have permission to view this page.');
             $output = "";
-            if(!$this->getMemberRole() < $level) {
+            if(!$this->getMemberRole() < $level && $site_settings->getKey('USER_MODE')) {
                 $request_uri = $_SERVER['REQUEST_URI'];
                 //your addQueryStringVar() returns the new url, it doesn't echo it to the screen
-                $request_uri= $p->addQueryStringVar($request_uri,"mode","admin");
+                $request_uri= $p->addQueryStringVar($request_uri,"mode", USER_MODE_ADMIN);
 
                 $output .= "<a href=\"" . $request_uri . "\" class=\"button large\"><i class=\"fas fa-lock\"></i>Turn on admin mode</a>";
             }

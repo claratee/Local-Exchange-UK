@@ -65,7 +65,7 @@ function process_data ($values) {
         // Log if enabled & entered by an admin
 		if(LOG_LEVEL > 0 and $_REQUEST["mode"] == "admin") {
             $cUser->MustBeLevel(2);
-			$log_entry = new cLogging (FEEDBACK, FEEDBACK_BY_ADMIN, $feedback->feedback_id);
+			$log_entry = new cLogging (LOG_FEEDBACK, LOG_FEEDBACK_BY_ADMIN, $feedback->feedback_id);
 			$log_entry->SaveLogEntry();	
 		}
 		$output = "Your feedback has been recorded.";

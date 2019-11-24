@@ -12,7 +12,7 @@
 * include news items in weekly updates
 * restrict members 
 * site settings writing UI
-* inactivate member - expire listings
+* -inactivate member - expire listings-
 * change filter or member chooser (member_chooser.php)
 * remove redundant classes
 * genericize style - too much camlets

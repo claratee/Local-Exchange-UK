@@ -55,7 +55,7 @@ try{
 	}
 	$adminElements ="";
 	//allow edit by the logged in user on self, or committee.
-	if($cUser->getMode() == "admin" || $cUser->getMemberId() == $member_id){
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) || $cUser->getMemberId() == $member_id){
 	    $output .= "
 	    <div>
 	    	<a href=\"listing_edit.php?listing_id={$listing->getListingId()}\" class=\"button edit\">

@@ -163,8 +163,10 @@ $string_queries[]="ALTER TABLE " . DATABASE_MEMBERS . "
   ADD UNIQUE KEY `member_id` (`member_id`);";
 
 //CT sets up more useful categories of actions - all "send mail" events are category S, and action remains the original value.
-$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set category='" . LOG_SEND . "' where category='" . LOG_SEND_UPDATE_WEEKLY . "' or category='" . LOG_SEND_UPDATE_DAILY . "' or category='" . LOG_SEND_UPDATE_MONTHLY . "';";
+$string_queries[]="UPDATE " . DATABASE_LOGGING .  " set category='" . LOG_SEND . "' where category='" . LOG_SEND_UPDATE_WEEKLY . "' or category='" . LOG_SEND_UPDATE_DAILY . "' or category='" . LOG_SEND_UPDATE_MONTHLY . "';";
 
+
+$string_queries[]="INSERT INTO " . DATABASE_SETTINGS .  "  (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'USER_MODE', 'Enable usermodes', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to allow members in admin role to explicitly enter admin mode before access to certain actions?', '4');";
 //$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set `admin_id`='" . SYSTEM_ACCOUNT_ID . "' where `admin_id`='EVENT_SYSTEM';";
 
 try{

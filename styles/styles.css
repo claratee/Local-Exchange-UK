@@ -294,12 +294,12 @@ table.tabulated tr.debit td.units{color: red;}
 table.tabulated tr.credit td.units{color: green;}
 
 /* table.tabulated tr.reversal td, table.tabulated tr.expired td div.text{opacity: 0.5; text-decoration: line-through;} */
-table.tabulated tr.reversal td, table.tabulated tr.expired td div.text{opacity: 0.5; font-style: italic}
-table.tabulated tr.reversal td a, table.tabulated tr.expired td div.text a {color:inherit;}
+table.tabulated tr.reversal td{opacity: 0.5; font-style: italic}
+table.tabulated tr.reversal td a {color:inherit;}
 table.tabulated tr.reversal td span.note{text-decoration: none;}
-
 table.tabulated tr.total td{background-color: #333; color:#FFF;}
 
+table.tabulated tr.expired td div.text{opacity: 0.5; text-decoration: line-through;}
 
 
 div.group{

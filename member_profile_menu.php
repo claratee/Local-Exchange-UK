@@ -10,7 +10,7 @@ $cUser->Load("m.member_id=\"{$cUser->getMemberId()}\"");
 $cUser->refreshSession();
 
 
-if($cUser->getMode() == "admin" && !empty($_REQUEST['member_id'])){
+if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
 	$member_id = $_REQUEST['member_id'];
 	$page_title = "Profile menu for #{$member_id}";
 }else{

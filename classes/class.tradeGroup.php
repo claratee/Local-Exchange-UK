@@ -40,7 +40,7 @@ class cTradeGroup extends cBasic{
         //     $condition .= " AND type !='S' AND type != '{$trade_type}' AND type != '{$trade_type_monthly_refund}'";
         // }
         //print();
-        if(!($site_settings->getKey('SHOW_GLOBAL_FEES')) AND $cUser->getMemberId() != $member_id){
+        if(!($site_settings->getKey('SHOW_GLOBAL_FEES')) AND $cUser->getMemberId() != $member_id AND $cUser->getMode() != "admin"){
             $condition .= " 
                 AND NOT t.type = '" . TRADE_TYPE_REVERSAL. "' 
                 AND NOT t.type = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL. "' 

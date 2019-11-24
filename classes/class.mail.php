@@ -313,7 +313,6 @@ public function EmailListingUpdates($action) {
                 $this->Build($field_array);
                 //print_r($message_array['message']);
                 //$mailer = new cMail($message_array);
-                //CT send to ALL users with role ADMIN - so security risk user "admin" can go away.
                 $condition="`email_updates`={$action} ORDER BY member_id";
                 $this->loadRecipients($condition);
                 return $this->sendMail($action);

@@ -7,7 +7,7 @@ $cUser->MustBeLoggedOn();
 $p->page_title = "For which member?";
 $members = new cMemberGroup;
 
-$option = (!empty($_REQUEST['option']) && $cUser->getMode() == "admin") ? $_REQUEST['option'] : "member";
+$option = (!empty($_REQUEST['option']) && ($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) ? $_REQUEST['option'] : "member";
 
 $members->setOption($option);
 list($condition, $label, $actions_keys) = $members->makeSettingFromOption();

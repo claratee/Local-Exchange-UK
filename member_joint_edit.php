@@ -7,7 +7,7 @@ include_once("includes/inc.global.php");
 //
 
 try{
-	if($cUser->getMode()=="admin" && !empty($_REQUEST['member_id'])){
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) && !empty($_REQUEST['member_id'])){
 		//CT can manage someone else's income shares - inactive users too, just in case
 		//CT TODO should be able to search active users to make sure that their inclme shares are not benefitting inactive account - sweep
 		$member = new cMemberUtils();

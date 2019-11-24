@@ -172,6 +172,8 @@ define("TRADE_PENDING_STATUS_CANCELLED","W"); //CT - withdrawn NEW - cancelled. 
 define("LOG_TRADE","T"); //CT transfer
 define("LOG_ACCOUNT","A"); //CATEGORY new. category for account admin events.
 define("LOG_SEND","S"); //CATEGORY CT new. category for mail events.
+define("LOG_FEEDBACK","F"); // Logging event category
+
 
 //ACTIONS for logging.
 //CT note - actions come from the trade object - TRADE_TYPE_TRANSFER etc
@@ -189,6 +191,13 @@ define("LOG_SEND_UPDATE_MONTHLY","M"); // monthly email update - refactor of MON
 define("LOG_SEND_OUT_OF_BALANCE","B"); // new. Out of balance warning mail
 define("LOG_SEND_WELCOME","W"); // send mail on creation of account or admin action password reset
 define("LOG_SEND_PASSWORD_RESET","P"); // send mail on password reset
+//CT these are a bit messy. sort out
+define("LOG_SEND_TRADE_PENDING_REJECTED","R"); // send mail on rejection of trade
+define("LOG_SEND_TRADE_PENDING_ACCEPT_REJECTION","A"); // send mail on accepting of trade
+define("LOG_SEND_TRADE_PENDING_RESENT","Q"); // send mail on accepting of trade
+define("LOG_SEND_TRADE_PENDING_ACCEPT","U"); // send mail on accepting of trade
+
+
 
 //these as above, but content and recipient gets saved
 define("LOG_SEND_ALL","A"); // send mail to all members - refactored LOG_SEND_ALL
@@ -207,7 +216,11 @@ define("LOG_SEND_CONTACT","C"); // send mail via contact form
 // define("TRADE_TYPE_REVERSAL","R");
 // define("TRADE_TYPE_MONTHLY_FEE_REVERSAL", "N");
 define("FEEDBACK","F"); // Logging event category
-define("FEEDBACK_BY_ADMIN","A");
+define("LOG_FEEDBACK_BY_ADMIN","A"); //CT refactored FEEDBACK_BY_ADMIN
+
+//CT new. user object can go into explicit admin mode.
+define("USER_MODE_ADMIN", "admin");
+define("USER_MODE_DEFAULT", "default");
 
 /*
 //CT TODO - the above is great, but it would be better if 

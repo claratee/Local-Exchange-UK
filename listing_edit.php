@@ -53,7 +53,7 @@ if(!empty($_REQUEST["listing_id"])){
 	}
 	if(!empty($_REQUEST["category_id"])) $listing->setCategoryId($_REQUEST["category_id"]);
 
-	if($cUser->getMode() == "admin" && $_REQUEST['member_id'] && $_REQUEST['member_id'] != $cUser->getMemberId()){
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) && $_REQUEST['member_id'] && $_REQUEST['member_id'] != $cUser->getMemberId()){
 	
 		try{
 			$member = new cMember;

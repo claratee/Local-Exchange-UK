@@ -21,7 +21,7 @@ class cMemberUtils extends cMember {
     public function sendWelcomeEmail(){
         global $cUser, $cStatusMessage, $site_settings;
 
-        if($cUser->getMode()!="admin") return false;
+        if(!$cUser->getMemberRole() > 0) return false;
         
 
             $message_array = array();
@@ -44,7 +44,7 @@ class cMemberUtils extends cMember {
             //scope
             $mailer->buildRecipientsFromMemberObject($this, "primary");
             //CT should be try catch
-            $is_success=$mailer->sendMail();
+            $is_success=$mailer->sendMail(LOG_SEND_WELCOME);
         //}else{
         //    throw new Exception('Could not send email.');   
         //}
@@ -89,7 +89,7 @@ class cMemberUtils extends cMember {
             if (null !=($this->getConfirmPayments())) $keys_array[] = 'confirm_payments';
             if(null !=($this->getAccountType())) $keys_array[] = 'account_type'; //CT non-admins can only change from single to joint or back again
 
-            if($cUser->getMode()=="admin"){
+            if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
                 if(null !=($this->getMemberId())) $keys_array[] = 'member_id';
                 if(null !=($this->getMemberRole())) $keys_array[] = 'member_role';
                 if(null !=($this->getAccountType())) $keys_array[] = 'account_type';
@@ -138,15 +138,18 @@ class cMemberUtils extends cMember {
                 case "archive":
                     $cUser->MustBeLevel(1);
                         if($this->getMemberId() == $site_settings->getKey('SITE_MEMBER_ID')) throw new Exception("You cannot archive permanently the central site account.", 1);
-                        
-                        $trade_field_array = $this->makeTradeArrayForBalanceTransfer();
-                        //CT commit trade
-                        $trade = new cTradeUtils($trade_field_array);
-                        $is_success = $trade->ProcessData($trade_field_array);
-                    // $field_array = array;
-                    // $this->Build($field_array);
+                            $this->setAdminNote("");
+                            $keys_array[] = 'admin_note';
+                            $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
 
-                    // $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
+                        if($this->getBalance() != 0){
+                             $trade_field_array = $this->makeTradeArrayForBalanceTransfer();
+                            //CT commit trade
+                            $trade = new cTradeUtils($trade_field_array);
+                            $is_success = $trade->ProcessData($trade_field_array);
+                        }else{
+                            $is_success = true;
+                        }
                 break;
                 case "joint_create":
                     //make sure status=L, primary member=Y are all set before get to this stage
@@ -186,6 +189,34 @@ class cMemberUtils extends cMember {
                 break;
                 case "change_status":
                     //CT do nothing - all good.
+                break;
+                case "archive":
+                    //CT blank all PII fields
+                    $field_array = array(
+                        'member_id'=>$this->getMemberId(),
+                        'person_id'=>$this->getPerson()->getPersonId(),
+                        'first_name'=>substr($this->getPerson()->getFirstName(), 0, 1) . "******",
+                        'last_name'=>substr($this->getPerson()->getLastName(), 0, 1) . "******",
+                        'primary_member'=>"Y",
+                        'about_me'=>"The record of this member was archived on " . date('Y-m-d') . " by an admin."
+                    );
+                
+                    $person = $this->makePerson($field_array);
+                    $this->setPerson($person);
+                    $this->getPerson()->Save();
+                    if(!empty($this->getJointPerson()->getPersonId())){
+                        $field_array = array(
+                            'first_name'=>"Archived",
+                            'last_name'=>"Member",
+                            'member_id'=>$this->getMemberId(),
+                            'person_id'=>$this->getJointPerson()->getPersonId(),
+                            'primary_member'=>"N"
+                        );
+                        $person1 = $this->makePerson($field_array);
+                        $this->setJointPerson($person1);
+                        $this->getJointPerson()->Save();
+                    }
+
                 break;
                 case "joint_create":
                     $this->getJointPerson()->setAction('create');

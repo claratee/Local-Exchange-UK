@@ -10,7 +10,7 @@ $is_success = false;
 $member = new cMember();
 $member_id = (!empty($_REQUEST["member_id"]))? $cDB->EscTxt($_REQUEST["member_id"]) : $member_id=$cUser->getMemberId();
 
-if($cUser->getMode()=="admin"){
+if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR $cUser->getMode() == USER_MODE_ADMIN){
     $condition = "m.member_id=\"{$member_id}\" LIMIT 1";
 } else{
     $condition = "m.member_id=\"{$member_id}\" and status=\"A\" LIMIT 1";
@@ -74,7 +74,7 @@ if(!$is_success){
             if ($member->getAccountType() == "J" AND !is_null($member->getJointPerson())) {
 
                 if($member->getJointPerson()->getDirectoryList() == "N"){
-                    if(($cUser->getMemberId() == $member->getMemberId()) OR $cUser->getMode()=="admin"){
+                    if(($cUser->getMemberId() == $member->getMemberId()) OR (($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
                         $joint_member_text ="
                         <p class=\"line\">
                             There is a joint member, but hidden from view. <a href=\"member_joint_edit.php?member_id=0634\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit or remove joint member</a>

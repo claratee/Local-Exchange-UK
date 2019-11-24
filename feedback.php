@@ -5,7 +5,7 @@ $cUser->MustBeLoggedOn();
 
 	try{
 		$feedback = new cFeedback(); 
-		if($cUser->getMode() == "admin" && !empty($_REQUEST["member_id"])) {  // Administrator is creating listing for another member
+		if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) && !empty($_REQUEST["member_id"])) {  // Administrator is creating listing for another member
 			$member = new cMember();
 			
 			$member->Load("m.member_id =\"{$_REQUEST["member_id"]}\" AND m.status=\"A\"");
@@ -63,7 +63,7 @@ $cUser->MustBeLoggedOn();
 		}
 
   
-        $dropdown_rating = $p->PrepareFormSelector("rating", ARRAY_FEEDBACK, "-- Select action --", $feedback->getRating());
+        $dropdown_rating = $p->PrepareFormSelector("rating", ARRAY_FEEDBACK, "Select action", $feedback->getRating());
 		$member_about = new cMember();
 			
 		$member_about->Load("m.member_id =\"{$member_id_about}\" AND m.status=\"A\"");

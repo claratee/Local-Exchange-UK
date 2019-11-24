@@ -48,7 +48,7 @@ if(!empty($_REQUEST['option'])) {
 
 
 	$admin_extras = "";
-	if($cUser->getMode() == "admin"){
+	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)){
 		$admin_extras = "<p class=\"l_text\">
 			<label>
 				<span>[Admin] Options:</span>
@@ -162,7 +162,7 @@ if(!empty($_REQUEST['option'])) {
 		if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->member_role >= 1){
 			$row_output .= "<td class='units balance'>{$member->getBalance()} </td>";
 		}
-		if ($cUser->getMode() == "admin")  {   
+		if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
 			$row_output .= "<td class='action nowrap'>{$member->makeActionsButtons($actions_keys, $member->getMemberId())}</td>";
 		}
 		$row_output .= "</tr>";
@@ -178,18 +178,18 @@ $output .="<div class=\"scrollable-x\"><table class=\"tabulated\">
 		<th>Contact</th>
 		<th>Location</th>";
 
-if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->getMemberRole() >= 1)  {   
+if (MEM_LIST_DISPLAY_BALANCE==true || $cUser->getMemberRole() > 0)  {   
 	$output .= "<th class='units balance'>Balance</th>";
 
 }
-if ($cUser->getMode() == "admin")  {   
+if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
 	$output .= "<th class='action'>Available actions</th>";
 }
 $output .= "</tr>
 			{$row_output}
 		</table></div>
 		<div class='summary'>{$label} ({$i} found).</div>";
-if($cUser->getMode() == "admin") {
+if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) {
 	$output .= "
 		<div class='summary'>[Admin] Total (for check balance): {$running_balance} " . UNITS . "</div>";
 }

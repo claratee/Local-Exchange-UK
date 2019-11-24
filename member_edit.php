@@ -29,7 +29,7 @@ $member_id = $_REQUEST['member_id']; //if missing, is user.
 
 // twisty logic for safety. not readability!
 // only core group and up can be in admin mode.
-if($cUser->getMode() == "admin"){
+if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {
     if($action == "create"){
         //member_id shown in form
         $member_id = "";
@@ -126,7 +126,7 @@ $adminElements="";
 
 
         if($cUser->getMemberRole() > 0){
-            if($cUser->getMode()=="admin"){
+            if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
                 $adminElements .= "
                  <div class=\"summary\">
                     <h3>Account [Admin controls]</h3>
@@ -300,11 +300,11 @@ $p->DisplayPage($output);
 
 
 function processData(){
-    global $member, $cUser, $cStatusMessage, $p;
+    global $member, $cUser, $cStatusMessage, $p, $site_settings;
     //CT TODO - validation. this is hokey and manual, will replace with proper validator sometime...
     $error_message = "";
 
-    if($cUser->getMode()=="admin"){
+    if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
         
 
         if(strlen($member->getJoinDate()) < 1) {

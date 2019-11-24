@@ -16,9 +16,9 @@ include_once("classes/class.trade.php");
 $p->site_section = EXCHANGES;
 	$cUser->MustBeLoggedOn();
 //CT allow admins to see this page
-$mode = $cUser->getMode();  // Administrator is editing a member's account
+//$mode = $cUser->getMode();  // Administrator is editing a member's account
 
-if($mode == "admin" && !empty($_REQUEST["member_id"])){
+if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST["member_id"])){
 	//$cUser->MustBeLevel(2);
 	$member_id = $_REQUEST["member_id"];
 	/* CT just for user experience - check that member exists, and show display name */
@@ -80,7 +80,7 @@ function makeRemoveLink($base_link){
 //CT make better
 function displayTrade($field_array, $filter) {
 		//print_r($type);
-		global $cUser, $cDB, $mode, $member_id;
+		global $cUser, $cDB, $member_id, $site_settings;
 		//CT this is rubbish
 		$base_link = "trades_pending.php?filter={$filter}&member_id={$member_id}&tid={$field_array["trade_pending_id"]}";
 
@@ -96,7 +96,9 @@ function displayTrade($field_array, $filter) {
 					//CT has it been rejected?
 					if($field_array["member_to_decision"]  != 3){
 						$action_text .= "Transfer requested. Awaiting acceptance... ";
-						if($cUser->getMode() == "admin") $action_text .= makeActionLink($base_link, "cancel", "Cancel");
+						if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST["member_id"])) { 
+							$action_text .= makeActionLink($base_link, "cancel", "Cancel");
+						}
 
 					}else{
 						$action_text .= "Transfer was rejected. ";
@@ -115,7 +117,9 @@ function displayTrade($field_array, $filter) {
 					//CT has it been rejected?
 					if($field_array["member_from_decision"] != 3){
 						$action_text .= "Invoice sent.  Awaiting confirmation... ";
-						if($cUser->getMode() == "admin") $action_text .= makeActionLink($base_link, "cancel", "Cancel");
+						if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+ $action_text .= makeActionLink($base_link, "cancel", "Cancel");
+ 						}
 					}else{
 						$action_text .= "Invoice was rejected. ";
 						$action_text .= makeActionLink($base_link, "accept_rejection", "Accept rejection") . " | ";
@@ -213,7 +217,7 @@ function confirmTrade($field_array) {
 }
 //CT Sorry, this is horrendous - just trying to work within what is here, but make safer :) like put in try/catch and not just print out on screen and continue executing
 function doPageView(){
-	global $cDB, $cUser;
+	global $cDB, $cUser, $site_settings;
 
 	// CT WRNING THIS function is grabbing values off of the querystring which I know is not a great thing to do. there is also a lot of duplication. 
 
@@ -234,8 +238,7 @@ function doPageView(){
 
 
 
-	if($cUser->getMode() == "admin" && !empty($_REQUEST["member_id"])){
-		//$cUser->MustBeLevel(2);	
+if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST["member_id"])){		//$cUser->MustBeLevel(2);	
 		$member_id = $_REQUEST["member_id"];
 		//$form->addElement("header", null, "Edit Member " . $member->getAllNames());
 	}
@@ -442,7 +445,8 @@ function doPageAction(){
 			if ($row["status"] !=TRADE_PENDING_STATUS_OPEN){
 				throw new Exception('Only Open pending trades can be cancelled.');
 			}
-			if ($cUser->getMode() != "admin"){
+			if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+
 				throw new Exception('Only admins can cancel pending trades right now.');
 			}
 
@@ -636,7 +640,7 @@ function doPageAction(){
                     $message_array['message'] = "<p>Hi {$member_from->getDisplayName()},</p><p>Your transfer request of {$row['amount']} to {$member_to->getDisplayName()} ({$member_to->getMemberId()}) has been rejected. You can accept this rejection, or re-send the transfer request using the following URL</p><p><a href=\"".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=outgoing\">".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=outgoing</a></p>";
                     $mailer = new cMail($message_array);
                     $mailer->buildRecipientsFromMemberObject($member_to);
-                    $mailer->sendMail();
+                    $mailer->sendMail(LOG_SEND_TRADE_PENDING_REJECTED);
 			} elseif($row['type'] == TRADE_TYPE_INVOICE){
 				//CT send message to member whi sent the invoice saying its been rejected
 
@@ -645,7 +649,7 @@ function doPageAction(){
                     $message_array['message'] = "<p>Hi {$member_to->getDisplayName()},</p><p> Your invoice of {$row['amount']} requesting payment from {$member_from->getDisplayName()} ({$member_from->getMemberId()}) has been rejected. You can accept this rejection, or re-send the invoice using the following URL</p><p><a href=\"".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=invoices_sent\">".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=invoices_sent</a></p>";
                     $mailer = new cMail($message_array);
                     $mailer->buildRecipientsFromMemberObject($member_to);
-                    $mailer->sendMail();
+                    $mailer->sendMail(LOG_SEND_TRADE_PENDING_ACCEPT_REJECTION);
 			}
 
 		}elseif($action=="resend"){
@@ -659,14 +663,14 @@ function doPageAction(){
                     //CT a bit awkward, but set recipients after object already instantiated
                     $mailer->buildRecipientsFromMemberObject($member_to);
                     //CT should be try catch
-                    $mailer->sendMail();
+                    $mailer->sendMail(LOG_SEND_TRADE_PENDING_RESENT);
 			}else{
 					$message_array = array();
                     $message_array['subject'] = "ACTION REQUIRED: Confirm transfer";
                     $message_array['message'] = "<p>Hi {$member_to->getDisplayName()},</p><p>You have been re-sent a request from {$member_from->getDisplayName()} ({$member_from->getMemberId()}) to transfer a payment of {$row["amount"]} " . UNITS . " to your account.  Please confirm or reject this payment using the following URL</p><p><a href=\"".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=incoming\">".SERVER_DOMAIN.SERVER_PATH_URL."/trades_pending.php?filter=incoming</a></p>";
                     $mailer = new cMail($message_array);
                     $mailer->buildRecipientsFromMemberObject($member_to);
-                    $mailer->sendMail();
+                    $mailer->sendMail(LOG_SEND_TRADE_PENDING_ACCEPT);
 			}
 		}
 

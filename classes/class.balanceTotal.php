@@ -46,30 +46,27 @@ class cBalanceTotal  {
     		return true;
     	}
     	//CT todo - if site is already locked dont send email
-		if ($site_settings->getKey("OOB_EMAIL_ADMIN") == true) {
+		if ($site_settings->getKey("OOB_EMAIL_ADMIN") == true AND $this->getSystemBalance() != 0) {
 			//mail admin 
-			$this->sendMailToAdmins();
+			
+	    		//mail admin 
+				$message_array = array();
+		        $message_array['subject'] = "System is out of balance";
+		        $message_array['message'] = "<p>Hi Admin,</p><p>The system is out of balance by {$this->getSystemBalance()}. This was detected on " . date("Y-m-d H:i:s", time() - date("Z")) . "</p>";
+		        $message_array['recipients'][0] = array('display_name'=>"Admin", 'email'=>$site_settings->getKey('EMAIL_ADMIN'));
+		        //use this if you want to send to all admins instead
+		        //$condition = "member_role=\"2\"";
+		        //$mailer->loadRecipients($condition);
+
+		        $mailer = new cMail($message_array);
+		        $mailer->sendMail(LOG_SEND_OUT_OF_BALANCE);
+				// Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
+	    	
 			// Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
 
 		}		
     }
-    public function sendMailToAdmins(){
-    	if($this->getSystemBalance() != 0){
-    		//mail admin 
-			$message_array = array();
-	        $message_array['subject'] = "System is out of balance";
-	        $message_array['message'] = "<p>Hi Admin,</p><p>The system is out of balance by {$this->getSystemBalance()}. This was detected on " . date("Y-m-d H:i:s", time() - date("Z")) . "</p>";
-	        $mailer = new cMail($message_array);
-	        //CT send to ALL users with role ADMIN - so security risk user "admin" can go away.
-	        $condition = "member_role=\"2\"";
-	        $mailer->loadRecipients($condition);
-	        //CT commented out  temp
-	        $mailer->sendMail(LOG_SEND_OUT_OF_BALANCE);
-			// Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
-    	}
-		
 
-    }
     //CT replace with function above
 	// public function Balanced() {
 	// 	global $cDB, $cStatusMessage;

@@ -10,7 +10,9 @@
 
 // }
 $menu_string ="";
-if($cUser->getMemberId() == $member_id OR $cUser->getMode()=="admin"){
+if($cUser->getMemberId() == $member_id  
+	OR (($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))
+	AND $member->getStatus() == "A"){
 	$menu_string .="
 		<a href=\"member_edit.php?member_id={$member_id}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a>";
 	 if($member->getStatus() == "A"){
@@ -21,7 +23,7 @@ if($cUser->getMemberId() == $member_id OR $cUser->getMode()=="admin"){
 		
 }
 
-if(($cUser->getMemberId() != $member_id  OR $cUser->getMode()=="admin") AND $member->getStatus() == "A"){
+if($cUser->getMemberId() != $member_id){
 	
 	$menu_string .="
 	<div class=\"context-trade-menu\">

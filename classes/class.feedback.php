@@ -165,19 +165,14 @@ class cFeedback extends cBasic2 {
         $feedback_id = $this->Save();
     
         if($feedback_id) {
-            // if(LOG_LEVEL > 0 and $cUser->getMode() == "admin") { // Log if enabled & entered by an admin
-       
-            //  $log_entry = new cLogging (FEEDBACK, FEEDBACK_BY_ADMIN, feedback_id);
-            //  $log_entry->SaveLogEntry(); 
-            // }
 
                     //log events done by admins
-            if($cUser->getMode() == "admin" AND LOG_LEVEL > 0){
+            if($cUser->getMode() == USER_MODE_ADMIN AND LOG_LEVEL > 0){
                 //      $keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
                 $field_array=array();
                 $field_array['admin_id'] = $cUser->getMemberId();
-                $field_array['category'] = FEEDBACK;
-                $field_array['action'] = FEEDBACK;
+                $field_array['category'] = LOG_FEEDBACK;
+                $field_array['action'] = LOG_FEEDBACK_BY_ADMIN;
                 $field_array['ref_id'] = $feedback_id;
                 $field_array['note'] = "";
                 $log_entry = new cLogging ($field_array);
