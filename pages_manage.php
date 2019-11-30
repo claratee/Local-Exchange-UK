@@ -23,7 +23,7 @@ if ($_POST["submit"]){
 	$vars['action'] = $_POST["action"];
 	//print_r($vars);
 	if($pageGroup->Save($vars)){
-		$cStatus->Info("Your changes were saved.");
+		$cStatusMessage->Info("Your changes were saved.");
 	}
 }
 $pageGroup->Load($cUser->getMemberRole());
