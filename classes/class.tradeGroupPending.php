@@ -163,7 +163,7 @@ function DisplayWithTriggers($filter) {
 			$hname = "t{$trade->getTradeId()}";			
             // $currentbalance = number_format((float)$runningbalance, 2, '.', '');
             $note = (!empty($trade->getFeedback())) ? "From #{$trade->getMemberIdFrom()}: {$trade->getFeedback()->showRatingAsStars()} &quot;{$trade->getFeedback()->getComment()}&quot; " : "";
-            if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+            if($cUser->isAdminActionPermitted())  {   
             	$note .= "(Requested by {$trade->getMemberIdAuthor()})";
             }
             //TODO - show who did it

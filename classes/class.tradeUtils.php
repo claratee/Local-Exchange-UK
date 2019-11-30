@@ -397,7 +397,7 @@ class cTradeUtils extends cTrade{
             $errors[] = "Amount is missing or not a number.";
         }
         // CT safety for members - admin can complete large trades
-        if(!empty($field_array['amount']) AND is_numeric($field_array['amount']) AND $field_array['amount'] > 1000 AND (($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)))  {   
+        if(!empty($field_array['amount']) AND is_numeric($field_array['amount']) AND $field_array['amount'] > 1000 AND (!$cUser->isAdminActionPermitted()))  {   
 
             $errors[] = "Amount is too large. You've hit the maximum number allowed for members. Contact an admin for trades bigger than 1000.";
         }        

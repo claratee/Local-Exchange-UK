@@ -67,7 +67,7 @@ class cInfo extends cBasic2 {
 			//$clean_text = $this->tidyHTML($this->body);
 			//CT show page
 			if(!empty($this->page_id)){
-				if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+				if($cUser->isAdminActionPermitted())  {   
 					//CT move edit button to page class
 					$string.= "<div class=\"button edit\"><a href=\"pages_edit.php?page_id={$this->page_id}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a></div>";
 				}

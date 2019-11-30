@@ -96,7 +96,7 @@ function displayTrade($field_array, $filter) {
 					//CT has it been rejected?
 					if($field_array["member_to_decision"]  != 3){
 						$action_text .= "Transfer requested. Awaiting acceptance... ";
-						if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST["member_id"])) { 
+						if($cUser->isAdminActionPermitted()) { 
 							$action_text .= makeActionLink($base_link, "cancel", "Cancel");
 						}
 
@@ -445,7 +445,7 @@ function doPageAction(){
 			if ($row["status"] !=TRADE_PENDING_STATUS_OPEN){
 				throw new Exception('Only Open pending trades can be cancelled.');
 			}
-			if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+			if(!$cUser->isAdminActionPermitted())  {   
 
 				throw new Exception('Only admins can cancel pending trades right now.');
 			}
