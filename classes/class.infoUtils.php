@@ -9,12 +9,13 @@ class cInfoUtils extends cInfo {
 		//add extra class
 		if($vars['action']) $this->action = $vars['action'];
 	}
+
 	function PreparePermissionDropdown($page_id=null){
 		global $p, $cUser;
-		$vars = array("0" => "Guests", "1" => "Members", "2" => "Committee");
+		$vars = ARRAY_PAGES_VISIBILITY_ROLES;
 		// add extra option if user is an admin 
-		if($cUser->getMemberRole() > 1) {
-			$vars[3] = "Administrators";
+		if(!$cUser->getMemberRole() > 1) {
+			array_pop($vars);
 		}
 		$select_name = "permission";
 		//if used in context of batch page controls

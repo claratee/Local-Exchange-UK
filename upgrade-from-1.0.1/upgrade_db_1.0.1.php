@@ -173,6 +173,8 @@ $string_queries[]="UPDATE " . DATABASE_LOGGING .  " set category='" . LOG_SEND .
 $string_queries[]="INSERT INTO " . DATABASE_SETTINGS .  "  (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'USER_MODE', 'Enable usermodes', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to allow members in admin role to explicitly enter admin mode before access to certain actions?', '4');";
 //$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set `admin_id`='" . SYSTEM_ACCOUNT_ID . "' where `admin_id`='EVENT_SYSTEM';";
 
+$string_queries[]="INSERT INTO " . DATABASE_SETTINGS . " (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'SITE_MEMBER_ID', 'the member account used to handle the central balance for the scheme', 'varchar', '0001', '', '0000', '', 'What is the member ID used to hold the balance for the scheme? ie where do payments for memberships go.', '4');";
+
 $string_queries[]="INSERT INTO " . DATABASE_SETTINGS . " (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'MAIN_MENU', 'Main menu of the site', 'varchar', '<li><a href=\"{{HTTP_BASE}}/index.php\">Home</a></li>
           <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=7\">Information</a></li>
           <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=84\">Events</a></li>

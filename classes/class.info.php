@@ -48,7 +48,11 @@ class cInfo extends cBasic2 {
 			if(isset($field_array['updated_at'])) $this->updated_at = $field_array['updated_at'];
 			if(isset($field_array['member_id_author'])) $this->member_id_author = $field_array['member_id_author'];
 		}
-
+		function makePermissionString(){
+			global $p, $cUser;
+			$vars = ARRAY_PAGES_VISIBILITY_ROLES;
+			return $vars[$this->permission];
+		}
 		function tidyHTML($html) {
 			global $cDB;
 			//return $html;
@@ -72,20 +76,9 @@ class cInfo extends cBasic2 {
 					$string.= "<div class=\"button edit\"><a href=\"pages_edit.php?page_id={$this->page_id}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a></div>";
 				}
 				//CT put this in permissions object
-				switch($this->permission){
-					case '0':
-						$role_string="";
-					break;
-					case '1':
-						$role_string="Page visible to logged-in members.";
-					break;
-					case '2':
-						$role_string="Page visible to committee and up.";
-					break;
-					case '3':
-						$role_string="Page visible to admins only.";
-					break;
-				}
+				$role_string  = ($this->permission > 0 ) ? "Page visible to " . $this->makePermissionString() : "";
+
+
 				$authorstring = ($cUser->IsLoggedOn()) ? " by #{$this->member_id_author}" : "";
 				$string .= "<div class=\"content\">{$cDB->UnEscTxt($this->body)}</div>";
 				$string .= "<div class=\"metadata left\">{$role_string}</div><div class=\"metadata\"> Updated on {$this->updated_at}{$authorstring}</div>";

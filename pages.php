@@ -42,14 +42,14 @@ switch($cInfo->permission){
 
 if(!empty($cInfo->page_id)){
 	$p->page_title = $cInfo->title;
-	if($cUser->getMemberRole() > 1){
-		$form_action = (!empty($_REQUEST["form_action"])) ? $_REQUEST["form_action"] : null;
-		if($form_action == "update") {
-			$output .= "<div class=\"response success\">Your changes have been saved.</div>";
-		} elseif($form_action == "create"){
-			$output .= "<div class=\"response success\">New page created.</div>";
-		}
-	}
+	// if($cUser->getMemberRole() > 1){
+	// 	$form_action = (!empty($_REQUEST["form_action"])) ? $_REQUEST["form_action"] : null;
+	// 	if($form_action == "update") {
+	// 		$output .= "<div class=\"response success\">Your changes have been saved.</div>";
+	// 	} elseif($form_action == "create"){
+	// 		$output .= "<div class=\"response success\">New page created.</div>";
+	// 	}
+	// }
 	$output .=$cInfo->Display();
 	$p->DisplayPage($output);
 

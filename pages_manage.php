@@ -10,15 +10,15 @@ $pageGroup = new cInfoUtilsGroup;
 //$pageGroup->Load($cUser->getMemberRole());
 
 if ($_POST["submit"]){
-	$permission = array();
+	//$permission = array();
 	// CT arrange permission array according to role selection - makes it easier to process mysql
-	foreach($pageGroup->cdm_pages as $page){
-		//$value=$_POST["permission_" . $page->page_id];
-		$permission[$_POST["permission_" . $page->page_id]][] = $page->page_id;
-		//find out value of each permission setting for pages
-		//$vars['permission'][$page->page_id] = $_POST["permission_" . $page->page_id];
-	}
-	$vars['permission'] = $permission;
+	// foreach($pageGroup->cdm_pages as $page){
+	// 	//$value=$_POST["permission_" . $page->page_id];
+	// 	$permission[$_POST["permission_" . $page->page_id]][] = $page->page_id;
+	// 	//find out value of each permission setting for pages
+	// 	//$vars['permission'][$page->page_id] = $_POST["permission_" . $page->page_id];
+	// }
+	//$vars['permission'] = $permission;
 	$vars['select_id'] = $_POST["select_id"];
 	$vars['action'] = $_POST["action"];
 	//print_r($vars);
@@ -39,8 +39,8 @@ foreach($pageGroup->cdm_pages as $page) {
 			<td>{$page->PrepareCheckbox()}</td>
 			<td><a href=\"pages.php?page_id={$page->page_id}\">{$page->title} </a><span class=\"metadata\">page_id: {$page->page_id}</span></td>
 			<td>{$page->updated_at} by {$page->member_id_author}</td>
+			<td>{$page->makePermissionString()}</td>			
 			<td><a href=\"pages_edit.php?page_id={$page->page_id}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a></td>
-			<td>{$page->PreparePermissionDropdown($page->page_id)}</td>			
 		</tr>";
 	$i++;
 }
@@ -54,8 +54,8 @@ $output .= "
 				<th></th>
 				<th>Page</th>
 				<th>Updated</th>
+				<th>Visible to</th>
 				<th>Actions</th>
-				<th>Permission</th>
 			</tr>
 			{$row_output}
 		</table></div>

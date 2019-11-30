@@ -154,25 +154,7 @@ class cTradeUtils extends cTrade{
                 throw new Exception('Could not update TO account balance.');
                 exit;
             }
-                                // Has the recipient got an income tie set-up? If so, we need to transfer a percentage of this elsewhere...
-        /*  
-                $recipTie = cIncomeTies::getTie($member_to_id);
-                
-                if ($recipTie && ALLOW_INCOME_SHARES==true) {
-                    
-                    $member_to = new cMember;
-                    $member_to->LoadMember($member_to_id);
-        
-                    $theAmount = round(($values['units']*$recipTie->percent)/100);
-                    
-                    $charity_to = new cMember;
-                    $charity_to->LoadMember($recipTie->tie_id);
-        
-                    $trade2 = new cTrade($member_to, $charity_to, htmlspecialchars($theAmount), htmlspecialchars(12), htmlspecialchars("Donation from ".$member_to_id.""), 'T');
-            
-                    $status = $trade2->MakeTrade();
-                }
-        */            
+
             //CT this replaces the code above  
                 try {
                     if($this->getAction() !="reverse"){
@@ -221,7 +203,7 @@ class cTradeUtils extends cTrade{
                             $field_array_reversal["category_id"]=$this->getCategoryId(); //system business 
                             $field_array_reversal["type"]=TRADE_TYPE_REVERSAL; //reversal
                             $field_array_reversal["status"]="V"; //confirmed 
-                            $field_array_reversal["description"]="[Reversal of exchange #{$trade_id} from " . substr($this->getTradeDate(), 0, 10) . "by admin " . $cUser->getMemberId() . ". Reason: " . $reason . ']"; 
+                            $field_array_reversal["description"]="[Reversal of exchange #{$trade_id} from " . substr($this->getTradeDate(), 0, 10) . "by admin " . $cUser->getMemberId() . ". Reason: " . $reason . "']"; 
                             
                             //CT commit trade
                             //$trade_donation = new cTradeUtils($field_array_donation);
@@ -245,124 +227,6 @@ class cTradeUtils extends cTrade{
         return $trade_id;
 	}
 	
-
-//CT redoing - is this needed?
-
-	// // It is very important that this function prevent the database from going out balance.
-	// function MakeTrade($reversed_trade_id=null) { 
-	// 	global $cDB, $cStatusMessage;
-		
-	// 	if ($this->getAmount() <= 0 and $this->getType() != TRADE_TYPE_REVERSAL) // Amount should be positive unless
-	// 		return false;									 // this is a reversal of a previous trade.
-			
-	// 	if ($this->getAmount() >= 0 and $this->getType() == TRADE_TYPE_REVERSAL)	 // And likewise.
-	// 		return false;
-			
-		
-	// 	if ($this->getTradeMemberIdFrom() == $this->getTradeMemberIdTo())
-	// 		return false;		// don't allow trade to self
-		
-	// 	if ($this->getTradeMemberFrom()->getRestriction()==1) { // This member's account has been restricted - they are not allowed to make outgoing trades
-			
-	// 		return false;
-	// 	}
-	
-	// 	$balances = new cBalancesTotal;
-	
-	// 	// TODO: At some point, we should handle out-of-balance problems without shutting 
-	// 	// down all trades.  But for now, seems like a wonderfully simple solution.	
-	// 	//
-	// 	// [chris] Have added a few more methods for dealing with out-of-balance scenarios (admin can set his/her preferred method in inc.config.php)	
-	// 	// CT - TODO put this in the db and elsewhere
-	// 	if(!$balances->Balanced()) {
-			
-	// 		if (OOB_EMAIL_ADMIN==true) // Admin wishes to receive an email notifying him/her when db is found to be out-of-balance
- //                //CT TODO - mail
-	// 			$cStatusMessage->Error("The trade database is out of balance. TODO: mail admins");
- //                //$mailed = mail();
-			
-	// 		switch(OOB_ACTION) { // How should we handle the out-of-balance event?
-				
-	// 			case("FATAL"): // FATAL: The original method for dealing which is to abort the transaction
-					
-	// 				$cStatusMessage->Error("The trade database is out of balance!  Please contact your administrator at ". EMAIL_ADMIN .".", ERROR_SEVERITY_HIGH);  
-
-	// 				//include("redirect.php");
-	// 				exit;  // Probably unnecessary...
-					
-	// 			break;
-				
-	// 			default: // SILENT: Just ignore the situation and don't burden the user with warnings/error messages
-					
-	// 					// doing nothing...
-						
-	// 			break;
-	// 		}
-	// 	}	
-
-	// 	// NOTE: Need table type InnoDB to do the following transaction-style statements.		
-	// 	$cDB->Query("SET AUTOCOMMIT=0");
-		
-	// 	$cDB->Query("BEGIN");
-		
-	// 	if($this->Save()) {
-			
-	// 		$success1 = $this->gettradeMemberFrom()->UpdateBalance(-($this->amount));
-	// 		$success2 = $this->getTradeMemberTo()->UpdateBalance($this->amount);
-			
-	// 		if(LOG_LEVEL > 0 and $this->getType() != TRADE_BY_MEMBER) {//Log if enabled & not an ordinary trade
-	// 			$log_entry = new cLogging (TRADE, $this->getType(), $this->getTradeId());
-	// 			$success3 = $log_entry->SaveLogEntry();
-	// 		} else {
-	// 			$success3 = true;
-	// 		}
-			
-	// 		if($reversed_trade_id) {  // If this is a trade reversal, need to mark old trade reversed
-	// 			$success4 = $cDB->Query("UPDATE ".DATABASE_TRADES." SET status='R', trade_date=trade_date WHERE trade_id=". $cDB->EscTxt($reversed_trade_id) .";");
-	// 		} else {
-	// 			$success4 = true;
-	// 		}
-
-	// 		if($success1 and $success2 and $success3 and $success4) {
-	// 			$cDB->Query('COMMIT');
-	// 			$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-	// 			return true;
-	// 		} else {
-	// 			$cDB->Query('ROLLBACK');
-	// 			$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-	// 			return false;
-	// 		}
-	// 	} else {
-	// 		$cDB->Query("SET AUTOCOMMIT=1"); // Probably isn't necessary...
-	// 		return false;
-	// 	}			
-	// }
-	
-	// function ReverseTrade() { 	// This method allows administrators to reverse
-	// 	global $cUser;								// trades that were made in error.
-	// 	$cUser->MustBeLevel(1);
-	// 	if($this->getStatus() != TRADE_STATUS_APPROVED) return false;		// CT only reverse active trades
-	// 	$this->setStatus(TRADE_STATUS_REVERSED);
- //        $string = $this->setDescription() .  "[Trade from {$this->getTradeDate()} Reversed by admin #{$cUser->getMemberId()}]";
- //        $this->setDescription($string);
- //        $this->Save();
-
-	// 	$new_trade = new cTrade;				
- //        //CT - set and use 
- //        //
- //        $new_trade->setType(TRADE_TYPE_REVERSAL);
- //        $new_trade->setStatus(TRADE_STATUS_REVERSAL);
-	// 	$new_trade->setMemberIdFrom($this->getMemberIdTo());
- //        $new_trade->setMemberIdTo($this->getMemberIdFrom());
- //        $new_trade->setMemberIdAuthor($CUSER->getMemberId());
-	// 	$new_trade->setAmount($this->getAmount());
-	// 	$new_trade->setCategory($this->getCategory());
-	// 	$string = "[Reversal of trade #{$this->getTradeId()} from {$this->getTradeDate()} by admin {$cUser->getMemberId()}] {$description}";
-	// 	$new_trade->setDescription($string);
-
- //        //CT change status of the current
-	// 	return $new_trade->Save();
-	// }
 
     ///CT moved from inpage trade.php. 
     function ProcessData ($field_array) {
