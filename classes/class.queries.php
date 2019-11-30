@@ -231,6 +231,8 @@ function getMySqlFeedbackSummary($condition){
             FROM " . DATABASE_TRADES . " t 
             LEFT JOIN " . DATABASE_CATEGORIES . " c ON t.category_id = c.category_id
             LEFT JOIN " . DATABASE_FEEDBACK . " f ON t.trade_id = f.trade_id 
+            LEFT JOIN " . DATABASE_MEMBERS . " m ON t.member_id_to = m.member_id 
+            LEFT JOIN " . DATABASE_MEMBERS . " n ON t.member_id_from = n.member_id 
             WHERE {$condition} 
             ORDER BY trade_id DESC;";
         return $query;

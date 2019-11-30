@@ -11,30 +11,31 @@ abstract class cBasic2 {
 	public function pascalcasify($snakecase){
         return str_replace('_', '', ucwords($snakecase, '_'));
     }
+    //CT remember to declare again if a list class
     public function Build($field_array)  {
     	//print_r($field_array);
     	//exit;
-        $i=0;
+        //foreach ($field_array as $key => $value) {
         foreach ($field_array as $key => $value) {
+        	//var_dump($key);
+        	//print_r(gettype($value));
+        	//var_dump($value);
             if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
-                //if(is_null($value)) $value = "";
-                $this->$method($value);
+                 //if(is_null($value)) $value = "";
+                 $this->$method($value);
             }
-            $i++;
+         
         }
-        return $i;
+        return sizeof($field_array);
     } 
     public function LoadDatabaseTable ($string_query)  {
     	global $cDB;
         if($query = $cDB->Query($string_query)){
-			if($field_array = $cDB->FetchArray($query)){	
-				$is_success = $this->Build($field_array);
-				return $is_success;
-			} else{
-				return false;
-				//CT results empty - don't throw an error, just return false - probably not a mistake, just no results found with the condition set.
-			}
-
+        	$field_array = array();
+        	while($row = $cDB->FetchArray($query)) $field_array[] = $row; 
+        	//print_r($field_array);
+        	$is_success = $this->Build($field_array);
+			return $is_success;
         }else{
 			throw new Exception('Load - Could not execute query.');
 		}
@@ -42,7 +43,8 @@ abstract class cBasic2 {
     } 
 
 
-    //pass in the fields you want to create an array from
+    //CT pass in the fields you want to create an array from
+    //advantage - really quick to use. disadvantage: names must match,
 	public function makeFieldArrayFromKeys($keys_array){
 		$field_array = array();
 		foreach ($keys_array as $key) {

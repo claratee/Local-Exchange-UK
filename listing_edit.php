@@ -30,19 +30,19 @@ if(!empty($_REQUEST["listing_id"])){
 	$listing->setFormAction("update");
 	$condition = "p.primary_member = \"Y\" and m.status = \"A\" AND listing_id=\"{$listing_id}\"";
 	$is_loaded = $listing->Load($condition);
+
 	if(!$is_loaded){
 		$cStatusMessage->Error("Cannot load id '{$listing_id}'");
 		//$redir_url="index.php";
 		//include("redirect.php");
 	}
 	// only allow committee and above to edit other people's ads
-	if(($cUser->getMode() !== "admin") && ($listing->getMemberId() != $cUser->getMemberId())){
-		$cStatusMessage->Error("You don't have permission to edit this listing");
-		
-		//$redir_url="listing_detail.php?listing_id={$listing_id}&status=success_listing_edit";
-	  	//include("redirect.php");
+	if(($listing->getMemberId() != $cUser->getMemberId())){
+		$cUser->MustBeLevel(1);
+
+	}else{
+		$member = $cUser;
 	}
-	$member = $cUser;
 
 }else{
 	$listing->setFormAction("create");
@@ -53,9 +53,10 @@ if(!empty($_REQUEST["listing_id"])){
 	}
 	if(!empty($_REQUEST["category_id"])) $listing->setCategoryId($_REQUEST["category_id"]);
 
-	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) && $_REQUEST['member_id'] && $_REQUEST['member_id'] != $cUser->getMemberId()){
+	if($cUser->isAdminActionPermitted() && $_REQUEST['member_id'] && $_REQUEST['member_id'] != $cUser->getMemberId()){
 	
 		try{
+
 			$member = new cMember;
 			$condition = "m.member_id='{$_REQUEST['member_id']}' AND m.status='A'";
 			$member->load($condition);
@@ -71,7 +72,6 @@ if(!empty($_REQUEST["listing_id"])){
 	
 }
 
-$listing->setMemberId($member->getMemberId());
 
 $type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING : WANT_LISTING;
 
@@ -102,6 +102,8 @@ if($listing->getFormAction() == "update"){
 	//if($type == "W") $typeDescription = "Want";
 	//else $type == "Offer";
 	$page_title = "Create new '{$type_description}' listing " . $page_title;
+	$listing->setMemberId($member->getMemberId());
+
 	//CT doesnt go through build function - todo - should it?
 }
 	$p->page_title = $page_title;

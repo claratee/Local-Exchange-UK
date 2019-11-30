@@ -1,32 +1,34 @@
 <?php
 
-class cMemberGroup extends cBasic2 {
+class cMemberGroup extends cCollection {
     //CT this should be private 
-    private $members; //CT array of member objects
     private $option; //CT option filter for results
     private $order; //CT order of results
 
-    // public function __construct($values=null)
-    // {
-    //     if(!empty($values)) {
-    //         $this->Build($values);
-    //     }
-
-    //     return $this;
-    // }
-    public function getCount(){
-        return sizeof($this->getMembers());
+    public function __construct($rows=null)
+    {
+        parent::__construct($rows);
+        
+        $this->setItemsClassname("cMember");
+        return $this;
     }
-
-
-    public function Build($field_array){
-        $members = array();
-
-        foreach($field_array as $field) // Each result
-        {
-            $members[] = new cMember($field);
-        }
-        $this->setmembers($members);  // this will be an array of cmembers
+    //CT builds the type of object that items is supposed to be
+    // function Build($rows) {
+    //     //print("hello");
+    //     global $cDB;
+    //     $i=0;
+    //     foreach ($rows as $row) {
+    //         $item = $this->makeMember();
+    //         $item->Build($row);
+    //         $this->addItem($item);
+    //         $i++;
+    //         //print_r($i);
+    //     }
+    //     return $this->countItems();
+    // }
+        //CT bit like a factory - returns new person object. rerouting opportunity for extend classes
+    public function makeMember($field_array=null){
+        return new cMember($field_array);
     }
     //CT this isnt great - dont know how else to do this for now
     public function makeSettingFromOption(){
@@ -86,21 +88,14 @@ class cMemberGroup extends cBasic2 {
         global $cDB, $cStatusMessage, $cQueries;
         $order_by = " ORDER BY " . $order_by;
         $string_query = $cQueries->getMySqlMember($condition . $order_by);
-
-        $query = $cDB->Query($string_query);
-        $i=0;
-        $field_array = array();
-        while($row = $cDB->FetchArray($query)) $field_array[] = $row;            
-        //build from vars
- 
-        $this->Build($field_array);
+        return $this->LoadCollection($string_query);
     }   
     
 
     function PrepareMemberDropdown($select_name = "member_id", $member_id=null, $excluded_member_id=null){
         global $p, $cUser;
         $array = array();
-        foreach($this->getMembers() as $member) {
+        foreach($this->getItems() as $member) {
             //print_r($category->getCategoryName());
             $status_text =  ($member->getStatus()=="I") ? " - INACTIVE" : "";
             if(empty($excluded_member_id) OR !($member->getMemberId() == $excluded_member_id)){
@@ -120,7 +115,7 @@ class cMemberGroup extends cBasic2 {
     // CT this looks dangerous. avoid using... 
     // Use of this function requires the inclusion of class.listing.php
     // public function ExpireListings4InactiveMembers() {
-    //     if(empty($this->getMembers())) {
+    //     if(empty($this->getItems())) {
     //         $condition="`member_id`=\"\"";
     //         if(!$this->Load($condition)){
     //             return false;
@@ -157,13 +152,6 @@ class cMemberGroup extends cBasic2 {
     //         }
     //     }
     // }
-    public function Display(){
-        $string = "";
-        foreach ($this->getMembers() as $member) {
-            $string .= $member->Display();
-        }
-        return $string;
-    }
 
     
     /**

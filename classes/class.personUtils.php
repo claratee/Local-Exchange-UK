@@ -4,17 +4,6 @@ class cPersonUtils extends cPerson
 {
     private $action;          
 
- 
-	public function  __construct ($field_array=null) {
-        global $cUser;
-        //init in case of creation...will be overwritten if set
-    //        $this->setPrimaryMember="Y";
-     //      $this->setDirectoryList="Y";
-        //base constructor - build if values exist
-        if(!empty($field_array)) $this->Build($field_array);
-        //print_r($field_array);
-    }
-
 	public function Save() {
         global $cDB, $cUser, $cStatusMessage; 
         //print("MemberId: " . $this->getMemberId());
@@ -29,32 +18,32 @@ class cPersonUtils extends cPerson
         //$keys_array[] = 'member_id';
         //$keys_array[] = 'person_id';
         //$keys_array[] = 'primary_member';
-        $keys_array[]="directory_list"; 
-        $keys_array[]="first_name"; 
-        $keys_array[]="last_name"; 
-        $keys_array[]="email"; 
-        $keys_array[]="phone1_number"; 
-        $keys_array[]="phone2_number"; 
-        $keys_array[]="address_street1"; 
-        $keys_array[]="address_street2"; 
-        $keys_array[]="address_city"; 
-        $keys_array[]="address_state_code"; 
-        $keys_array[]="address_post_code";
-        $keys_array[]="address_country"; 
-        $keys_array[]="about_me";
-        $keys_array[]="age";
-        $keys_array[]="sex";
+        $field_array["directory_list"] = $this->getDirectoryList(); 
+        $field_array["first_name"] = $this->getFirstName(); 
+        $field_array["last_name"] = $this->getLastName(); 
+        $field_array["email"] = $this->getEmail(); 
+        $field_array["phone1_number"] = $this->getPhone1Number(); 
+        $field_array["phone2_number"] = $this->getPhone2Number(); 
+        $field_array["address_street1"] = $this->getAddressStreet1(); 
+        $field_array["address_street2"] = $this->getAddressStreet2(); 
+        $field_array["address_city"] = $this->getAddressCity(); 
+        $field_array["address_state_code"] = $this->getAddressStateCode(); 
+        $field_array["address_post_code"] = $this->getAddressPostCode();
+        $field_array["address_country"] = $this->getAddressCountry(); 
+        $field_array["about_me"] = $this->getAboutMe();
+        $field_array["age"] = $this->getAge();
+        $field_array["sex"] = $this->getSex();
 
         if($this->getAction() == "create"){
 
             //TODO -
             //make sure status=L, primary member=Y are all set before get to this stage
-            $keys_array[] = 'member_id';
-            $keys_array[] = 'primary_member';
-            $person_id = $this->insert(DATABASE_PERSONS, $keys_array);        
+            $field_array["member_id"] = $this->getMemberId(); 
+            $field_array["primaryMember"] = $this->getPrimaryMember(); 
+            $person_id = $this->insert(DATABASE_PERSONS, $field_array);        
         }else{
             $condition = "`member_id`=\"{$this->getMemberId()}\" AND `person_id`=\"{$this->getPersonId()}\"";  
-            $person_id = $this->update(DATABASE_PERSONS, $keys_array, $condition);
+            $person_id = $this->update(DATABASE_PERSONS, $field_array, $condition);
         }
 
 		return $person_id;

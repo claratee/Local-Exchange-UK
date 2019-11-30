@@ -1,21 +1,24 @@
 <?php
-class cTradeGroup extends cBasic{
-	private $trades;   	// an array of cTrade objects
+class cTradeGroup extends cCollection {
+	//private $items;   	// was: trades
 	private $member_id;
 	private $from_date;
 	private $to_date;
 	private $filter_type;
 
-
+    function __construct($rows=null) {
+        //global $cDB;
+        parent::__construct($rows);
+        $this->setItemsClassname("cTrade"); // name of class for items array
+    }
 	
-	function Load($condition, $member_id=null) {
+	function Load($condition) {
 
 		global $cUser, $cDB, $cStatusMessage, $site_settings, $cQueries;
 
 		//$to_date = strtotime("+1 days", strtotime($this->getToDate()));
-		$this->setMemberId($member_id);
 
-		/*
+		/*        
 		//CT removed this for now as not used - date can get passed in from condition
         // not sure if this is doing it correct but this somehow makes epoch time
         $from_date = date("Ymd", $from_date);
@@ -47,27 +50,29 @@ class cTradeGroup extends cBasic{
                 AND NOT t.status = '" . TRADE_STATUS_REVERSED . "' 
                 AND NOT t.status = '" . TRADE_TYPE_MONTHLY_FEE_REVERSAL . "'"; 
         }
-       
-		$query = $cDB->Query($cQueries->getMySqlTrade($condition));
+        $string_query = $cQueries->getMySqlTrade($condition);
+        //print_r($string_query);
+        return $this->LoadCollection($string_query);
+		// $query = $cDB->Query($cQueries->getMySqlTrade($condition));
 
-    	$trades = array();
-		// instantiate new cTrade objects and load them
-		while($row = $cDB->FetchArray($query)) // Each of our SQL results
-		{
-			//echo $row['balance'];
-			$trade = new cTrade;	
-			$trade->Build($row); 
-			$trades[] = $trade;	
-		}
-		$this->setTrades($trades);
-		//$cStatusMessage->Error(print_r($this->getTrades(), true));
-		if(sizeof($trades) > 0) return true;
-		// if no trades
-		return false;
+  //   	$trades = array();
+		// // instantiate new cTrade objects and load them
+		// while($row = $cDB->FetchArray($query)) // Each of our SQL results
+		// {
+		// 	//echo $row['balance'];
+		// 	$trade = new cTrade;	
+		// 	$trade->Build($row); 
+		// 	$trades[] = $trade;	
+		// }
+		// $this->setTrades($trades);
+		// //$cStatusMessage->Error(print_r($this->getItems(), true));
+		// if(sizeof($trades) > 0) return true;
+		// // if no trades
+		// return false;
 	}
     //get a trade by its ID
     function getTradeById($trade_id){
-        foreach($this->getTrades() as $trade){
+        foreach($this->getItems() as $trade){
             if($trade->getTradeId() == $trade_id) return $trade;
         }
         //could not find it
@@ -93,10 +98,10 @@ class cTradeGroup extends cBasic{
 				
 			$output .= "</tr>";
 		
-		if(empty($this->getTrades())) return $p->Wrap('No trades?' . $output, "table", "tabulated");   // No trades yet, presumably
+		if(empty($this->getItems())) return $p->Wrap('No trades?' . $output, "table", "tabulated");   // No trades yet, presumably
 		
 		$i=0;
-		foreach($this->getTrades() as $trade) {
+		foreach($this->getItems() as $trade) {
 
 			$hname = "t{$trade->getTradeId()}";			
             $currentbalance = number_format((float)$runningbalance, 2, '.', '');
@@ -218,22 +223,6 @@ class cTradeGroup extends cBasic{
 	*/
 
 	//CT getters and setters
-   public function getTrades()
-    {
-        return $this->trades;
-    }
-
-    /**
-     * @param mixed $trades
-     *
-     * @return self
-     */
-    public function setTrades($trades)
-    {
-        $this->trades = $trades;
-
-        return $this;
-    }
     public function getMemberId()
     {
         return $this->member_id;

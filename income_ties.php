@@ -140,7 +140,7 @@ if ($_POST["remove"]) {
 	<p>
 		        	<label for=\"member_id_to\">
 			            <span>with this member: *</span>" .
-			            $members->PrepareMemberDropdown("member_id_to", $ties->getMemberIdTo()) . " ({$members->getCount()} members)
+			            $members->PrepareMemberDropdown("member_id_to", $ties->getMemberIdTo(), $member->getMemberId()) . " ({$members->countItems()} members)
 			        </label>
 		    	</p>";
 	

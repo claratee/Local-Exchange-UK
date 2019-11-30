@@ -130,10 +130,11 @@ if(!empty($_REQUEST['option'])) {
 
 	$members->Load($condition, $order_by);
 
+
 	$row_output = "";
 	$i=0;
 	$running_balance = 0; //CT shown only in admin mode - to check state of system. useful for checking inactive accounts that are not 0
-	foreach($members->getMembers() as $member) {
+	foreach($members->getItems() as $member) {
 		$running_balance = $running_balance + $member->getBalance();
 
 
@@ -172,7 +173,7 @@ if(!empty($_REQUEST['option'])) {
 	 } // end loop to force display of inactive members off
 
 
-$output .="<div class=\"scrollable-x\"><table class=\"tabulated\">
+$output .= "<div class=\"scrollable-x\"><table class=\"tabulated\">
 	<tr>
 		<th class='id' colspan='2'>Member</th>
 		<th>Contact</th>

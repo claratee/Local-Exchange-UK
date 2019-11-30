@@ -62,7 +62,7 @@ class cInfo extends cBasic2 {
 			return substr($extract, 0, $extract_length) . "...";
 		}
 		function Display(){
-			global $cUser, $p, $cDB;
+			global $cUser, $p, $cDB, $site_settings;
 			$string = "";
 			//$clean_text = $this->tidyHTML($this->body);
 			//CT show page

@@ -27,14 +27,14 @@ if ($_REQUEST["member_id"]){
 $members->Load($condition);
 
 	$row_output = "";
-	foreach($members->getMembers() as $member) {
+	foreach($members->getItems() as $member) {
 		//CT: use css styles not html colors - cleaner
 		$rowclass = ($i % 2) ? "even" : "odd";
 
 		//$postcode = $member->getPerson()->getAddressPostCode());
-		
+		$link = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "member_id", $member->getMemberId());
 		$row_output .="
-			<li><a href=\"{$p->makeLinkSelf(Array('member_id'=>$member->getMemberId()))}\">{$member->getDisplayName()} (#{$member->getMemberId()})</a></li>";
+			<li><a href=\"{$link}\">{$member->getDisplayName()} (#{$member->getMemberId()})</a></li>";
 		$i+=1;
 	
 	 } // end loop to force display of inactive members off

@@ -61,7 +61,7 @@ $listings->Load($condition);
 
 $i=0;
 $row_output =  "";
-foreach($listings->getListings() as $listing) {
+foreach($listings->getItems() as $listing) {
 	//stripy columns
 	$className= ($i%2) ? "even" : "odd";
 	if($listing->getStatus()=="E" OR $listing->getStatus()=="I") $className .= " expired";

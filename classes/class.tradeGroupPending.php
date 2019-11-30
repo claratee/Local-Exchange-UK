@@ -37,12 +37,12 @@ class cTradeGroupPending extends cTradeGroup {
 		// $field_array['$count_invoice_out'] =0; // Num invoices awaiting payment on
 		// $field_array['$count_trade_out'] =0; // Num payments awaiting confirmation on
 
-		if(empty($this->getTrades())) throw new Exception("No pending trades found");   // No trades yet, presumably
+		if(empty($this->getItems())) throw new Exception("No pending trades found");   // No trades yet, presumably
 
-		//print_r($tradeGroup->getTrades());
+		//print_r($tradeGroup->getItems());
 		$i=0;
 
-		foreach($this->getTrades() as $trade) {
+		foreach($this->getItems() as $trade) {
 			//echo($trade->getType()); 
 			
 			switch($trade->getTradeType()){
@@ -137,7 +137,7 @@ function DisplayWithTriggers($filter) {
 				$trades = $this->getTradesTradeIn();
 			break;
 			default:
-				$trades = $this->getTrades();
+				$trades = $this->getItems();
 		}
 
 

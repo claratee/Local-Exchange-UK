@@ -16,7 +16,7 @@ $field_array['mode'] =$cUser->getMode();
 //$field_array['member_id_author'] = $cUser->getMemberId();
 
 //CT - todo - tidy
-if($_REQUEST['type'] == 'invoice'){
+if($_REQUEST['type'] == 'invoice' || strtoupper($_REQUEST['type']) == TRADE_TYPE_INVOICE){
 	$field_array['type'] =  TRADE_TYPE_INVOICE;
 }else{
 	$field_array['type'] =  TRADE_TYPE_TRANSFER;
@@ -86,7 +86,11 @@ if ($_POST["submit"]){
 	$trade->Build($field_array);
 	try {
 		$trade_id = $trade->ProcessData($field_array);
-		$cStatusMessage->Info("Successfully traded. <!-- #{$trade_id}. -->");
+		$feedback_link = "";
+		if($trade->getStatus() == "V"){
+			$feedback_link = "<a href=\"" . HTTP_BASE . "/feedback.php?trade_id={$trade_id}\">Leave a feedback for this trade?</a>";
+		}
+		$cStatusMessage->Info("Successfully traded. {$feedback_link}<!-- #{$trade_id}. -->");
 
 		$_POST=array();
 		$redir_url="member_trade_menu.php";
@@ -124,7 +128,7 @@ if ($_POST["submit"]){
 			// 	$member_options .= "<p>
 		 //        	<label for=\"member_id_from\">
 			//             <span>Transfer from member: *</span>
-			//             {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom())} ({$members->getCount()} members)
+			//             {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom())} ({$members->countItems()} members)
 			//         </label>
 		 //    	</p>";
 			// }else{
@@ -137,7 +141,7 @@ if ($_POST["submit"]){
 		<p>
 	    	<label for=\"member_id_to\">
 	            <span>Pay member: *</span>
-	            {$members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo(), $member->getMemberId())} ({$members->getCount()} members) 
+	            {$members->PrepareMemberDropdown("member_id_to", $trade->getMemberIdTo(), $member->getMemberId())} ({$members->countItems()} members) 
 	        </label>
 	    </p>";
 	}elseif($trade->getType() == TRADE_TYPE_INVOICE){
@@ -148,7 +152,7 @@ if ($_POST["submit"]){
 			$member_options = "<p>
 	        	<label for=\"member_id_from\">
 		            <span>Invoice member: *</span>
-		            {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom(), $member->getMemberId())} ({$members->getCount()} members) 
+		            {$members->PrepareMemberDropdown("member_id_from", $trade->getMemberIdFrom(), $member->getMemberId())} ({$members->countItems()} members) 
 		        </label>
 	    	</p>";
 		

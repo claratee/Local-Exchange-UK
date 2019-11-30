@@ -1,7 +1,7 @@
 <?php
 include_once("includes/inc.global.php");
 
-global $cStatusMessage, $cDB;
+global $cStatusMessage, $cDB, $cUser;
 
 $cStatusMessage->SaveMessages();
 
@@ -40,7 +40,11 @@ if (!empty($redir_type))	// $item not specified
 */
 
 // dunno where to go.  Go home.
-header("Location: " . HTTP_BASE . "/member_profile_menu.php");
+if(!$cUser->isAdminActionPermitted()){
+	header("Location: " . HTTP_BASE . "/member_profile_menu.php");
+}else{
+	header("Location: " . HTTP_BASE . "/admin_menu.php");
+}
 exit;
 
 

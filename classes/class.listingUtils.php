@@ -111,26 +111,18 @@ class cListingUtils extends cListing {
 
 
         //only allow user themself and committee to make changes to these fields, and execute. Doublecheck!!!
-        if($this->getMember()->getMemberId() == $cUser->getMemberId() || $cUser->getMemberRole() > 0){
-            $keys_array = array(
-                "status",
-                "rate",
-                "title",
-                "description",
-                "category_id",
-                "reactivate_date",
-                "type",
-            );
-   //          $field_array["status"]=$this->getStatus();           
-   //          //$field_array["status"]=$this->getReactivateDate();           
-			// $field_array["title"]=$this->getTitle();
-			// $field_array["description"]=$this->getDescription();
-			// $field_array["category_id"]=$this->getCategoryId();
-			// $field_array["rate"]=$this->getRate();
-			// //$field_array["listing_date"]=now; //this should be automatic - leave it to the db
-			// $field_array["reactivate_date"]=$this->getReactivateDate();
-			// $field_array["type"]=$this->getType();
-			// $field_array["member_id"]=$this->getMemberId();
+        if($this->getMemberId() == $cUser->getMemberId() || $cUser->isAdminActionPermitted()){
+            //map database fields to values.
+            $field_array = array();
+            $field_array["status"] = $this->getStatus();
+            $field_array["rate"] = $this->getRate();
+            $field_array["title"] = $this->getTitle();
+            $field_array["description"] = $this->getDescription();
+            $field_array["category_id"] = $this->getCategoryId();
+            $field_array["reactivate_date"] = $this->getReactivateDate();
+            $field_array["type"] = $this->getType();
+            
+      
         
             $listing_id = 0;
 
@@ -138,16 +130,17 @@ class cListingUtils extends cListing {
             if($this->getFormAction() == "update"){
             	$condition = "`member_id`=\"{$this->getMemberId()}\" AND listing_id = \"{$this->getListingId()}\""; 
                 
-                //CT don't save the secondary member here, just the primary
-                if($this->update(DATABASE_LISTINGS, $keys_array, $condition)){
+                if($this->update(DATABASE_LISTINGS, $field_array, $condition)){
                     return $this->getListingId();
                 }
             } 
             else{
                 //TODO -
-                $this->setStatus("A");
-                $keys_array[]="member_id";
-                return  $this->insert(DATABASE_LISTINGS, $keys_array); //CT should return the id 
+                $field_array["status"] = ACTIVE;
+
+                $field_array["member_id"] = $this->getMemberId();
+                
+                return $this->insert(DATABASE_LISTINGS, $field_array); //CT should return the id 
             }
             return false;
         }

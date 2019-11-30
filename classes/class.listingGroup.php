@@ -1,10 +1,10 @@
 <?php 
 
 //default class for displaying and filtering active listings
-class cListingGroup extends cBasic2
+class cListingGroup extends cCollection
 	{
 	//todo: getters and setters
-	private $listings;  // array of objects of type cListing
+	private $items;  // array of objects of type cListing
 	private $num_listings;  // number of active offers
 	//filters 
 	private $type;
@@ -12,11 +12,17 @@ class cListingGroup extends cBasic2
 	private $category_id;
 	private $member_id;
 
+	public function __construct($rows=null)
+    {
+        parent::__construct($rows);
+        $this->setItemsClassname("cListing");
+        return $this;
+    }
 	// function __construct($values=null) {
 	// 	if(!empty($values)) $this->Build($values);
 	// }
 //function makeFilterCondition($member_id=null, $category_id=null, $timeframe=null, $timeframe=null, $type_code=null){
-	function makeFilterCondition($member_id=null, $type=null, $status=null, $category_id=null, $timeframe=null, $keywords=null){
+	public function makeFilterCondition($member_id=null, $type=null, $status=null, $category_id=null, $timeframe=null, $keywords=null){
 		global $cDB;
 		//CT note - listings from members that are not active are not explicity excluded from the results. 
 		if(empty($status)) $status = "A"; // default state - hide expired
@@ -69,45 +75,8 @@ class cListingGroup extends cBasic2
 		return $condition;
 
 	}
-	// function makeFilterCondition($member_id=null, $category_id=null, $timeframe=null, $timeframe=null, $type_code=null){
-	// 	global $cDB;
-	// 	if($category_id == null){
-	// 		$category_id = "%";
-	// 	}
 
-	// 	if(empty($member_id)){
-	// 		$member_id = "%";
-	// 	}
-			
-	// 	if(empty($timeframe)){ 
-	// 		$timeframe = null;
-	// 		//$timeframe = ;
-	// 	} 
-	// 	// default to offers
-	// 	if(empty($type_code)) {
-	// 		$type_code = "O";
-	// 	}
-				
-	// 	// // todo - keywords
-	// 	// $condition = "p.primary_member = 'Y' and 
-	// 	// m.status = 'A' and l.member_id LIKE \"{$cDB->EscTxt($member_id)}\" AND l.category_id=c.category_id AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
-
-	// 	// todo - keywords
-	// 	$condition = "p.primary_member = 'Y' AND m.status = 'A' AND l.member_id LIKE \"{$member_id}\" AND c.category_id LIKE \"{$category_id}\" AND l.type=\"{$type_code}\"";
-
-	// 	// show listings that are outside of expiry window
-	// 	$condition .= " AND (l.expire_date IS NULL OR l.expire_date > CURDATE() OR (l.expire_date < CURDATE() AND l.reactivate_date < CURDATE())) and l.status != 'I'";
-
-	// 	if(!empty($timeframe)){ 
-	// 		$condition .= " AND l.listing_date > CURDATE() - INTERVAL {$timeframe} DAY";
-	// 	} 
-	// 	return $condition;
-
-	// }
-
-		// todo - keywords
-
-	function Load($condition)
+	public function Load($condition)
 	{
 		global $cDB, $cEr, $cQueries;
 
@@ -117,37 +86,36 @@ class cListingGroup extends cBasic2
 		$order_by = "c.description ASC, l.listing_date DESC, l.member_id ASC";
 		
 		$string_query = $cQueries->getMySqlListing($condition, $order_by);
-		$query = $cDB->Query($string_query);
+		$this->LoadCollection($string_query);		
 
+	// 	// instantiate new cOffer objects and load them
+	// 	$i = 0;		
+	// 	$field_array	 = array();
+	// 	while ($row = $cDB->FetchArray($query)){
+	// 		$field_array[] = $row;			
+	// 	}
 
-		// instantiate new cOffer objects and load them
-		$i = 0;		
-		$field_array	 = array();
-		while ($row = $cDB->FetchArray($query)){
-			$field_array[] = $row;			
-		}
-
-		if(sizeof($field_array) == 0) {
-			return false;
-		}
-		return $this->Build($field_array);
-	}
-	function Build($vars){
-		$listings = array();
-		foreach($vars as $field_array){
-			//var_dump($value);
-			$listing = $this->makeListing($field_array);
-			$listings[] = $listing;	
-			//var_dump($listing->getListingId());
-		}
-		if(sizeof($listings)==0) return false;
-		$this->setListings($listings);
-		return true;
+	// 	if(sizeof($field_array) == 0) {
+	// 		return false;
+	// 	}
+	// 	return $this->Build($field_array);
+	// }
+	// function Build($vars){
+	// 	$listings = array();
+	// 	foreach($vars as $field_array){
+	// 		//var_dump($value);
+	// 		$listing = $this->makeListing($field_array);
+	// 		$listings[] = $listing;	
+	// 		//var_dump($listing->getListingId());
+	// 	}
+	// 	if(sizeof($listings)==0) return false;
+	// 	$this->setListings($listings);
+	// 	return true;
 	}
 
 
 	//CT: made work on id number
-	function ListingLink($listing_id, $title) {
+	public function ListingLink($listing_id, $title) {
 		global $p;
 		$link = HTTP_BASE."/listing_detail.php?listing_id={$listing_id}";
 		//return $p->Link($text, $link);
@@ -156,7 +124,7 @@ class cListingGroup extends cBasic2
 
 
 	//CT 
-	function PrepareSelectorCategory($selected_id=null) {
+	public function PrepareSelectorCategory($selected_id=null) {
 
 		$categories = new cCategoryGroup;
 		$categories->Load(1);
@@ -173,7 +141,7 @@ class cListingGroup extends cBasic2
 		$string = $p->PrepareFormSelector('category_id', $vars, 'All categories', $selected_id);
 		return $string;		
 	}
-	function PrepareSelectorTimeframe($selected_id=null){
+	public function PrepareSelectorTimeframe($selected_id=null){
 		global $p;
 		//$vars[]=array(value, description);
 		// prepare vars to be in the right format for the generic builder
@@ -190,7 +158,7 @@ class cListingGroup extends cBasic2
 		return $output;
 	}
 
-	function PrepareInputKeywords($keywords=null){
+	public function PrepareInputKeywords($keywords=null){
 		global $p;
 		//$vars[]=array(value, description);
 		// prepare vars to be in the right format for the generic builder
@@ -200,7 +168,7 @@ class cListingGroup extends cBasic2
 	}
 
 	//ct todo: default to the current setting of form
-	function DisplayFilterForm($type_code, $category_id, $member_id, $timeframe, $keywords){
+	public function DisplayFilterForm($type_code, $category_id, $member_id, $timeframe, $keywords){
 		//global $c
 		// standardize the nulls
 		$category_id = (!empty($category_id)) ? $category_id : "";
@@ -240,7 +208,7 @@ class cListingGroup extends cBasic2
 	}
 
 
-	function Display($show_ids=false)
+	public function Display($show_ids=false)
 	
 	{
 		global $site_settings, $cUser,$cDB, $p;
@@ -249,8 +217,8 @@ class cListingGroup extends cBasic2
 		$current_cat = "";
 		$i = 0;
 		
-		if(!empty($this->getListings())) {
-			foreach($this->getListings() as $listing) {
+		if(!empty($this->getItems())) {
+			foreach($this->getItems() as $listing) {
 			
 				if($current_cat != $listing->getCategoryName()) {
 					if($i>0) $output .= "</ul>"; // end the last unordered list

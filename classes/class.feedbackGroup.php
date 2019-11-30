@@ -1,5 +1,5 @@
 <?php
-class cFeedbackGroup extends cBasic2 {
+class cFeedbackGroup extends cCollection {
 	//private $member_id;
 	private $member_id;		// for convenience
 	private $context;		// Buyer or Seller or Both
@@ -9,32 +9,24 @@ class cFeedbackGroup extends cBasic2 {
 	private $num_neutral;
     private $total;
     private $percent_positive;
-	private $feedback;		// will be an array of cFeedback objects
+	//private $feedback;		// now items. will be an array of cFeedback objects
 	
 
     
   
 
-    function __construct($condition=null){
-
-        if(!empty($condition)){
-            //$this->setContext("about");
-            //$this->setMemberId($member_id);
-           //$condition = "`member_id_about` = \"{$member_id}\"";
-            //print_r($condtion);
-           $this->Load($condition);
-        }
-		
-		// ct load feedback from constructor - probably never built without loading
-		
+    public function __construct($rows=null) {
+        //global $cDB;
+        parent::__construct($rows);
+        $this->setItemsClassname("cFeedback"); // name of class for items array
     }
     // load db feedback from condtion
-	function Load ($condition) {
+	public function Load ($condition) {
 		global $cDB, $p, $cStatusMessage, $site_settings;
 		// CT choose whether feedback is for someone or left by someone
 		//$context_field = ($this->getContext() == "about") ? "member_id_about" : "member_id_author";
 		//$cStatusMessage->Error($this->getContext());
-		$query = $cDB->Query("SELECT 
+		$string_query = "SELECT 
             f.feedback_id as feedback_id, 
 			f.feedback_date as feedback_date, 
 			f.member_id_author as member_id_author, 
@@ -51,46 +43,47 @@ class cFeedbackGroup extends cBasic2 {
 			LEFT JOIN ".DATABASE_TRADES." t on f.trade_id=t.trade_id
 			LEFT JOIN ".DATABASE_CATEGORIES." c on c.category_id=t.category_id
 			WHERE {$condition}
-			ORDER BY f.feedback_date desc");
-		// CT init
-		$feedback_list = array();
-		$num_positive = 0;
-		$num_negative = 0;
+			ORDER BY f.feedback_date desc";
+		
+        return $this->LoadCollection($string_query);
+        
+		
+	}
+    public function Build($field_array){
+        $is_built = sizeof($this->getItems());
+        if(!$is_built) return false;
+         // CT init
+        $feedback_list = array();
+        $num_positive = 0;
+        $num_negative = 0;
         $num_neutral = 0;
 
-		$i=0;
-		while($row = $cDB->FetchArray($query))
-		{
-			$feedback = new cFeedback($row);
-			//$cStatusMessage->Error(print_r($row, true));
-			$feedback->setContext($context);
-	
-			if($feedback->getRating() == 3) $num_positive++;
-			if($feedback->getRating() == 1) $num_negative++;
-			if($feedback->getRating() == 2) $num_neutral++;
-
-			$feedback_list[] = $feedback;
-			//$cStatusMessage->Error(print_r($feedback, true));
-			$i++;
-		}
+        $i=0;
+        foreach ($this->getItems() as $feedback) {
+            if($feedback->getRating() == 3) $num_positive++;
+            if($feedback->getRating() == 1) $num_negative++;
+            if($feedback->getRating() == 2) $num_neutral++;
+            $i++;
+        }
+        
         $total = $num_positive + $num_negative + $num_neutral;
 
         $this->setTotal($total);
         $this->setNumPositive($num_positive);
-		$this->setNumNegative($num_negative);
-		$this->setNumNeutral($num_neutral);
-		$this->setFeedback($feedback_list);
+        $this->setNumNegative($num_negative);
+        $this->setNumNeutral($num_neutral);
+        //$this->setFeedback($feedback_list);
         if($num_positive > 0 && $total > 0){
             $this->setPercentPositive(number_format($num_positive /  $total * 100, 0));
         } else {
             $this->setPercentPositive(0);
         }
-		
-		//$cStatusMessage->Error($i);
-		if(sizeof($this->getFeedback()) > 0) return true;
-		return false;
-		
-	}
+        
+        //$cStatusMessage->Error($i);
+        if(sizeof($this->getItems()) > 0) return true;
+        return false;
+       
+    }
 	
 	function PercentPositive() {
 		return number_format(($this->getNumPositive() / ($this->getNumPositive() + $this->getNumNegative() + $this->getNumNeutral())) * 100, 0); 
@@ -123,7 +116,7 @@ class cFeedbackGroup extends cBasic2 {
 		
 		
 		$i=0;
-		foreach($this->getFeedback() as $feedback) {
+		foreach($this->getItems() as $feedback) {
 			$rowclass = ($i % 2) ? "even" : "odd";	
 
 //			$member_author = $feedback->getMemberIdAuthor();
@@ -343,24 +336,5 @@ class cFeedbackGroup extends cBasic2 {
         return $this;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getFeedback()
-    {
-        return $this->feedback;
-    }
-
-    /**
-     * @param mixed $feedback
-     *
-     * @return self
-     */
-    public function setFeedback($feedback)
-    {
-        $this->feedback = $feedback;
-
-        return $this;
-    }
 }
 ?>

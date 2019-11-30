@@ -23,7 +23,7 @@ include_once("../includes/inc.global.php");
 // UPDATE `lets_person` SET `last_name`=concat("Deckard", member_id), `email`=concat("username+", member_id, "@example.com"),`address_street1`=concat(member_id, " Jetson Parkway")
 
 
-
+ 
 // ****************************************** #
 // ****************************************** #
 
@@ -162,12 +162,39 @@ $string_queries = array();
 $string_queries[]="ALTER TABLE " . DATABASE_MEMBERS . "
   ADD UNIQUE KEY `member_id` (`member_id`);";
 
+  $string_queries[]="UPDATE " . DATABASE_ADMIN_ACTIVITY ." set category='S' where category='W' or category='D' or category='M';";
+
+
+
 //CT sets up more useful categories of actions - all "send mail" events are category S, and action remains the original value.
 $string_queries[]="UPDATE " . DATABASE_LOGGING .  " set category='" . LOG_SEND . "' where category='" . LOG_SEND_UPDATE_WEEKLY . "' or category='" . LOG_SEND_UPDATE_DAILY . "' or category='" . LOG_SEND_UPDATE_MONTHLY . "';";
 
 
 $string_queries[]="INSERT INTO " . DATABASE_SETTINGS .  "  (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'USER_MODE', 'Enable usermodes', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to allow members in admin role to explicitly enter admin mode before access to certain actions?', '4');";
 //$string_queries[]="UPDATE " . DATABASE_LOGGING .  "set `admin_id`='" . SYSTEM_ACCOUNT_ID . "' where `admin_id`='EVENT_SYSTEM';";
+
+$string_queries[]="INSERT INTO " . DATABASE_SETTINGS . " (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'MAIN_MENU', 'Main menu of the site', 'varchar', '<li><a href=\"{{HTTP_BASE}}/index.php\">Home</a></li>
+          <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=7\">Information</a></li>
+          <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=84\">Events</a></li>
+          <li><a href=\"{{HTTP_BASE}}/listings.php?type=offer&timeframe=14\">Offered</a></li>
+          <li><a href=\"{{HTTP_BASE}}/listings.php?type=want&timeframe=14\">Wanted</a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_directory.php\">Member directory</a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_profile_menu.php\">My profile </a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_trade_menu.php\">My trades and transactions</a></li>
+{{admin_menu_link}}
+          <li><a href=\"{{HTTP_BASE}}/contact.php\">Contact us</a></li> 
+          <li><a href=\"{{HTTP_BASE}}/{{login_toggle_link}}\">{{login_toggle_text}}</a></li>', 'li', '<li><a href=\"{{HTTP_BASE}}/index.php\">Home</a></li>
+          <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=7\">Information</a></li>
+          <li><a href=\"{{HTTP_BASE}}/pages.php?page_id=84\">Events</a></li>
+          <li><a href=\"{{HTTP_BASE}}/listings.php?type=offer&timeframe=14\">Offered</a></li>
+          <li><a href=\"{{HTTP_BASE}}/listings.php?type=want&timeframe=14\">Wanted</a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_directory.php\">Member directory</a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_profile_menu.php\">My profile </a></li>
+          <li><a href=\"{{HTTP_BASE}}/member_trade_menu.php\">My trades and transactions</a></li>
+{{admin_menu_link}}
+          <li><a href=\"{{HTTP_BASE}}/contact.php\">Contact us</a></li> 
+          <li><a href=\"{{HTTP_BASE}}/{{login_toggle_link}}\">{{login_toggle_text}}</a></li>', '', 'Main navigation for the site - what are the links?', '1')";
+
 
 try{
   $complete = doCreateScript();

@@ -54,7 +54,7 @@ if ($cUser->getMemberRole() > 1) { // if admin
 	$menuArray[] = $p->MenuItemArray("Manage pending trades for a member", "member_choose.php?action=trades_pending");
 	$menuArray[] = $p->MenuItemArray("Record a trade for a member", "member_choose.php?action=trade&get1=type&get1val=transfer");
 	$menuArray[] = $p->MenuItemArray("Raise and invoice for a member", "member_choose.php?action=trade&get1=type&get1val=invoice");
-	$menuArray[] = $p->MenuItemArray("Reverse a trade that was Made in Error", "trade_reverse.php?action=trade_reverse");
+	$menuArray[] = $p->MenuItemArray("Reverse a trade that was Made in Error", "trade_reverse_choose.php");
 	$menuArray[] = $p->MenuItemArray("Record Feedback for a Member", "member_choose.php?action=feedback_choose");
 	$menuArray[] = $p->MenuItemArray("Manage income shares for a Member", "member_choose.php?action=income_ties");
 $menuHtml = $p->Menu($menuArray);

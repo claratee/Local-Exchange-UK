@@ -6,7 +6,7 @@
 
 
 
-class cMember extends cBasic2
+class cMember extends cSingle
 {
     private $member_id;
     private $is_nested; //if set to true, don't cross ref other classes - prevent circuclar logic ;
@@ -45,7 +45,7 @@ class cMember extends cBasic2
         if(!empty($field_array)) $this->Build($field_array);
     }
 
-        public function getRestrictionLabel()
+    public function getRestrictionLabel()
     {
         $label = ($this->getRestriction()) ? "Restricted" : "";
         return $label;
@@ -57,27 +57,9 @@ class cMember extends cBasic2
     }
     //CT rebuilt to be..not so dangerous. do not load passwords and such into memory
     public function Load($condition) {
-		global $cDB, $cStatusMessage, $cQueries;
-        //ct clean?
-        //$member_id = $cDB->EscTxt($member_id);
-		// populate
-
-        //$is_success = false;
+		global $cDB, $cQueries;
         $string_query = $cQueries->getMySqlMember($condition);
-        return $this->LoadDatabaseTable($string_query);
-        // if($query = $cDB->Query("{$cQueries->getMySqlMember($condition)}")){
-        //     if($field_array = $cDB->FetchArray($query)){    
-        //         if($is_success = $this->Build($field_array)){    
-        //             return $is_success;
-        //         } else{
-        //            throw new Exception('Could not build from array');
-        //         }
-        //     } else{
-        //        throw new Exception('Could not find member. May be inactive');
-        //     }
-        // }else{
-        //     throw new Exception('Could not execute query');
-        // }
+        return $this->LoadFromDatabase($string_query);
 	}
 
     public function buildFieldArrayForJointPerson($old_array){
@@ -107,28 +89,46 @@ class cMember extends cBasic2
     //     $field_array['phone1_number'] = $old_array['phone1_number']; 
     //     return $field_array;
     // }
-	public function Build($field_array){
+	// public function BuildSingle($row){
+ //        global $cDB;
+ //        parent::BuildSingle($row);
+
+ //        // extra bits for convenience
+ //        $this->getPasswordReset()->Build($row);  //CT call the build function for password - will just set the member_id
+
+ //        $this->getPerson()->Build($row);  //CT call the build function for person
+
+ //        if($this->getAccountType() == "J"){
+ //            $joint_person_row = $this->buildFieldArrayForJointPerson($row);
+ //            $this->getJointPerson()->Build($joint_person_row);         
+ //        }
+
+
+ //        return true;
+ //    }
+    public function Build($row){
         global $cDB;
         //print_r($field_array);
-        parent::Build($field_array);
+        parent::Build($row);
         // extra bits for convenience
-        $this->getPasswordReset()->Build($field_array);  //CT call the build function for password - will just set the member_id
+        $this->getPasswordReset()->Build($row);  //CT call the build function for password - will just set the member_id
 
         //$person_field_array = $this->buildFieldArrayForPerson($field_array);
-        $this->getPerson()->Build($field_array);  //CT call the build function for person
+        $this->getPerson()->Build($row);  //CT call the build function for person
         //CT presets - todo:change
         //if(empty($this->getPerson()->getAge())) $this->getPerson()->setAge(9);
         //if(empty($this->getPerson()->getSex())) $this->getPerson()->setSex(3);
         //print("mebmer" . $this->getPerson()->getMemberId());
         // secondary
+        //print_r($this->getAccountType());
         if($this->getAccountType() == "J"){
-            $joint_person_field_array = $this->buildFieldArrayForJointPerson($field_array);
-            $this->getJointPerson()->Build($joint_person_field_array);         
+            $joint_person_row = $this->buildFieldArrayForJointPerson($row);
+            $this->getJointPerson()->Build($joint_person_row);         
         }
 
 
         return true;
-	}
+    }
 //CT here because its useful. sets from other fields. done like this as it might be in cUser which doent necessarily have all the fields.
 
 public function getDisplayName(){
@@ -161,39 +161,7 @@ public function setDisplayName($display_name){
     $this->display_name = $display_name;
     return $this;
 }
-//CT this is a joyful useless function. Just greets people in different languages. that's it.
-public function greetMe($name){
-    $greeting_array = array();
-    $greeting_array[]=array("ar-AE", "Arabic", "اهلا (Ahlan) {$name}!");
-    $greeting_array[]=array("cy-GB", "Welsh", "Hylô, {$name}!");
-    $greeting_array[]=array("da-DK", "Danish", "Halløj {$name}!");
-    $greeting_array[]=array("de-DE", "German", "Hallo {$name}!");
-    $greeting_array[]=array("el-GR", "Greek", "Γεια σου (Yassou) {$name}!");
-    $greeting_array[]=array("en-AU", "Australian", "G’day Mate!");
-    $greeting_array[]=array("en-GB", "British English", "Hiya {$name}");
-    $greeting_array[]=array("es-ES", "Spanish", "¿Qué tal {$name}?");
-    $greeting_array[]=array("fa-IR", "Farsi", "درود (Salaam) {$name}!");
-    $greeting_array[]=array("fr-FR", "French", "Salut {$name}!");
-    $greeting_array[]=array("he-IL", "Hebrew", "שָׁלוֹם (Shalom) {$name}!");
-    $greeting_array[]=array("hi-IN", "Hindi", "Namaste {$name}!");
-    $greeting_array[]=array("it-IT", "Italian", "Ciao {$name}!");
-    $greeting_array[]=array("ja-JP", "Japanese", "今日は (Konnichiwa) {$name}!");
-    $greeting_array[]=array("ko-KR", "Korean", "안녕 (Anyoung), {$name}!");
-    $greeting_array[]=array("nb-NO", "Norwegian", "Hei, {$name}!");
-    $greeting_array[]=array("nl-NL", "Dutch", "Goedendag {$name}");
-    $greeting_array[]=array("pl-PL", "Polish", "Cześć {$name}!");
-    $greeting_array[]=array("pt-PT", "Portuguese", "Oi {$name}!");
-    $greeting_array[]=array("ru-RU", "Russian", "Privet {$name}!");
-    $greeting_array[]=array("se-SE", "Swedish", "Tjena {$name}!");
-    $greeting_array[]=array("sw-KE", "Swahili", "Habari {$name}!");
-    $greeting_array[]=array("ta-IN", "Tamil", "Selam {$name}!");
-    $greeting_array[]=array("uk-UK", "Ukranian", "Dobriy den, {$name}!");
-    $greeting_array[]=array("xh-ZA", "Xhosa (South Africa)", "Molo {$name}!");
 
-    $greeting_array[]=array("zh-CN", "Mandorin Chinese", "Nǐ hǎo {$name}!");
-    $n = rand(0,sizeof($greeting_array)-1);
-    return "<span title=\"A greeting in {$greeting_array[$n][1]}!\">" . $greeting_array[$n][2] . "</span>";
-}
 
     //helper function to make appropriate buttons for actions
     public function makeButtonsFromAction($action, $member_id){
@@ -522,7 +490,38 @@ public function getDisplayLocation(){
 		return $last_update->DaysAgo();
     }
 
+    public function greetMe($name){
+        $greeting_array = array();
+        $greeting_array[]=array("ar-AE", "Arabic", "اهلا (Ahlan) {$name}!");
+        $greeting_array[]=array("cy-GB", "Welsh", "Hylô, {$name}!");
+        $greeting_array[]=array("da-DK", "Danish", "Halløj {$name}!");
+        $greeting_array[]=array("de-DE", "German", "Hallo {$name}!");
+        $greeting_array[]=array("el-GR", "Greek", "Γεια σου (Yassou) {$name}!");
+        $greeting_array[]=array("en-AU", "Australian", "G’day Mate!");
+        $greeting_array[]=array("en-GB", "British English", "Hiya {$name}");
+        $greeting_array[]=array("es-ES", "Spanish", "¿Qué tal {$name}?");
+        $greeting_array[]=array("fa-IR", "Farsi", "درود (Salaam) {$name}!");
+        $greeting_array[]=array("fr-FR", "French", "Salut {$name}!");
+        $greeting_array[]=array("he-IL", "Hebrew", "שָׁלוֹם (Shalom) {$name}!");
+        $greeting_array[]=array("hi-IN", "Hindi", "Namaste {$name}!");
+        $greeting_array[]=array("it-IT", "Italian", "Ciao {$name}!");
+        $greeting_array[]=array("ja-JP", "Japanese", "今日は (Konnichiwa) {$name}!");
+        $greeting_array[]=array("ko-KR", "Korean", "안녕 (Anyoung), {$name}!");
+        $greeting_array[]=array("nb-NO", "Norwegian", "Hei, {$name}!");
+        $greeting_array[]=array("nl-NL", "Dutch", "Goedendag {$name}");
+        $greeting_array[]=array("pl-PL", "Polish", "Cześć {$name}!");
+        $greeting_array[]=array("pt-PT", "Portuguese", "Oi {$name}!");
+        $greeting_array[]=array("ru-RU", "Russian", "Privet {$name}!");
+        $greeting_array[]=array("se-SE", "Swedish", "Tjena {$name}!");
+        $greeting_array[]=array("sw-KE", "Swahili", "Habari {$name}!");
+        $greeting_array[]=array("ta-IN", "Tamil", "Selam {$name}!");
+        $greeting_array[]=array("uk-UK", "Ukranian", "Dobriy den, {$name}!");
+        $greeting_array[]=array("xh-ZA", "Xhosa (South Africa)", "Molo {$name}!");
 
+        $greeting_array[]=array("zh-CN", "Mandorin Chinese", "Nǐ hǎo {$name}!");
+        $n = rand(0,sizeof($greeting_array)-1);
+        return "<span title=\"A greeting in {$greeting_array[$n][1]}!\">" . $greeting_array[$n][2] . "</span>";
+    }
 
 
     /**
@@ -892,6 +891,7 @@ public function getDisplayLocation(){
 
         return $this;
     }
+
 }
 
 ?>

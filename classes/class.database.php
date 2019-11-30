@@ -100,13 +100,17 @@ class cDatabase
 			if($_REQUEST['debug']) $debug = true;
 		}
 		if($debug) $cStatusMessage->Info("Q.{$this->count_query}: {$string_query} {$result_message}");
-		if(gettype($result) == "object" ){
+		//selects
+		if(gettype($result) == "object" || preg_match("DROP", $string_query) || preg_match("ALTER", $string_query)){
+			//print_r($string_query);
 			return $result;
 		}
 		//CT return affected rows if more than 0
+		//inserts and updates?
 		if(!empty($this->AffectedRows())) return $this->AffectedRows();
-		//CT in case of updates where no data is changed, still want to report its done correctly
+		//updates where nothing changed
 		return $this->MatchedRows();
+		//CT in case of updates where no data is changed, still want to report its done correctly
 		
 	}
 
@@ -213,7 +217,12 @@ class cDatabase
         	//not sure if this is possible
         	if(!is_null($key)){
 	            if($i > 0) $string .= ", ";
-	            $string .= " `{$key}`=\"{$this->EscTxt($value)}\"";
+
+				if(is_int($value)){
+	            	$string .= " `{$key}`=$value ";
+				}else{
+					$string .= " `{$key}`=\"{$this->EscTxt($value)}\"";
+				}
 	        	$i++;
 	    	}
             

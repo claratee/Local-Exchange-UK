@@ -77,7 +77,7 @@ class cMemberUtils extends cMember {
  
         //$cStatusMessage->Error("save data");    
         //Rejigged for safety
-        $keys_array = array();
+        $field_array = array();
 
         //only allow committee and up to make Could not execute queryto these fields
         //$admin 
@@ -85,19 +85,23 @@ class cMemberUtils extends cMember {
         $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
 
         if($this->getAction() == "create" OR $this->getAction() == "update"){
-            if (null !=($this->getEmailUpdates())) $keys_array[] = 'email_updates';
-            if (null !=($this->getConfirmPayments())) $keys_array[] = 'confirm_payments';
-            if(null !=($this->getAccountType())) $keys_array[] = 'account_type'; //CT non-admins can only change from single to joint or back again
+            // if (null !=($this->getEmailUpdates())) $keys_array[] = 'email_updates';
+            // if (null !=($this->getConfirmPayments())) $keys_array[] = 'confirm_payments';
+            // if(null !=($this->getAccountType())) $keys_array[] = 'account_type'; //CT non-admins can only change from single to joint or back again
 
-            if((($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)) && !empty($_REQUEST['member_id'])){
-                if(null !=($this->getMemberId())) $keys_array[] = 'member_id';
-                if(null !=($this->getMemberRole())) $keys_array[] = 'member_role';
-                if(null !=($this->getAccountType())) $keys_array[] = 'account_type';
-                if(null !=($this->getAdminNote())) $keys_array[] = 'admin_note';
-                if(null !=($this->getJoinDate())) $keys_array[] = 'join_date';
-                if(null !=($this->getExpireDate())) $keys_array[] = 'expire_date';
-                if(null !=($this->getRestriction())) $keys_array[] = 'restriction';
-                if(null !=($this->getStatus())) $keys_array[] = 'status';
+            if (null !=($this->getEmailUpdates())) $field_array['email_updates'] = $this->getEmailUpdates();
+            if (null !=($this->getConfirmPayments())) $field_array['confirm_payments'] = $this->getConfirmPayments();
+            if (null !=($this->getAccountType())) $field_array['account_type'] = $this->getAccountType(); //CT non-admins can only change from single to joint or back again
+
+            if($cUser->isAdminActionPermitted()){
+                if(null !=($this->getMemberId())) $field_array['member_id'] = $this->getMemberId();
+                if(null !=($this->getMemberRole())) $field_array['member_role'] = $this->getMemberId();
+                if(null !=($this->getAccountType())) $field_array['account_type'] = $this->getAccountType(); //CT non-admins can only change from single to joint or back again
+                if(null !=($this->getAdminNote())) $field_array['admin_note'] = $this->getAdminNote();
+                if(null !=($this->getJoinDate())) $field_array['join_date'] = $this->getJoinDate();
+                if(null !=($this->getExpireDate())) $field_array['expire_date'] = $this->getExpireDate();
+                if(null !=($this->getRestriction())) $field_array['restriction'] = $this->getRestriction();
+                if(null !=($this->getStatus())) $field_array['status'] = $this->getStatus();
             //$admin_action=true;
             }
         }
@@ -117,7 +121,7 @@ class cMemberUtils extends cMember {
                     // $password = $this->GeneratePassword();
                     // $field_array["password"] =  password_hash($password, PASSWORD_DEFAULT);
                     //CT cant do anything with password here anymore - security. only user themselves can change their password.
-                    $member_id = $this->insert(DATABASE_MEMBERS, $keys_array);
+                    $member_id = $this->insert(DATABASE_MEMBERS, $field_array);
                     $this->setMemberId($member_id);
                     //CT sets default password
                     $this->DefaultPassworForNewMember();
@@ -125,22 +129,22 @@ class cMemberUtils extends cMember {
                 case "update":
                     // print_r($keys_array);
                     //try{
-                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                    $is_success = $this->update(DATABASE_MEMBERS, $field_array, $condition);
                     
                     //}catch (Exception $e){
                     //} 
                 break;
                 case "change_status":
                     $cUser->MustBeLevel(1);
-                    $keys_array[] = 'status';
-                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
+                    $field_array['status'] = $this->getStatus();
+                    $is_success = $this->update(DATABASE_MEMBERS, $field_array, $condition); 
                 break;
                 case "archive":
                     $cUser->MustBeLevel(1);
                         if($this->getMemberId() == $site_settings->getKey('SITE_MEMBER_ID')) throw new Exception("You cannot archive permanently the central site account.", 1);
                             $this->setAdminNote("");
-                            $keys_array[] = 'admin_note';
-                            $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition); 
+                            $field_array['admin_note'] = $this->getAdminNote();
+                            $is_success = $this->update(DATABASE_MEMBERS, $field_array, $condition); 
 
                         if($this->getBalance() != 0){
                              $trade_field_array = $this->makeTradeArrayForBalanceTransfer();
@@ -154,15 +158,14 @@ class cMemberUtils extends cMember {
                 case "joint_create":
                     //make sure status=L, primary member=Y are all set before get to this stage
                     //$keys_array[] = 'member_id';
-                    $this->setAccountType("J");
-                    $keys_array[] = 'account_type';
-                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                    $field_array['account_type'] = "J";
+
+                    $is_success = $this->update(DATABASE_MEMBERS, $field_array, $condition);
 
                 break;
                 case "joint_delete":
-                    $this->setAccountType("S");
-                    $keys_array[] = 'account_type';
-                    $is_success = $this->update(DATABASE_MEMBERS, $keys_array, $condition);
+                    $field_array['account_type'] = "S";
+                    $is_success = $this->update(DATABASE_MEMBERS, $field_array, $condition);
 
                 break; 
 

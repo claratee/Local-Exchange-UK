@@ -5,7 +5,7 @@ if (!isset($global))
 	die(__FILE__." was included without inc.global.php being included first.  Include() that file first, then you can include ".__FILE__);
 }
 
-class cLogging extends cBasic2 {
+class cLogging extends cSingle {
 	private $log_id; //not normally set, unless historic
 	private $log_date; // not normally set, unless historic
 	private $admin_id; // usually a member_id, but not always
@@ -17,14 +17,16 @@ class cLogging extends cBasic2 {
 
 	//you can only save new entries
 	function Save(){
-		$keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
-		$log_id = $this->insert(DATABASE_LOGGING, $keys_array);
+        $field_array = array();
+        $field_array['admin_id'] = $this->getAdminId();
+        $field_array['category'] = $this->getCategory();
+        $field_array['action'] = $this->getAction();
+        $field_array['note'] = $this->getNote();
+		$log_id = $this->insert(DATABASE_LOGGING, $field_array);
 		return $log_id;
 	}
         //you can only save new entries
-    function Build($field_array){
-        return $is_success=parent::Build($field_array);
-    }
+
 /*
 	function __construct ($field_array=null) {
 		global $cUser;

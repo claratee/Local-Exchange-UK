@@ -1,6 +1,6 @@
 <?php
 
-class cMail extends cBasic2 {
+class cMail extends cSingle {
 
 	//CT new class - attempt to fix the sender for all mails in system
     
@@ -65,75 +65,85 @@ newsletter - new download available (group->item)
 		global $cStatusMessage, $site_settings;
 
         //test if it can be done
-        if(empty($this->getSubject())) throw new Exception('Missing subject.');
-        if(empty($this->getMessage())) throw new Exception('Missing message.');
+        try{
+            if(empty($this->getSubject())) throw new Exception('Missing subject.');
+            if(empty($this->getMessage())) throw new Exception('Missing message.');
 
-        $this->setHeaders($this->makeHeaders());     
-        $this->setFormattedSubject($this->makeFormattedSubject());     
-        $this->setFormattedMessage($this->makeFormattedMessage());     
-        $fail_count=0;
-        $success_count=0;
-        foreach ($this->getRecipients() as $recipient) {
-            //$to = "\"{$recipient['display_name']}\" {$recipient['email']}";
-            $to = "{$recipient['email']}";
-            //$is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
-           // $is_success = mail($to, "$this->getFormattedSubject()", $this->getFormattedMessage(), $this->getHeaders());
-            //print_r($to);
-            $is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
-            //$is_success = true;
-            // CT debug
-            //print($to);
-            // print("<br />message: " . $this->getFormattedMessage());
-            // print("<br />subject: " . $this->getFormattedSubject());
-            // print("<br />headers: " . $this->getHeaders() . "is success" .$is_success . "<br />");
-            if($is_success) $success_count++;
-            else {
-                $fail_count++;
-                if(!DEBUG) $cStatusMessage->Error("Could not send to " . $recipient['email'] . " ? " . $recipient['display_name']);
+            $this->setHeaders($this->makeHeaders());     
+            $this->setFormattedSubject($this->makeFormattedSubject());     
+            $this->setFormattedMessage($this->makeFormattedMessage());     
+            $fail_count=0;
+            $success_count=0;
+            foreach ($this->getRecipients() as $recipient) {
+                //$to = "\"{$recipient['display_name']}\" {$recipient['email']}";
+                $to = "{$recipient['email']}";
+                //$is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
+               // $is_success = mail($to, "$this->getFormattedSubject()", $this->getFormattedMessage(), $this->getHeaders());
+                //print_r($to);
+                $is_success = mail($to, $this->getFormattedSubject(), $this->getFormattedMessage(), $this->getHeaders());
+                //$is_success = true;
+                // CT debug
+                //print($to);
+                // print("<br />message: " . $this->getFormattedMessage());
+                // print("<br />subject: " . $this->getFormattedSubject());
+                // print("<br />headers: " . $this->getHeaders() . "is success" .$is_success . "<br />");
+                if($is_success) $success_count++;
+                else {
+                    $fail_count++;
+                    if(!DEBUG) $cStatusMessage->Error("Could not send to " . $recipient['email'] . " ? " . $recipient['display_name']);
+                }
             }
+            $total=sizeof($this->getRecipients());
+            
+            $note = "Attempted mail: {$total} success: {$success_count}, failed: {$fail_count}";
+            if(DEBUG) $cStatusMessage->Info($note);
+            //CT logs - just in case its used for spam, we need a record
+            // dont think we need to log every sendemail...was here for debugg
+            // if(LOG_LEVEL > 0) {//Log if enabled
+
+           /*$keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
+                 $field_array=array();
+                 $field_array['category'] = LOG_SEND_ANNOUNCEMENT;
+                 $field_array['action'] = "A";
+                 $field_array['ref_id'] = "";
+                 $field_array['note'] = $note;
+                 $log_entry = new cLogging ($field_array);
+                 $log_entry->Save();
+            }*/
+            $contact_id=null;
+            //timed update events
+            //print($action . "<br />");
+            //print("<br />action: " . $action);
+            //LOG contact 
+
+            if(LOG_LEVEL>0 OR ($action==LOG_SEND_UPDATE_DAILY OR $action==LOG_SEND_UPDATE_WEEKLY OR $action==LOG_SEND_UPDATE_MONTHLY)){
+                if($action == LOG_SEND_CONTACT OR $action == LOG_SEND_ALL){ 
+                    //CT saves the content too of broadcast or contact_us email
+                        $contact_id = $this->logMessage($action);
+                        $this->LogSendEvent($action, $contact_id);
+                    //print($action);
+                }else{
+                    //updates
+                    $this->LogSendEvent($action, null);
+                }
+            }  
+        }catch(Exception $e){
+            $cStatusMessage->Error("Send message: " . $e->getMessage());
         }
-        $total=sizeof($this->getRecipients());
         
-        $note = "Attempted mail: {$total} success: {$success_count}, failed: {$fail_count}";
-        if(DEBUG) $cStatusMessage->Info($note);
-        //CT logs - just in case its used for spam, we need a record
-        // dont think we need to log every sendemail...was here for debugg
-        // if(LOG_LEVEL > 0) {//Log if enabled
-
-       /*$keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
-             $field_array=array();
-             $field_array['category'] = LOG_SEND_ANNOUNCEMENT;
-             $field_array['action'] = "A";
-             $field_array['ref_id'] = "";
-             $field_array['note'] = $note;
-             $log_entry = new cLogging ($field_array);
-             $log_entry->Save();
-        }*/
-        $contact_id=null;
-        //timed update events
-        //print($action . "<br />");
-        //print("<br />action: " . $action);
-        //LOG contact 
-
-        if(LOG_LEVEL>0 OR ($action==LOG_SEND_UPDATE_DAILY OR $action==LOG_SEND_UPDATE_WEEKLY OR $action==LOG_SEND_UPDATE_MONTHLY)){
-            if($action == LOG_SEND_CONTACT OR $action == LOG_SEND_ALL){ 
-                //CT saves the content too of broadcast or contact_us email
-                    $contact_id = $this->logMessage($action);
-                    $this->LogSendEvent($action, $contact_id);
-                //print($action);
-            }else{
-                //updates
-                $this->LogSendEvent($action, null);
-            }
-        }
 
         return empty($fail_count);
         
 	}
     function LogMessage(){
         //exclude some updates from saving contact
-        $keys_array = array('recipients', 'reply_to_name', 'reply_to_email', 'subject', 'message', 'headers');
-        return $this->insert(DATABASE_CONTACT, $keys_array);
+        $field_array = array();
+        $field_array['recipients'] = $this->getRecipients();
+        $field_array['reply_to_email'] = $this->getReplyToEmail();
+        $field_array['subject'] = $this->getSubject();
+        $field_array['message'] = $this->getMessage();
+        $field_array['headers'] = $this->getHeaders();
+        return $this->insert(DATABASE_CONTACT, $field_array);
     }
     function LogSendEvent($action, $contact_id=null, $note=null){
         //print_r($action);

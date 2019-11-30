@@ -6,7 +6,7 @@ if (!isset($global))
 }
 
 
-class cListing extends cBasic2
+class cListing extends cSingle
 {
     
 	// added via default __get at build
@@ -38,7 +38,7 @@ class cListing extends cBasic2
         //$is_success = false;
         
         $string_query = $cQueries->getMySqlListing($condition);
-        return $this->LoadDatabaseTable($string_query);
+        return $this->LoadFromDatabase($string_query);
 
         //CT something is not worrking well - going back to manual process
         // if($query = $cDB->Query($string_query)){

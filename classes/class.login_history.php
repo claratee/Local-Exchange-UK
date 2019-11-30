@@ -6,53 +6,36 @@ if (!isset($global))
 }
 
 //class cLoginHistory extends cBasic{  
-class cLoginHistory extends cBasic2{  
-	private $member_id;
+class cLoginHistory extends cSingle{  
+    private $action;
+    private $member_id;
 	private $total_failed;
 	private $consecutive_failures;
-	private $login_event_date;
+	private $login_event_date; // CT never set, just controlled by mysql
 	
 	// CT canot use cBasic class as this requires explicit build
-	function Load ($condition)  {
+	function Load($condition)  {
 		global $cDB, $cStatusMessage, $cUser;
 		
-    	$query_string = "SELECT 
+    	$string_query = "SELECT 
     		`member_id`, 
             `total_failed`, 
             `consecutive_failures`
               FROM `".DATABASE_LOGINS . 
               "` WHERE $condition";
         //$string="SELECT `member_id`, `total_failed`, `consecutive_failures`, `login_event_date`, `last_password_change_date` FROM `lets_logins` WHERE member_id='0018'";
-		$query = $cDB->Query($query_string);
-		if($row = $cDB->FetchArray($query))
-        {       
-            $this->Build($row);
-            return true; 
-        }
+		return $this->LoadFromDatabase($string_query);
         //CT create new line
     	//object is empty, but will be populated shortly no worries
-    	$this->setMemberId($member_id);
-    	$field_array=$this->makeFieldArrayFromObject();	
-    	$string_query = $cDB->BuildInsertQuery(DATABASE_LOGINS, $field_array);
-            //TODO - wirtie insert
-        $is_success = $cDB->Query($string_query);
-        return $is_success;
+    	// $this->setMemberId($member_id);
+    	// $field_array=$this->makeFieldArrayFromObject();	
+    	// $string_query = $cDB->BuildInsertQuery(DATABASE_LOGINS, $field_array);
+     //        //TODO - wirtie insert
+     //    $is_success = $cDB->Query($string_query);
+     //    return $is_success;
 	} 
 
-    public function pascalcasify($snakecase){
-        return str_replace('_', '', ucwords($snakecase, '_'));
-    }
-    function Build ($field_array)  {
-        $count=0;
-        foreach ($field_array as $key => $value) {
-            if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
-                //if(is_null($value)) $value = "";
-                $this->$method($value);
-                $count++;
-            }
-        }
-        return $count;
-    } 
+    
 //CT replace this with the one on basic2 class - from keys
 	function makeFieldArrayFromObject(){
 		$field_array=array();
@@ -67,11 +50,15 @@ class cLoginHistory extends cBasic2{
 	function Save() {
         
 		global $cDB, $cStatusMessage;
+
 		$field_array=$this->makeFieldArrayFromObject();	
-		$condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";		
-		$string_query = $cDB->BuildUpdateQuery(DATABASE_LOGINS, $field_array, $condition);
-        $is_success = $cDB->Query($string_query);  
-		return $is_success;
+		if($this->getAction() == "update") {
+            $condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";      
+            $this->update(DATABASE_LOGINS, $field_array, $condition);
+        }else{
+            //CT inserts new object where most fields are 0
+            $this->insert(DATABASE_LOGINS, $field_array);
+        }
 	}
 	
 
@@ -79,27 +66,34 @@ class cLoginHistory extends cBasic2{
         global $cDB;
         $condition = "`member_id`=\"{$cDB->EscTxt($member_id)}\"";
 		if($this->Load($condition)) {
-			$this->setConsecutiveFailures(0);
-			//then save new state
-			return $this->Save();
-		} 
+            $this->setAction("update");
+		}else{
+            $this->setAction("create");
+            $this->setTotalFailed(0);
+
+        }
+        $this->setMemberId($member_id);
+        $this->setConsecutiveFailures(0);
+        $this->Save();
 	}
 
-    //returns failures
-	function RecordLoginFailure ($member_id) {
+    function RecordLoginFailure ($member_id) {
         global $cDB;
-		$condition = "`member_id`=\"{$cDB->EscTxt($member_id)}\"";
+        $condition = "`member_id`=\"{$cDB->EscTxt($member_id)}\"";
         if($this->Load($condition)) {
-            //track number of failures all time
-			$total_failed = $this->getTotalFailed()+1;
-			$this->setTotalFailed($total_failed);
-            //track number of failures in a row
-			$consecutive_failures = $this->getConsecutiveFailures()+1;
-			$this->setConsecutiveFailures($consecutive_failures);
-			$this->Save();
-            return $consecutive_failures;
-		} 
-	}
+            $this->setAction("update");
+            $this->setTotalFailed($this->getTotalFailed()+1);
+            $this->setConsecutiveFailures($this->getConsecutiveFailures()+1);
+        }else{
+            $this->setAction("create");
+            $this->setMemberId($member_id);
+            $this->setTotalFailed(1);
+            $this->setConsecutiveFailures(1);
+        }
+        $this->Save();
+    }
+
+    
 
     /**
      * @return mixed
@@ -186,6 +180,26 @@ class cLoginHistory extends cBasic2{
      * @return mixed
      */
 
+
+    /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param mixed $action
+     *
+     * @return self
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
 }
 	
 

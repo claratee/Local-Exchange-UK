@@ -1,5 +1,5 @@
 <?php
-class cIncomeTies extends cBasic2 {
+class cIncomeTies extends cSingle {
 	// doesnt need access to member object, even uses a dedicated db table. So severing ties!
 	    //CT construct and build functions come from parent
     
@@ -14,12 +14,13 @@ class cIncomeTies extends cBasic2 {
 		global $cDB;
 		$string_query = "select member_id, member_id_to, percent, updated_at from " . DATABASE_INCOME_TIES ." where member_id=\"{$member_id}\"";
         //CT parent function - load and builds from string query on db
-        if($has_income_share = $this->LoadDatabaseTable($string_query)){
-        	//print_r($has_income_share);
-        	return $has_income_share;
-        }else{
-        	return false;
-        }
+        return $this->LoadFromDatabase($string_query);
+        // if($has_income_share = $this->LoadDatabaseTable($string_query)){
+        // 	//print_r($has_income_share);
+        // 	return $has_income_share;
+        // }else{
+        // 	return false;
+        // }
         
 
 	}

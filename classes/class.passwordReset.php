@@ -6,7 +6,7 @@ if (!isset($global))
 }
 
 //class cLoginHistory extends cBasic{  
-class cPasswordReset extends cBasic2{  
+class cPasswordReset extends cSingle{  
 	private $member_id;
     private $password_reset_token; 
     private $password_reset_token_date;
@@ -15,21 +15,13 @@ class cPasswordReset extends cBasic2{
 
 	// CT canot use cBasic class as this requires explicit build
 	protected function Load ($condition)  {
-		global $cDB, $cStatusMessage, $cUser;
 		
-    	$query_string = "SELECT 
+    	$string_query = "SELECT 
     		`member_id`, 
             `password_reset_token`,
             `password_reset_token_date`
               FROM `". DATABASE_PASSWORD_RESET ."` WHERE $condition";
-		$query = $cDB->Query($query_string);
-
-		if($row = $cDB->FetchArray($query)) {       
-            $this->Build($row);
-            return true; 
-        }else{
-
-        }
+		return $this->LoadFromDatabase($string_query);
        
         //continue if select was unsuccessful. 
      //    //CT create new line
@@ -45,9 +37,11 @@ class cPasswordReset extends cBasic2{
     
 	//CT renamed SaveLoginHistory
 	protected function Save(){
-        $keys_array = array('member_id', 'password_reset_token');
+        $field_array = array();
+        $field_array['member_id'] = $this->getMemberId();
+        $field_array['password_reset_token'] = $this->getPasswordResetToken();;
 		$condition = "member_id=\"{$cDB->EscTxt($this->getMemberId())}\"";		
-		$this->update($keys_array, $condition);
+		$this->update(DATABASE_PASSWORD_RESET, $field_array, $condition);
 		return $is_success;
 	}
 	
@@ -84,12 +78,13 @@ class cPasswordReset extends cBasic2{
         $field_array['member_id'] = $this->getMemberId();      
         //$field_array['password_reset_token_date'] = $this->getPasswordChangeTokenDate(); 
         $condition = "member_id = \"{$this->getMemberId()}\"";
-        $string_query = $cDB->BuildUpdateQuery(DATABASE_PASSWORD_RESET, $field_array, $condition);
-        $is_success = $cDB->Query($string_query); 
+
         //if uppdate wasnt successful (ie no record found) insert instead
-        if($cDB->AffectedRows()<1) {
-            $string_query = $cDB->BuildInsertQuery(DATABASE_PASSWORD_RESET, $field_array);
-            $is_success = $cDB->Query($string_query); 
+        if($this->Load($condition)) {
+            $is_success = $this->update(DATABASE_PASSWORD_RESET, $field_array, $condition);
+        }else{
+            $is_success = $this->insert(DATABASE_PASSWORD_RESET, $field_array);
+
         }
         //print_r($is_success);
         return $is_success;

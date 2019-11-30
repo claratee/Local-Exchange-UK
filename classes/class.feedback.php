@@ -6,7 +6,7 @@ if (!isset($global))
 }
 
 
-class cFeedback extends cBasic2 {	
+class cFeedback extends cSingle {	
 	 private $feedback_id;
 	 private $feedback_date;
 	 private $status;
@@ -89,50 +89,77 @@ class cFeedback extends cBasic2 {
             return false;
     } */
     //CT modified a bit
-    function FindTradeFeedback ($trade_id) {
-        global $cDB;
+    // function FindTradeFeedback ($trade_id) {
+    //     global $cDB;
         
-        $condition = "f.trade_id=\"{$trade_id}\" AND f.member_id_author=\"{$this->getMemberIdAuthor()}\" ";
-        $feedback = new cFeedback(); 
-        if($feedback->Load($condition)) return $feedback->getFeedbackId();
-        return false;
-    }
+    //     $condition = "f.trade_id=\"{$trade_id}\" AND f.member_id_author=\"{$this->getMemberIdAuthor()}\" ";
+    //     $feedback = new cFeedback(); 
+    //     if($feedback->Load($condition)) return $feedback->getFeedbackId();
+    //     return false;
+    // }
 
+    //sets feedback values from trade_id and $member_id.
+    function FindTradeFeedback ($trade_id, $member_id_author=null) {
+        global $cDB;
+    
+        //$condition = "f.trade_id=\"{$trade_id}\" AND f.member_id_author=\"{$this->getMemberIdAuthor()}\" ";
+        $condition = "f.trade_id=\"{$trade_id}\"";
+        if(!empty($member_id_author)) $condition .= " AND `f`.`member_id_author`=\"{$member_id_author}\"";
+        
+        return $this->Load($condition);
+    }
     //is used by groups as well as single. pass in the trade_id for single
-    function returnTradesIfValid($trade_id=null){
+    function returnAllValidTrades($trade_id=null){
+
         //CT make sure user has rights to post
         $condition = "
             t.status = \"V\" 
             AND (`t`.`member_id_to` =\"{$this->getMemberIdAuthor()}\" OR `t`.`member_id_from` =\"{$this->getMemberIdAuthor()}\") 
-            AND NOT `t`.`type` = '" . TRADE_TYPE_REVERSAL . "' 
+            AND NOT `t`.`type` = '" . TRADE_TYPE_REVERSAL . "' AND m.status = \"A\" AND n.status = \"A\"
             AND `t`.`trade_date` > CURRENT_DATE() - INTERVAL 3 MONTH 
-
             ";
         //CT trade_id indicates single or group class
 
-        if(!empty($trade_id)) {
-            $condition .= " AND t.trade_id=\"{$trade_id}\"";
-            $trade = new cTrade(); 
-            //print($this->FindTradeFeedback($trade_id));
-            if($trade->Load($condition) && !$this->FindTradeFeedback($trade_id)) {
-                return $trade;
-            } 
-        }else{
-            //CT if group
-            $trades = new cTradeGroup(); 
-            if($trades->Load($condition)) 
-                $new_trades = array();
-                foreach ($trades->getTrades() as $trade) {
-                 //remove items you have already left feedback for
-                    if(!$this->FindTradeFeedback($trade->getTradeId())) $new_trades[]=$trade;
+        if(!empty($this->getTradeId())) {
+             $condition .= " AND t.trade_id=\"{$trade_id}\"";
+        } 
+        $trades = new cTradeGroup();
+        if($trades->Load($condition)) {
+            //print_r($trades->getItems());
+            $new_trades = array();
+            foreach ($trades->getItems() as $trade) {
+                //remove items you have already left feedback for
+                //print_r($trade->getTradeId());
+                if(!$this->FindTradeFeedback($trade->getTradeId())) {
+                    $new_trades[]=$trade;
+                    
                 }
-                //CT replace the trade array on the tradegroup object
-                $trades->setTrades($new_trades);
-                return $trades;
+            }
+
+            $trades->setItems($new_trades);
+            return $trades;
+        } 
+        else{
+            return false;
         }
+
+        //     //print($this->FindTradeFeedback($trade_id));
+            
+        // }else{
+        //     //CT if group
+        //     $trades = new cTradeGroup(); 
+        //     if($trades->Load($condition)) 
+        //         $new_trades = array();
+        //         
+        //         //CT replace the trade array on the tradegroup object
+        //         $trades->setItems($new_trades);
+        //         return $trades;
+        // }
         return false;
     }
+    function isTradeValid($trade_id){
 
+    }
 	function Save () {
         global $cDB, $cStatusMessage;
 
@@ -141,51 +168,18 @@ class cFeedback extends cBasic2 {
         // } 
 
         //CT all is well
-        $keys_array =array(
-            'status',
-            'member_id_author',
-            'member_id_about',
-            'trade_id',
-            'rating',
-            'comment'
-        );        
-        return $this->insert(DATABASE_FEEDBACK, $keys_array);  
+        $field_array =array();
+        $field_array['status'] = $this->getStatus();
+        $field_array['member_id_author'] = $this->getMemberIdAuthor();
+        $field_array['member_id_about'] = $this->getMemberIdAbout();
+        $field_array['trade_id'] = $this->getTradeId();
+        $field_array['rating'] = $this->getRating();
+        $field_array['comment'] = $this->getComment();
+        // print_r($field_array);
+        // exit;      
+        return $this->insert(DATABASE_FEEDBACK, $field_array);  
     }
 
-    function ProcessData ($field_array) {
-        global $p, $member_about, $member, $cStatusMessage, $cUser;
-        $this->Build($field_array);
-        if($this->getRating()<1) {
-            $cStatusMessage->Error("Enter a rating.");
-            return false;
-        }
-        if(!$this->returnTradesIfValid($this->getTradeId())) {
-            throw new Exception("You cannot leave feedback on this trade. You may have left one already. <a href=\"feedback_choose.php?member_id={$this->getMemberIdAuthor()}\">Leave feedback for another trade</a>");
-        }    
-        $feedback_id = $this->Save();
-    
-        if($feedback_id) {
-
-                    //log events done by admins
-            if($cUser->getMode() == USER_MODE_ADMIN AND LOG_LEVEL > 0){
-                //      $keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
-                $field_array=array();
-                $field_array['admin_id'] = $cUser->getMemberId();
-                $field_array['category'] = LOG_FEEDBACK;
-                $field_array['action'] = LOG_FEEDBACK_BY_ADMIN;
-                $field_array['ref_id'] = $feedback_id;
-                $field_array['note'] = "";
-                $log_entry = new cLogging ($field_array);
-                $log_entry->Save();
-            }   
-
-            //$output = "Your feedback has been recorded.";
-            return $feedback_id;
-        } else {
-            throw new Exception("There was an error recording your feedback.");
-        }
-
-}
 
 
 
@@ -211,9 +205,10 @@ class cFeedback extends cBasic2 {
 //         }   
 //     }
 	
-	function Load ($condition) {
-		global $cDB, $site_settings, $cStatusMessage;
-		
+	public function Load ($condition) {
+		global $cDB, $site_settings, $cStatusMessage, $cQueries;
+		$string_query = $cQueries->getMySqlTrade($condition);
+
 		$string_query = "SELECT f.feedback_id as feedback_id, 
             date_format(feedback_date, \"{$site_settings->getKey('SHORT_DATE')}\") as feedback_date, 
             f.member_id_author member_id_author, 
@@ -231,29 +226,32 @@ class cFeedback extends cBasic2 {
             LEFT JOIN ".DATABASE_CATEGORIES." c on c.category_id=t.category_id
             WHERE {$condition}
             ORDER BY f.feedback_date desc";
-        //print($string_query);
-		$query = $cDB->Query($string_query);
-		while ($row = $cDB->FetchArray($query)) {		
-			$this->Build($row);
+        return $this->LoadFromDatabase($string_query);
+     }   
 
-			//$rebuttal_group = new cFeedbackRebuttalGroup();
-			//if($rebuttal_group->LoadRebuttalGroup($feedback_id))
-			//	$this->rebuttals = $rebuttal_group;
-			return true;
-		} 
-		// didnt enter loop so didn't return
-		//$cStatusMessage->Error("There was an error getting feedback.  ");
-		//include("redirect.php");
-		return false;
+ //  //       //print($string_query);
+	// 	// $query = $cDB->Query($string_query);
+	// 	// while ($row = $cDB->FetchArray($query)) {		
+	// 	// 	$this->Build($row);
+
+	// 	// 	//$rebuttal_group = new cFeedbackRebuttalGroup();
+	// 	// 	//if($rebuttal_group->LoadRebuttalGroup($feedback_id))
+	// 	// 	//	$this->rebuttals = $rebuttal_group;
+	// 	// 	return true;
+	// 	// } 
+	// 	// // didnt enter loop so didn't return
+	// 	// //$cStatusMessage->Error("There was an error getting feedback.  ");
+	// 	// //include("redirect.php");
+	// 	// return false;
 		
-	}
+	// }
 
 	/*
 	function DisplayFeedback () {
 		return $this->RatingText() . "<BR>" . $this->feedback_date->StandardDate(). "<BR>". $this->Context() . "<BR>". $this->member_author->PrimaryName() ." (" . $this->member_author->member_id . ")" . "<BR>" . $this->category->description . "<BR>" . $this->comment;
 	}
 	*/
-	function RatingText () {
+	public function RatingText () {
 		if ($this->rating == POSITIVE)
 			return "Positive";
 		elseif ($this->rating == NEGATIVE)
@@ -262,7 +260,7 @@ class cFeedback extends cBasic2 {
 			return "Neutral";
 	}	
 
-	function Context ($member_id) {
+	public function Context ($member_id) {
 		if ($this->getMemberIdAuthor == SELLER)
 			return "Seller";
 		else

@@ -18,7 +18,7 @@ $member_exists = $member->Load($condition);
 if(!$member_exists){
 	
 	//CT hard stop  until I have time to fix
-	$cStatusMessage->Error('Member does not exist or is no longer inactive.');
+	$cStatusMessage->Error('Member does not exist or is no longer active.');
 	$p->DisplayPage($output);
 	exit;
 }
@@ -29,10 +29,11 @@ $p->page_title = "Feedback for {$member->getDisplayName()} ({$member->getMemberI
 
 
 $condition = "`member_id_about`=\"{$member_id}\"";
-$feedback_group_about = new cFeedbackGroup($condition);
+$feedback_group_about = new cFeedbackGroup();
+$feedback_group_about->Load($condition);
 //$feedback_group_as_seller->LoadFeedbackGroup($member_id, SELLER);
 
-if(sizeof($feedback_group_about->getFeedback()) > 0 ){
+if(sizeof($feedback_group_about->getItems()) > 0 ){
 	//$output .= $feedback_group_as_seller->TableFromArray($field_array);
 	$output .=  "<p class=\"summary\">Feedback: " . $feedback_group_about->DisplaySummary() . "</p>";
 	$output .=  $feedback_group_about->Display("about");
@@ -44,10 +45,11 @@ else{
 $output .= "<h2>Feedback left for others</h2>";
 
 $condition = "`f`.`member_id_author`=\"{$member_id}\"";
-$feedback_group_about = new cFeedbackGroup($condition);
+$feedback_group_by = new cFeedbackGroup();
+$feedback_group_by->Load($condition);
 //$feedback_group_as_buyer->LoadFeedbackGroup();
-if(sizeof($feedback_group_about->getFeedback()) > 0 ){
-	$output .= $feedback_group_about->Display("author");
+if(sizeof($feedback_group_by->getItems()) > 0 ){
+	$output .= $feedback_group_by->Display("author");
 } 
 else{
 	$output .= "<p>No feedback found.</p>";

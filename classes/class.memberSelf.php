@@ -11,10 +11,10 @@ class cMemberSelf extends cMember {
  public function  __construct ($field_array=null) {
         //CT instantiate the people! Like a GOD!
         //CT password_reset - for token flow. stays empty most of the time.
-        $login_history = new cLoginHistory();
-        $this->setLoginHistory($login_history);
         //CT do the do with the array
         parent::__construct($field_array);
+        $login_history = new cLoginHistory();
+        $this->setLoginHistory($login_history);
     }    
     public function LoginFromCookie()
     {
@@ -172,6 +172,11 @@ class cMemberSelf extends cMember {
 
         return false;    
     }
+    //CT logic for assessing if an admin action is allowed, according to the settings of the site
+    public function isAdminActionPermitted(){
+        global $site_settings;
+        return (($this->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($this->getMode() == USER_MODE_ADMIN) && $site_settings->getKey('USER_MODE'));
+    }
     //CT wip. admins are members too. turn off admin controls when not needed - so they have the same experience of a normal member, except when they need it. A bit like "SUDO"...
     public function changeMode($mode="default"){
         global $cUser;
@@ -309,19 +314,17 @@ class cMemberSelf extends cMember {
     public function MustBeLoggedOn()
     {
         global $cUser, $p, $cStatusMessage, $site_settings, $site_settings;
-        
+        //CT check if logged on
+        if ($this->IsLoggedOn()) return true;
+    
+        $url = $_SERVER['REQUEST_URI'];
         if($site_settings->getKey('USER_MODE') == true && $cUser->getMode()==USER_MODE_ADMIN) {
-            $url = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "mode", USER_MODE_ADMIN);
+            $url = $p->addQueryStringVar($url, "mode", USER_MODE_ADMIN);
         }
-        if ($this->IsLoggedOn()){
-            return true;
-        }
-        
-        // user isn't logged on, but is in a section of the site where they should be logged on.
+        //CT user isn't logged on, but is in a section of the site where they should be logged on.
         $_SESSION['request_uri'] = $url;
         $cStatusMessage->SaveMessages();
         header("location:" . HTTP_BASE . "/login_redirect.php");
-                
         exit;
     }
 
@@ -393,6 +396,8 @@ class cMemberSelf extends cMember {
         } 
             
     }
+    //CT this is a joyful useless function. Just greets people in different languages. that's it.
+
 
 
     /**

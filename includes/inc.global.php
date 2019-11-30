@@ -47,87 +47,7 @@ define ("ERROR_SEVERITY_MED",3);
 define ("ERROR_SEVERITY_HIGH",4);
 define ("ERROR_SEVERITY_STOP",5);
 
-//CT TODO - LANG - things that look like language strings, that should be named in one place for localisation. not in global constants
-define ("OFFER_LISTING_HEADING", "Offered Listings");
-define ("WANT_LISTING_HEADING", "Wanted Listings");
-define ("OFFER_LISTING", "Offer");
-define ("WANT_LISTING", "Want");
-define("LOGGED_OUT","!");
-define("GO_BACK","< Back");
-define("GO_NEXT","Next >");
-define("GO_FINISH","Finish");
 
-//CT these are enums. prepare for localisation
-define("ARRAY_AGE", 
-	array(
-        "1" => "Under 18", 
-        "2" => "18-30", 
-        "3" => "30's", 
-        "4" => "40's",
-        "5" => "50's",
-        "6" => "60's",
-        "7" => "70's",
-        "8" => "80's",
-        "8" => "Over 80",
-        "9" => "Prefer not to say or n/a"
-    )
-);
-
-define("ARRAY_SEX", 
-	array(
-       	"1" => "Male", 
-		"2" => "Female", 
-        "3" => "Prefer not to say say or n/a"
-    )
-);
-
-define("ARRAY_ACCOUNT_TYPE", 
-	array(
-        "S" => "Single", 
-        "J" => "Joint", 
-        "H" => "Household", 
-        "O" => "Organization", 
-        "B" => "Business",
-        "F" => "Fund"
-    )
-);
-define("ARRAY_EMAIL_UPDATES", 
-	array(
-        "0" => "Never", 
-        "1" => "Daily",
-        "7" => "Weekly",
-        "30" => "Monthly"
-    )
-);
-define("ARRAY_ACCOUNT_ROLE", 
-	array(
-        "0" => "Member", 
-        "1" => "Committee",
-        "2" => "Administrator"
-    )
-);
-define("ARRAY_CONTACT_SUBJECT", 
-    array(
-        "Membership enquiry" => "Membership enquiry",
-        "Lost login details" => "Lost login details",
-        "General question about LETS and complementary currencies" => "General question about LETS and complementary currencies",
-        "Press or local networking opportunities" => "Press or local networking opportunities",
-        "Other" => "Other"
-    )
-);
-define("ARRAY_RESTRICTION", 
-	array(
-        0 => "No restriction", 
-        1 => "Restriction" 
-    )
-);
-
-define("ARRAY_FEEDBACK", array(
-        "1" => "Negative (1 star)", 
-        "2" => "Neutral (2 stars)", 
-        "3" => "Positive (3 stars)",
-    )
-);
 
 
 // The following constants are used for logging. Add new categories if
@@ -310,6 +230,8 @@ session_start();
 //CT campaign against spaghetti code...linking all classes from here instead of in other files
 //BASE CLASSES
 include_once(CLASSES_PATH ."class.basic.php");
+include_once(CLASSES_PATH ."class.single.php");
+include_once(CLASSES_PATH ."class.collection.php");
 include_once(CLASSES_PATH ."class.basic2.php");
 //HELPERS
 include_once(CLASSES_PATH ."class.logging.php");
@@ -321,6 +243,9 @@ include_once(CLASSES_PATH ."class.queries.php");
 include_once(CLASSES_PATH ."class.database.php");
 include_once(CLASSES_PATH ."class.settings.php");
 
+//UPLOAD
+include_once(CLASSES_PATH ."class.uploads.php");
+include_once(CLASSES_PATH ."class.uploadsGroup.php");
 
 //INFO PAGES
 include_once(CLASSES_PATH ."class.info.php");

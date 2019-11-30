@@ -41,7 +41,7 @@ class cPage {
 			$login_toggle_link = 'login.php';
 			$login_toggle_text = 'Log in';
 		}
-		if(!($site_settings->getKey('USER_MODE') && $cUser->getMemberRole() > 0)){
+		if(!($site_settings->getKey('USER_MODE')) && $cUser->getMemberRole() > 0){
 			$admin_menu_link = "<li><a href=\"" . HTTP_BASE . "/admin_menu.php\">Administration menu</a></li>";
 		}else{
 			$admin_menu_link="";
@@ -158,28 +158,26 @@ class cPage {
 	function MakePageMenu() {
 		return $this->page_sidebar;
 	}	
-	function makeLinkSelf($replace_array=null){
-		global $cUser;
+	// function makeLinkSelf($var, $value){
+	// 	global $cUser;
 		
-		$location = $_SERVER['PHP_SELF'];
-		$replace_key = "";
-		$replace_query = "";
+	// 	$location = $_SERVER['REQUEST_URI'];
 
-		if(!empty($replace_array)){
-			$replace_key = key($replace_array);
-			$replace_query = "{$replace_key}={$replace_array[$replace_key]}";			
-		}
-		$queries=$replace_query;
-			foreach ($_GET as $key => $value) {
-			if($key != $replace_key) $queries .=  "&{$key}={$value}";
-		}
+	// 	if(!empty($replace_array)){
+	// 		//$replace_key = key($replace_array);
+	// 		//$replace_query = "{$replace_key}={$replace_array[$replace_key]}";			
+	// 	}
+	// 	$queries=$replace_query;
+	// 		foreach ($_GET as $key => $value) {
+	// 		if($key != $replace_key) $queries .=  "&{$key}={$value}";
+	// 	}
 
-		//$querystring = $_SERVER['QUERY_STRING'];
-		$link = "{$location}?{$queries}"; 
+	// 	//$querystring = $_SERVER['QUERY_STRING'];
+	// 	$link = "{$location}?{$queries}"; 
 		
-		return "{$link}";
+	// 	return "{$link}";
 
-	} 
+	// } 
 	//CT new - needed for emails 
 	function stripLineBreaks($string){
 		return preg_replace( "/\r|\n/", "", $string);
@@ -187,7 +185,7 @@ class cPage {
 
 	//CT admin mode needs to be entered in specifically by the user. strip at the top of the page
 	function makeModeToggleButton(){
-		global $cUser, $site_settings;
+		global $cUser, $site_settings, $p;
 		//CT put somewhere sensible - this aint it
 		if($cUser->getMemberRole() > 0 AND $cUser->IsLoggedOn() AND $site_settings->getKey('USER_MODE')){
 			//put links into admin mode
@@ -211,8 +209,11 @@ class cPage {
 				$checked = "";
 				$class="off";
 			}
+	//			  <input type=\"checkbox\" {$checked} onclick=\"javascript:window.location='{$location}?mode={$desired_mode}'\">
+			$link = $p->addQueryStringVar($_SERVER['REQUEST_URI'], "mode", $desired_mode);
+
 			$toggle_button ="<div class=\"switch-strip {$class}\"><label class=\"switch\">
-				  <input type=\"checkbox\" {$checked} onclick=\"javascript:window.location='{$location}?mode={$desired_mode}'\">
+				  <input type=\"checkbox\" {$checked} onclick=\"javascript:window.location='{$link}'\">
 				  <span class=\"slider round\"></span> 
 				</label> {$admin_toggle_text}</div>";
 			return "{$toggle_button}";
@@ -402,21 +403,7 @@ class cPage {
 		    foreach($custom_options as $$key => $value) $options[$key]=$value;    	
 	    }
 	    
-	    //$selected_date;
-	    $array_months = array (
-	    	'1' => 'January', 
-	    	'2' => 'February', 
-	    	'3' => 'March', 
-	    	'4' => 'April', 
-	    	'5' => 'May', 
-	    	'6' => 'June', 
-	    	'7' => 'July', 
-	    	'8' => 'August', 
-	    	'9' => 'September', 
-	    	'10' => 'October', 
-	    	'11' => 'November', 
-	    	'12' => 'December'
-	    );
+	    
 
 
 	    $array_years = array();
@@ -431,7 +418,7 @@ class cPage {
 	    $selector_id = $selector_prefix . "_years";
 	    $dropdown_years = $this->PrepareFormSelector($selector_id, $array_years, null, null, "dropdown_years");
 	    $selector_id = $selector_prefix . "_months";
-	    $dropdown_months = $this->PrepareFormSelector($selector_id, $array_months, null, null, "dropdown_months");
+	    $dropdown_months = $this->PrepareFormSelector($selector_id, ARRAY_MONTHS, null, null, "dropdown_months");
 	    $selector_id = $selector_prefix . "_days";
 
 	    $dropdown_days = $this->PrepareFormSelector($selector_id, $array_days, null, null, "dropdown_days");

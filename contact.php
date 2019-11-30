@@ -37,7 +37,7 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 	    if(!empty($_POST['contact_form_from_cc'])){
 		    $field_array['recipients'][1] = array('display_name'=>$_POST['contact_form_from_name'], 'email'=>$_POST['contact_form_from_email']);
 	    }
-	    $field_array['message'] = "From: {$_POST['contact_form_from_name']}<br />
+	    $field_array['message'] = "From: {$_POST['contact_form_from_name']} {$_POST['contact_form_from_member_id']}<br />
 			Email: {$_POST['contact_form_from_email']}<br />
 			<br />
 			{$_POST['contact_form_message']}

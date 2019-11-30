@@ -10,7 +10,7 @@ if (!isset($global))
 
 
 //CT should extend cBasic so it can use builder
-class cTrade extends cBasic2{
+class cTrade extends cSingle{
     //
 	private $trade_id;
 	private $trade_date;
@@ -101,13 +101,9 @@ do the same for feedback and feedback rebuttal
 		global $cDB, $cStatusMessage,  $cQueries;
 		//CT - efficiency - combine db calls. categories, feedback 
         //$condition = "trade_id={$cDB->EscTxt($trade_id)}";
-        $order = "";
-		$query = $cDB->Query($cQueries->getMySqlTrade($condition));
-
-		
-		if($row = $cDB->FetchArray($query)) {		
-			return $this->Build($row);
-
+		$string_query = $cQueries->getMySqlTrade($condition);
+       //print($string_query);
+        if($this->LoadFromDatabase($string_query)){
 
 			
    //          $feedback_id = $feedback->FindTradeFeedback($trade_id, $this->member_from->getMemberId());
@@ -128,7 +124,7 @@ do the same for feedback and feedback rebuttal
 	}
 
     function Build($field_array) {
-        global $cDB, $cStatusMessage,  $cQueries;
+        global $cDB, $cStatusMessage, $cQueries;
              
  
         //CT find a nicer way??

@@ -9,7 +9,7 @@
 	$member = new cMember();
 
 
-	if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN))  {   
+	if($cUser->isAdminActionPermitted())  {   
 	    $condition = "m.member_id=\"{$member_id}\"";
 	} else{
 		//only show active users
@@ -41,7 +41,9 @@
 		$condition = "(member_id_to='{$member_id}' OR member_id_from=\"{$member_id}\")";
 	//trades relating to this member
 		$trades = new cTradeGroup();
-		$trades->Load($condition, $member_id);
+		$trades->setMemberId($member_id);
+
+		$trades->Load($condition);
 		//$output .= $trade_group->DisplayTradeGroupUser($member->getBalance());
 		//$output .= $trades->Display($member->getBalance());
 		//CT without running balance

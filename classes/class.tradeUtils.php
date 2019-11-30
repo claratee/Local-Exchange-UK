@@ -50,10 +50,16 @@ class cTradeUtils extends cTrade{
             //     $string_query = $cDB->BuildUpdateQuery(DATABASE_MEMBERS, $field_array, $condition);
             // break;
             case "reverse":
-                $field_array["status"]=$this->getStatus();
+                $field_array["status"]= TRADE_STATUS_REVERSED;
                 $field_array["description"]=$this->getDescription();
-                $condition = "$trade_id={$this->getTradeId()}";
-                $string_query = $cDB->BuildUpdateQuery(DATABASE_MEMBERS, $field_array, $condition);
+                $condition = "`trade_id`={$this->getTradeId()}";
+                $database = DATABASE_TRADES;
+                $string_query = $cDB->BuildUpdateQuery($database, $field_array, $condition);
+                // if(null == $this->getMemberIdAuthor()) {
+                //     $field_array["member_id_author"]=strval($cUser->getMemberId()); // make sure its a string
+                // }else{
+                //     $field_array["member_id_author"]=$this->getMemberIdAuthor();
+                // }
                 //CT TODO create new reverse trade
                 //$string_query = $cDB->BuildInsertQuery(DATABASE_TRADES, $field_array);
 
@@ -93,6 +99,7 @@ class cTradeUtils extends cTrade{
 
         // }elseif
         
+        //print_r($string_query);
 
         //print_r($cDB->Query($string_query));
         $trade_id = $cDB->QueryReturnId($string_query);
@@ -111,7 +118,7 @@ class cTradeUtils extends cTrade{
         $this->setTradeId($trade_id);
 
         //log events done by admins
-        if(($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN) AND LOG_LEVEL > 0){
+        if($cUser->isAdminActionPermitted() AND LOG_LEVEL > 0){
             //      $keys_array = array('admin_id', 'category', 'action', 'ref_id', 'note');
             $field_array=array();
             $field_array['admin_id'] = $cUser->getMemberId();
@@ -168,7 +175,8 @@ class cTradeUtils extends cTrade{
         */            
             //CT this replaces the code above  
                 try {
-                    $income_tie = new cIncomeTies();
+                    if($this->getAction() !="reverse"){
+                        $income_tie = new cIncomeTies();
                         $has_income_tie=$income_tie->Load($this->getMemberIdTo());
                         if($has_income_tie){
                             //make sure that the user being donated to is valid/active
@@ -200,6 +208,29 @@ class cTradeUtils extends cTrade{
                                 }
                             }
                         }
+                    } else{
+                           
+                            
+                            $field_array_reversal = array();
+                            $field_array_reversal["action"]="create"; 
+                            $field_array_reversal["member_id_to"]=$this->getMemberIdFrom(); 
+                            $field_array_reversal["member_id_from"]=$this->getMemberIdTo(); 
+                            $field_array_reversal["member_id_author"]=$cUser->getMemberId(); //automatic 
+                            //$field_array["status"]=$this->getStatus(); 
+                            $field_array_reversal["amount"]=$this->getAmount(); 
+                            $field_array_reversal["category_id"]="43"; //system business 
+                            $field_array_reversal["type"]=TRADE_TYPE_REVERSAL; //reversal
+                            $field_array_reversal["status"]="V"; //confirmed 
+                            $field_array_reversal["description"]="[Reversal of exchange #{$trade_id} from " . substr($this->getTradeDate(), 0, 10) . "by admin " . $cUser->getMemberId() . ". Reason: '" . $field_array["reason"] . "']"; 
+                            $field_array_reversal["type"]=TRADE_TYPE_TRANSFER; 
+                            
+                            //CT commit trade
+                            //$trade_donation = new cTradeUtils($field_array_donation);
+                            $trade_donation = new cTradeUtils($field_array_reversal);
+                            $trade_donation->ProcessData($field_array_reversal);
+                            
+                        }
+                        
 
                 }catch(Exception $e){
                     $cStatusMessage->Error("Trade has been completed, but the Income share has failed: " . $e->getMessage());
@@ -308,31 +339,31 @@ class cTradeUtils extends cTrade{
 	// 	}			
 	// }
 	
-	function ReverseTrade() { 	// This method allows administrators to reverse
-		global $cUser;								// trades that were made in error.
-		$cUser->MustBeLevel(1);
-		if($this->getStatus() != TRADE_STATUS_APPROVED) return false;		// CT only reverse active trades
-		$this->setStatus(TRADE_STATUS_REVERSED);
-        $string = $this->setDescription() .  "[Trade from {$this->getTradeDate()} Reversed by admin #{$cUser->getMemberId()}]";
-        $this->setDescription($string);
-        $this->Save();
+	// function ReverseTrade() { 	// This method allows administrators to reverse
+	// 	global $cUser;								// trades that were made in error.
+	// 	$cUser->MustBeLevel(1);
+	// 	if($this->getStatus() != TRADE_STATUS_APPROVED) return false;		// CT only reverse active trades
+	// 	$this->setStatus(TRADE_STATUS_REVERSED);
+ //        $string = $this->setDescription() .  "[Trade from {$this->getTradeDate()} Reversed by admin #{$cUser->getMemberId()}]";
+ //        $this->setDescription($string);
+ //        $this->Save();
 
-		$new_trade = new cTrade;				
-        //CT - set and use 
-        //
-        $new_trade->setType(TRADE_TYPE_REVERSAL);
-        $new_trade->setStatus(TRADE_STATUS_REVERSAL);
-		$new_trade->setMemberIdFrom($this->getMemberIdTo());
-        $new_trade->setMemberIdTo($this->getMemberIdFrom());
-        $new_trade->setMemberIdAuthor($CUSER->getMemberId());
-		$new_trade->setAmount($this->getAmount());
-		$new_trade->setCategory($this->getCategory());
-		$string = "[Reversal of trade #{$this->getTradeId()} from {$this->getTradeDate()} by admin {$cUser->getMemberId()}] {$description}";
-		$new_trade->setDescription($string);
+	// 	$new_trade = new cTrade;				
+ //        //CT - set and use 
+ //        //
+ //        $new_trade->setType(TRADE_TYPE_REVERSAL);
+ //        $new_trade->setStatus(TRADE_STATUS_REVERSAL);
+	// 	$new_trade->setMemberIdFrom($this->getMemberIdTo());
+ //        $new_trade->setMemberIdTo($this->getMemberIdFrom());
+ //        $new_trade->setMemberIdAuthor($CUSER->getMemberId());
+	// 	$new_trade->setAmount($this->getAmount());
+	// 	$new_trade->setCategory($this->getCategory());
+	// 	$string = "[Reversal of trade #{$this->getTradeId()} from {$this->getTradeDate()} by admin {$cUser->getMemberId()}] {$description}";
+	// 	$new_trade->setDescription($string);
 
-        //CT change status of the current
-		return $new_trade->Save();
-	}
+ //        //CT change status of the current
+	// 	return $new_trade->Save();
+	// }
 
     ///CT moved from inpage trade.php. 
     function ProcessData ($field_array) {
@@ -368,7 +399,7 @@ class cTradeUtils extends cTrade{
         // CT safety for members - admin can complete large trades
         if(!empty($field_array['amount']) AND is_numeric($field_array['amount']) AND $field_array['amount'] > 1000 AND (($cUser->getMemberRole() > 0 AND !($site_settings->getKey('USER_MODE'))) OR ($site_settings->getKey('USER_MODE') && $cUser->getMode() == USER_MODE_ADMIN)))  {   
 
-            $errors[] = "Amount is too large. You've hit the max safety size for members. Contact an admin for trades bigger than 1000.";
+            $errors[] = "Amount is too large. You've hit the maximum number allowed for members. Contact an admin for trades bigger than 1000.";
         }        
         if(!empty($field_array['description']) AND strlen($field_array['description']) > 300) {
             $errors[] = "Description must be under 300 characters long.";

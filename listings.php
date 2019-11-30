@@ -17,24 +17,24 @@ $search_title = "";
 try{
 	//CT filter conditions all initiated and overwritted as relevant
 	$member_id = null;
-	$type = "O"; //default
 	$category_id = null;
 	$keyword = null;
 	$timeframe = null;
 
 
-	if(!empty($_REQUEST["type"]) AND (strtolower($_REQUEST["type"]) == "want" || strtolower($_REQUEST["type"])=="w")){
-			$type_code = "W";
+	if(!empty($_REQUEST["type"]) && (strtolower($_REQUEST["type"]) == "want" || strtolower($_REQUEST["type"]) == "wanted" || strtoupper($_REQUEST["type"])==WANT_LISTING_CODE)){
+			$type_code = WANT_LISTING_CODE;
 			$search_title = WANT_LISTING_HEADING;
 		
-	} else{
+	} else{ //CT assume offer...
+		$type_code = OFFER_LISTING_CODE;
 		$search_title = OFFER_LISTING_HEADING;
 	}
-	if(!empty($_REQUEST["member_id"]) and $_REQUEST["member_id"] !="%") {
+	if(!empty($_REQUEST["member_id"]) && $_REQUEST["member_id"] !="%") {
 		$member_id = $_REQUEST["member_id"];
 		$search_title .= " for member \"" . $member_id . "\"";
 	} 	
-	if(!empty($_REQUEST["category_id"]) and $_REQUEST["category_id"] !="%") {
+	if(!empty($_REQUEST["category_id"]) && $_REQUEST["category_id"] !="%") {
 		$category_id = $_REQUEST["category_id"];
 		// todo change to english
 		$search_title .= ", in category";
