@@ -210,7 +210,7 @@ class cTradeUtils extends cTrade{
                         }
                     } else{
                            
-                            
+                            $reason = (!empty($field_array["reason"])) ? "'" . $field_array["reason"]. "'" : "None given.";
                             $field_array_reversal = array();
                             $field_array_reversal["action"]="create"; 
                             $field_array_reversal["member_id_to"]=$this->getMemberIdFrom(); 
@@ -218,11 +218,10 @@ class cTradeUtils extends cTrade{
                             $field_array_reversal["member_id_author"]=$cUser->getMemberId(); //automatic 
                             //$field_array["status"]=$this->getStatus(); 
                             $field_array_reversal["amount"]=$this->getAmount(); 
-                            $field_array_reversal["category_id"]="43"; //system business 
+                            $field_array_reversal["category_id"]=$this->getCategoryId(); //system business 
                             $field_array_reversal["type"]=TRADE_TYPE_REVERSAL; //reversal
                             $field_array_reversal["status"]="V"; //confirmed 
-                            $field_array_reversal["description"]="[Reversal of exchange #{$trade_id} from " . substr($this->getTradeDate(), 0, 10) . "by admin " . $cUser->getMemberId() . ". Reason: '" . $field_array["reason"] . "']"; 
-                            $field_array_reversal["type"]=TRADE_TYPE_TRANSFER; 
+                            $field_array_reversal["description"]="[Reversal of exchange #{$trade_id} from " . substr($this->getTradeDate(), 0, 10) . "by admin " . $cUser->getMemberId() . ". Reason: " . $reason . ']"; 
                             
                             //CT commit trade
                             //$trade_donation = new cTradeUtils($field_array_donation);

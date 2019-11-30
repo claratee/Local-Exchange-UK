@@ -163,6 +163,7 @@ class cTradeGroup extends cCollection {
 			}
 			//print_r($trade->getStatus());
             if($trade->getStatus() == strval(TRADE_STATUS_REVERSED) OR $trade->getStatus() == strval(TRADE_TYPE_MONTHLY_FEE_REVERSAL) OR ($trade->getType() == strval(TRADE_TYPE_REVERSAL) OR $trade->getType() == strval(TRADE_TYPE_MONTHLY_FEE_REVERSAL))){
+            //if($trade->getStatus() == TRADE_STATUS_REVERSED || $trade->getType() == TRADE_TYPE_REVERSAL){
                 //$statusclass = "{$statusclass} reversal";
                 $amount = $trade->getAmount(); //CT dont show the format or styling if it's a reversed or reversal
                 $statusclass = "reversal";
@@ -183,7 +184,7 @@ class cTradeGroup extends cCollection {
 				<td>{$traded_from}</td>
 				<td>{$traded_to}</td>
 				<td>{$trade->getCategoryName()}</td>
-				<td><span class=\"metadata\">trade id: {$trade->getTradeId()} </span>{$trade->getDescription()}{$note}</td>
+				<td><span class=\"metadata\">trade id: {$trade->getTradeId()} </span>{$trade->getDescription()}{$note}{$trade->getType()}{$trade->getStatus()}</td>
 				{$rb}</tr>
 				";
 				
