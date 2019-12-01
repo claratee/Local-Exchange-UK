@@ -54,6 +54,17 @@ class cQueries
     //         return $query;
     // }
 
+    function getMySqlNews($condition){
+        $query = "SELECT 
+            `news_id`,
+            `title`,
+            `description`,
+            `expire_date`,
+            `sequence` 
+            FROM " . DATABASE_NEWS . " where {$condition} ORDER BY sequence DESC;";
+            return $query;
+
+    }
     function getMySqlPerson($condition){
         $query = "SELECT
             person_id, 
@@ -301,7 +312,7 @@ function getMySqlFeedbackSummary($condition){
         return $query;
     }
     function getMySqlInfoPage($condition, $order_by){
-        $query="SELECT page_id, title, body, active, permission, member_id_author, updated_at FROM " . DATABASE_PAGE . " WHERE {$condition} ORDER BY {$order_by}";
+        $query="SELECT page_id, title, body, permission, member_id_author, updated_at FROM " . DATABASE_PAGE . " WHERE {$condition} ORDER BY {$order_by}";
         return $query;
     }
     function getMySqlCategory($condition, $order_by){

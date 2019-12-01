@@ -1,7 +1,7 @@
 <?php 
 class cInfoUtils extends cInfo {
 	//whether create or edit
-	var $action; 
+	private $action; 
 
 
 	function Build($vars) {
@@ -20,33 +20,31 @@ class cInfoUtils extends cInfo {
 		$select_name = "permission";
 		//if used in context of batch page controls
 		if(!empty($page_id)) $select_name .= "_{$page_id}";
-		$output = $p->PrepareFormSelector($select_name, $vars, null, $this->permission);
+		$output = $p->PrepareFormSelector($select_name, $vars, null, $this->getPermission());
 		return $output;
 	}
 	
 	function PrepareCheckbox(){
-		return "<input type=\"checkbox\" id=\"select_id[]\" name=\"select_id[]\" value=\"{$this->page_id}\" />";
+		return "<input type=\"checkbox\" id=\"select_id[]\" name=\"select_id[]\" value=\"{$this->getPageId()}\" />";
 	}
 
 	function Display(){
-
+		//$body = 
 		$output = "
 		<form action=\"". HTTP_BASE ."/pages_edit.php\" method=\"post\" name=\"\" id=\"\" class=\"layout2\">
-			<input type=\"hidden\" id=\"page_id\" name=\"page_id\" value=\"{$this->page_id}\" />
-			<input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$this->action}\" />
-			<!-- <input type=\"hidden\" id=\"active\" name=\"active\" value=\"1\" /> -->
-			<input type=\"hidden\" id=\"active\" name=\"active\" value=\"{$this->active}\" />
-			<input type=\"hidden\" id=\"member_id_author\" name=\"member_id_author\" value=\"{$this->member_id_author}\" />
+			<input type=\"hidden\" id=\"page_id\" name=\"page_id\" value=\"{$this->getPageId()}\" />
+			<input type=\"hidden\" id=\"action\" name=\"action\" value=\"{$this->getAction()}\" />
+			<input type=\"hidden\" id=\"member_id_author\" name=\"member_id_author\" value=\"{$this->getMemberIdAuthor()}\" />
 
 			<p>
 				<label for=\"title\">
 					Title *<br />
-					<input maxlength=\"200\" name=\"title\" id=\"title\" type=\"text\" value=\"{$this->title}\">
+					<input maxlength=\"200\" name=\"title\" id=\"title\" type=\"text\" value=\"{$this->getTitle()}\">
 				</label>
 			</p>
 			<p>
 				<label for=\"body\">Content *<br />
-					<textarea cols=\"80\" rows=\"20\" wrap=\"soft\" name=\"body\" id=\"body\">{$this->body}</textarea>
+					<textarea cols=\"80\" rows=\"20\" wrap=\"soft\" name=\"body\" id=\"body\">{$this->getBody()}</textarea>
 				</label>
 			</p>
 			<p>
@@ -67,22 +65,22 @@ class cInfoUtils extends cInfo {
 		$isSuccess = 0;
 		//can handle both create and update
 			$vars = array();
-			$vars['title'] = $cDB->EscTxt($this->title);
+			$vars['title'] = $cDB->EscTxt($this->getTitle());
 			//CT stripping linebreaks....todo: fix
-			$body = str_replace("\r\n", "", $this->body);
+			$body = str_replace("\r\n", "", $this->getBody());
 			$vars['body'] = $cDB->EscTxt($body);
-			$vars['member_id_author'] = $this->member_id_author;
-			$vars['permission'] = $this->permission;
-		if($this->action == "update"){
+			$vars['member_id_author'] = $this->getMemberIdAuthor();
+			$vars['permission'] = $this->getPermission();
+		if($this->getAction() == "update"){
 			//construct vars array
 			
 			//construct matching condition
-			$condition = "page_id=\"{$this->page_id};\"";
+			$condition = "page_id=\"{$this->getPageId()};\"";
 			//construct query
 			$string_query = $cDB->BuildUpdateQuery(DATABASE_PAGE, $vars, $condition);
 			// do the query, return the page id if updated
 			if($cDB->Query($string_query)){
-				return $this->page_id;
+				return $this->getPageId();
 			} else{
 				return false;
 			}
@@ -100,6 +98,26 @@ class cInfoUtils extends cInfo {
 		return false;
 		
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * @param mixed $action
+     *
+     * @return self
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+
+        return $this;
+    }
 }
 
 ?>

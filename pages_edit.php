@@ -22,13 +22,13 @@ if((!empty($_REQUEST["page_id"]))){
 
 if(!empty($page_id)){
 	$cInfoUtils->Load($page_id);
-	$p->page_title = "Edit page '". $cInfoUtils->title ."'";
+	$p->page_title = "Edit page '". $cInfoUtils->getTitle() ."'";
 	//CT doesnt go through build function - todo - should it?
-	$cInfoUtils->action = "update";
+	$cInfoUtils->setAction("update");
 }else{
 	$p->page_title = "Create new page";
 	//CT doesnt go through build function - todo - should it?
-	$cInfoUtils->action = "create";
+	$cInfoUtils->setAction("create");
 }
 
 
@@ -36,7 +36,7 @@ if ($_POST["submit"]){
 	$field_array = array();
 	$field_array['page_id'] = $_POST["page_id"];
 	$field_array['action'] = $_POST["action"];
-	$field_array['active'] = $_POST["active"];
+	$field_array['status'] = $_POST["status"];
 	$field_array['title'] = $_POST["title"];
 	$field_array['body'] = $_POST["body"];
 	$field_array['permission'] = $_POST["permission"];
@@ -47,17 +47,17 @@ if ($_POST["submit"]){
 	//TODO: less hacky approcach. 
 	$error_message = "";
 	// error - no title
-	if(strlen($cInfoUtils->title) < 1) $error_message .= "Title is missing. ";
+	if(strlen($cInfoUtils->getTitle()) < 1) $error_message .= "Title is missing. ";
 
 	// error - no content set
-	if(strlen($cInfoUtils->body) < 1)  $error_message .= "Content is missing. ";
+	if(strlen($cInfoUtils->getBody()) < 1)  $error_message .= "Content is missing. ";
 
 	$page_id = 0;
 	if(empty($error_message)) {
 
 		$page_id = $cInfoUtils->Save();
 	} else{
-		$cStatusMessage->Error($error_message);
+		throw new Exception($error_message);
 	}
 	//return message success or fail	
 	
@@ -65,7 +65,7 @@ if ($_POST["submit"]){
 	//print("test " . $is_saved);
 	if(!empty($page_id)){
 
-		header("location:" . HTTP_BASE . "/pages.php?page_id={$page_id}&form_action={$cInfoUtils->action}");
+		header("location:" . HTTP_BASE . "/pages.php?page_id={$page_id}&form_action={$cInfoUtils->getAction()}");
 	} 
 }
 //show form

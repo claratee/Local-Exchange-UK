@@ -14,7 +14,7 @@ abstract class cCollection extends cBasic {
 		//print("hello");
 		global $cDB;
 		$i=0;
-
+        print($this->getItemsClassname());
 		foreach ($rows as $row) {
 			$classname = $this->getItemsClassname();
 			$item = new $classname();
@@ -23,10 +23,14 @@ abstract class cCollection extends cBasic {
 			$i++;
 		}
         //do anything that is appropriate for the groupclass - summaries, etc
-        $this->Build($rows);
+        $is_success = $this->Build($rows);
 		//print_r(sizeof($this->getItems()));
 		return sizeof($this->getItems());
 	}
+    function Build($rows){
+        //placeholder class - write in the child class any summary or extra stuff
+        return true;
+    }
     
     public function LoadCollection($string_query)  {
     	global $cDB;

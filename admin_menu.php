@@ -80,7 +80,7 @@ $subtitle = $p->Wrap("Information", "h4");
 $output .= $p->Wrap($title . $subtitle . $menuHtml, "div", "col");
 
 // news
-/*
+
 $menuArray = array();
 $menuArray[] = $p->MenuItemArray("Create a News Item", "news_create.php");
 $menuArray[] = $p->MenuItemArray("Edit a News Item", "news_to_edit.php?");
@@ -89,7 +89,6 @@ $menuArray[] = $p->MenuItemArray("Delete an item", "newsletter_delete.php");
 $menuHtml = $p->Menu($menuArray);
 $subtitle = $p->Wrap("News &amp; Events", "h4");
 $output .= $p->Wrap($subtitle . $menuHtml, "div", "col");
-*/
 /*
 // Monthly fees
 $menuArray = array();

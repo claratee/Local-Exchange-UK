@@ -1,21 +1,33 @@
 <?php
 
-class cNews {
-	var $news_id;
-	var $title;
-	var $description;
-	var $expire_date;
-	var $sequence;
+class cNews extends cSingle {
+	private $news_id;
+	private $title;
+	private $description;
+	private $expire_date;
+	private $sequence;
 
-	function __construct($title=null, $description=null, $expire_date=null, $sequence=null) {
-		if($title) {
-			$this->title = $title;
-			$this->description = $description;
-			$this->expire_date = new cDateTime($expire_date);
-			$this->sequence = $sequence;
-		}
-	}
+//CT use baseclass construct
+	// function __construct($title=null, $description=null, $expire_date=null, $sequence=null) {
+	// 	if($title) {
+	// 		$this->title = $title;
+	// 		$this->description = $description;
+	// 		$this->expire_date = new cDateTime($expire_date);
+	// 		$this->sequence = $sequence;
+	// 	}
+	// }
 	
+	function Build($field_array){
+        //print_r($vars);
+        //$this->__set('type_description', $this->TypeDesc($this->getType()));
+        //lazy load of vars      
+		//print_r($field_array);
+        $is_success=parent::Build($field_array);
+        //stop if not buided
+        print_r($is_success);
+        return $is_success;
+       
+    } 
 	function SaveNewNews () {
 		global $cDB, $cStatusMessage;
 		
@@ -38,7 +50,7 @@ class cNews {
 		return $update;	
 	}
 	
-	function LoadNews ($news_id) {
+	function Load ($condition) {
 		global $cDB, $cStatusMessage;
 		
 //		$this->ExpireNews();
@@ -64,123 +76,108 @@ class cNews {
 		$output .= $this->description ."<P>";
 		return $output;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getNewsId()
+    {
+        return $this->news_id;
+    }
+
+    /**
+     * @param mixed $news_id
+     *
+     * @return self
+     */
+    public function setNewsId($news_id)
+    {
+        $this->news_id = $news_id;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     *
+     * @return self
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     *
+     * @return self
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExpireDate()
+    {
+        return $this->expire_date;
+    }
+
+    /**
+     * @param mixed $expire_date
+     *
+     * @return self
+     */
+    public function setExpireDate($expire_date)
+    {
+        $this->expire_date = $expire_date;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSequence()
+    {
+        return $this->sequence;
+    }
+
+    /**
+     * @param mixed $sequence
+     *
+     * @return self
+     */
+    public function setSequence($sequence)
+    {
+        $this->sequence = $sequence;
+
+        return $this;
+    }
 }
 
-class cNewsGroup {
-	var $newslist;  // will be an array of cNews objects
-	var $max_seq;
-	
-	function LoadNewsGroup () {
-		global $cDB, $cStatusMessage;
-		
-		$this->DeleteOldNews();
-	
-		$query = $cDB->Query("SELECT news_id FROM ".DATABASE_NEWS." ORDER BY sequence DESC;");
-		
-		$i = 0;				
-		while($row = mysqli_fetch_array($query)) {
-			$this->newslist[$i] = new cNews;			
-			$this->newslist[$i]->LoadNews($row[0]);
-			$i += 1;
-		}
 
-		if($i == 0)
-			return false;
-		else
-			$this->max_seq = $this->newslist[0]->sequence;
-			return true;
-	}
-	
-	function DisplayNewsGroup () {
-		$output = "";
-		if(!isset($this->newslist))
-			return $output;
-		
-		foreach($this->newslist as $news) {
-			if($news->expire_date->Timestamp() > strtotime("yesterday"))
-				$output .= $news->DisplayNews() . "<BR>";
-		}
-		return $output;
-	}
-	
-	function MakeNewsArray() {
-		if (!isset($this->newslist))
-			return false;
-			
-		foreach($this->newslist as $news) {
-			$list[$news->news_id] = $news->title;
-		}
-		return $list;
-	}
-
-	function MakeNewsSeqArray($current_seq=null) { // TODO: OK, this is just ugly...
-		$prior_seq = 0;									// Should use 1,2,3,4... and reorder
-		$prior_title = "At top of list";				// all each time.
-		$lead_txt = "";
-		$follow_txt = "";
-		
-		if (!isset($this->newslist))
-			return array("100"=>$prior_title);
-		
-		foreach($this->newslist as $news) {
-			if ($current_seq == $news->sequence) {
-				$list[$this->CutZero($current_seq)] = $lead_txt. $prior_title . $follow_txt;
-			} elseif ($prior_seq != $current_seq or $current_seq == null) {
-				if ($prior_seq == 0)
-					$seq = $this->GetNewSeqNum();
-				else
-					$seq = $this->GetSeqNumAfter($prior_seq);
-					
-				$list[$seq] = $lead_txt. $prior_title .$follow_txt;
-			}
-			
-			$prior_seq = $news->sequence;
-			$saved_title = $prior_title;
-			$prior_title = $news->title;
-			$lead_txt = "After '";
-			$follow_txt = "'";
-		}
-		
-		if ($current_seq != $news->sequence) {
-			if ($prior_seq == 0)
-				$seq = $this->GetNewSeqNum();
-			else
-				$seq = $this->GetSeqNumAfter($prior_seq);
-		
-			$list[$seq] = $lead_txt . $prior_title . $follow_txt;
-		}
-		
-		return $list;	
-	}	
-	
-	function CutZero($value) {
-   	return preg_replace("/(\.\d+?)0+$/", "$1", $value)*1;
-	}
-
-	function DeleteOldNews () {
-		global $cDB;
-		
-		$future_date = new cDateTime("-14 days");
-		
-		$delete = $cDB->Query("DELETE FROM ".DATABASE_NEWS." WHERE expire_date < '". $future_date->MySQLDate() ."';");
-		return $delete;
-	}
-	
-	function GetSeqNumAfter ($high) {
-		$low = 0;
-		foreach($this->newslist as $news) {
-			if ($news->sequence < $high) {
-				$low = $news->sequence;
-				break;
-			} 
-		}
-		
-		return $low + (($high - $low) / 2);
-	}
-	
-	function GetNewSeqNum () {
-		return round($this->max_seq + 100, -2);
-	}
-}
 
 ?>

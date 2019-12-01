@@ -37,10 +37,10 @@ foreach($pageGroup->cdm_pages as $page) {
 	$row_output .=  "
 		<tr class=\"{$className}\">
 			<td>{$page->PrepareCheckbox()}</td>
-			<td><a href=\"pages.php?page_id={$page->page_id}\">{$page->title} </a><span class=\"metadata\">page_id: {$page->page_id}</span></td>
-			<td>{$page->updated_at} by {$page->member_id_author}</td>
+			<td><a href=\"pages.php?page_id={$page->getPageId()}\">{$page->getTitle()} </a><span class=\"metadata\">page_id: {$page->getPageId()}</span></td>
+			<td>{$page->getUpdatedAt()} by {$page->getMemberIdAuthor()}</td>
 			<td>{$page->makePermissionString()}</td>			
-			<td><a href=\"pages_edit.php?page_id={$page->page_id}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a></td>
+			<td><a href=\"pages_edit.php?page_id={$page->getPageId()}\" class=\"button edit\"><i class=\"fas fa-pencil-alt\"></i> edit</a></td>
 		</tr>";
 	$i++;
 }
