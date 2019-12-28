@@ -5,9 +5,6 @@ if (!isset($global))
 	die(__FILE__." was included without inc.global.php being included first.  Include() that file first, then you can include ".__FILE__);
 }
 
-// include_once("class.listing.php");
-// include_once("class.category.php");
-
 //group
 class cCategoryGroup
 {
@@ -35,7 +32,6 @@ class cCategoryGroup
 			$categories[] = new cCategory($vars[$i]);
 			$i++;
 		}
-		//print_r($categories);
 		$this->setCategories($categories);
 	}
 
@@ -80,15 +76,6 @@ class cCategoryGroup
 		//$selector_id, $array, $label_none=null, $selected_id=null, $css_class=null
         return $p->PrepareFormSelector($selector_name, $array, "Select category", $selected_id);
 		// $vars = $categories->MakeCategoryArray();
-
-		// //print_r($vars);
-		// // add extra option if user is an admin 
-		// //print_r($vars);
-		// $select_name = "category_id";
-		// //if used in context of batch page controls
-		// //if(!empty($category_id)) $select_name .= "_{$category_id}";
-		// $output = $p->PrepareFormSelector($select_name, $vars, "-- Select category --", $this->getCategory());
-		// return $output;
 	}
 
     public function MakeCategoryArray() {	
@@ -97,9 +84,7 @@ class cCategoryGroup
 
 
 		foreach($this->getCategories() as $category) {
-			//print_r($category->getCategoryName());
 			$array[$category->getCategoryId()] = $category->getCategoryName();
-
 		}
 
 		

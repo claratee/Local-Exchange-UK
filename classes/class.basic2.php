@@ -13,13 +13,7 @@ abstract class cBasic2 {
     }
     //CT remember to declare again if a list class
     public function Build($field_array)  {
-    	//print_r($field_array);
-    	//exit;
-        //foreach ($field_array as $key => $value) {
         foreach ($field_array as $key => $value) {
-        	//var_dump($key);
-        	//print_r(gettype($value));
-        	//var_dump($value);
             if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
                  //if(is_null($value)) $value = "";
                  $this->$method($value);
@@ -33,7 +27,6 @@ abstract class cBasic2 {
         if($query = $cDB->Query($string_query)){
         	$field_array = array();
         	while($row = $cDB->FetchArray($query)) $field_array[] = $row; 
-        	//print_r($field_array);
         	$is_success = $this->Build($field_array);
 			return $is_success;
         }else{
@@ -54,7 +47,6 @@ abstract class cBasic2 {
 			}else{
 				$field_array[$key] = $this->$method();
 			}
-			//print($this->$method());
 			
 		}
     	return $field_array;
@@ -67,7 +59,6 @@ abstract class cBasic2 {
 		if($field_array=$this->makeFieldArrayFromKeys($keys_array)){
 			if($string_query = $cDB->BuildUpdateQuery($db_table, $field_array, $condition)){
 				if($is_success = $cDB->Query($string_query)){
-					//print_r($string_query);
 					return $is_success;
 				}else{
 					throw new Exception("{$context} Update - Could not execute query.");

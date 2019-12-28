@@ -29,7 +29,7 @@
 //CT test
 
 try{
-	print(!$site_settings->getKey('EMAIL_LISTING_UPDATES'));
+	//print(!$site_settings->getKey('EMAIL_LISTING_UPDATES'));
 	if($site_settings->getKey('EMAIL_LISTING_UPDATES')){
 		//MONTHLY
 		$log_event = new cLoggingSystemEvent();

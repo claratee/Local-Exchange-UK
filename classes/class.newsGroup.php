@@ -1,37 +1,42 @@
 <?php
 class cNewsGroup extends cCollection {
-	private $items;  // will be an array of cNews objects
+	//private $items;  // will be an array of cNews objects
 	private $max_s;
 
 	public function __construct($rows=null)
     {
         parent::__construct($rows);
+        
         $this->setItemsClassname("cNews");
         return $this;
     }
-
-
-	function Load ($condition) {
-		global $cDB, $cStatusMessage, $cQueries;
-		
-		//$this->DeleteOldNews();
-	
+    function Load($condition) {
+        global $cDB, $cStatusMessage, $cQueries;
+        $order_by = " ORDER BY " . $order_by;
 		$string_query = $cQueries->getMySqlNews($condition);
-		$is_success = $this->LoadCollection($string_query);
-		print_r($is_success);
-		// $i = 0;				
-		// while($row = mysqli_fetch_array($query)) {
-		// 	$this->newslist[$i] = new cNews;			
-		// 	$this->newslist[$i]->LoadNews($row[0]);
-		// 	$i += 1;
-		// }
+        return $this->LoadCollection($string_query);
+    } 
+	// function Load ($condition) {
+	// 	global $cDB, $cStatusMessage, $cQueries;
+		
+	// 	//$this->DeleteOldNews();
+	// 	$string_query = $cQueries->getMySqlNews($condition);
+	// 	//print_r($string_query);
+	// 	$is_success = $this->LoadCollection($string_query);
+	// 	print_r($is_success);
+	// 	// $i = 0;				
+	// 	// while($row = mysqli_fetch_array($query)) {
+	// 	// 	$this->newslist[$i] = new cNews;			
+	// 	// 	$this->newslist[$i]->LoadNews($row[0]);
+	// 	// 	$i += 1;
+	// 	// }
 
-		// if($i == 0)
-		// 	return false;
-		// else
-		// 	$this->max_seq = $this->newslist[0]->sequence;
-		// 	return true;
-	}
+	// 	// if($i == 0)
+	// 	// 	return false;
+	// 	// else
+	// 	// 	$this->max_seq = $this->newslist[0]->sequence;
+	// 	// 	return true;
+	// }
 	
 // 	function DisplayNewsGroup () {
 // 		$output = "";

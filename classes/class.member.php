@@ -108,7 +108,7 @@ class cMember extends cSingle
  //    }
     public function Build($row){
         global $cDB;
-        //print_r($field_array);
+        //print_r($row);
         parent::Build($row);
         // extra bits for convenience
         $this->getPasswordReset()->Build($row);  //CT call the build function for password - will just set the member_id
@@ -121,6 +121,7 @@ class cMember extends cSingle
         //print("mebmer" . $this->getPerson()->getMemberId());
         // secondary
         //print_r($this->getAccountType());
+        //print_r("sdf");
         if($this->getAccountType() == "J"){
             $joint_person_row = $this->buildFieldArrayForJointPerson($row);
             $this->getJointPerson()->Build($joint_person_row);         
@@ -393,10 +394,10 @@ public function getDisplayLocation(){
 
 
 	
-	public function MemberLink($text=null) {
+	public function makeMemberLink($text=null) {
         global $p;
-        if (empty($text)) $text = "#" . $this->member_id; //pass in name, or use member number if not there
-        $link = "member_detail.php?member_id=". $this->member_id;
+        if (empty($text)) $text = "#" . $this->getMemberId(); //pass in name, or use member number if not there
+        $link = "member_detail.php?member_id=". $this->getMemberId();
 		return $p->Link($text, $link);
 	}
 	

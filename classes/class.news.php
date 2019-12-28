@@ -17,17 +17,27 @@ class cNews extends cSingle {
 	// 	}
 	// }
 	
-	function Build($field_array){
-        //print_r($vars);
-        //$this->__set('type_description', $this->TypeDesc($this->getType()));
-        //lazy load of vars      
-		//print_r($field_array);
-        $is_success=parent::Build($field_array);
-        //stop if not buided
-        print_r($is_success);
-        return $is_success;
+	// function Build($field_array){
+ //        //print_r($vars);
+ //        //$this->__set('type_description', $this->TypeDesc($this->getType()));
+ //        //lazy load of vars      
+	// 	//print_r($field_array);
+ //        $is_success=parent::Build($field_array);
+ //        //stop if not buided
+ //        //print_r($is_success);
+ //        return $is_success;
        
-    } 
+ //    } 
+
+
+    // public function Build($row){
+    //     global $cDB;
+    //     //print_r($field_array);
+    //     parent::Build($row);
+    //     // extra bits for convenience
+    //     return true;
+    // }
+    
 	function SaveNewNews () {
 		global $cDB, $cStatusMessage;
 		
@@ -50,26 +60,26 @@ class cNews extends cSingle {
 		return $update;	
 	}
 	
-	function Load ($condition) {
-		global $cDB, $cStatusMessage;
+// 	function Load ($condition) {
+// 		global $cDB, $cStatusMessage;
 		
-//		$this->ExpireNews();
+// //		$this->ExpireNews();
 				
-		$query = $cDB->Query("SELECT title, description, expire_date, sequence FROM ".DATABASE_NEWS." WHERE  news_id=". $cDB->EscTxt($news_id) .";");
+// 		$query = $cDB->Query("SELECT title, description, expire_date, sequence FROM ".DATABASE_NEWS." WHERE  news_id=". $cDB->EscTxt($news_id) .";");
 		
-		if($row = mysqli_fetch_array($query)) {		
-			$this->news_id = $news_id;
-			$this->title = $cDB->UnEscTxt($row[0]);
-			$this->description = $cDB->UnEscTxt($row[1]);		
-			$this->expire_date = new cDateTime($row[2]);
-			$this->sequence = $row[3];
-			return true;
-		} else {
-			$cStatusMessage->Error("There was an error accessing the news table.  Please try again later.");
-			include("redirect.php");
-		}
+// 		if($row = mysqli_fetch_array($query)) {		
+// 			$this->news_id = $news_id;
+// 			$this->title = $cDB->UnEscTxt($row[0]);
+// 			$this->description = $cDB->UnEscTxt($row[1]);		
+// 			$this->expire_date = new cDateTime($row[2]);
+// 			$this->sequence = $row[3];
+// 			return true;
+// 		} else {
+// 			$cStatusMessage->Error("There was an error accessing the news table.  Please try again later.");
+// 			include("redirect.php");
+// 		}
 		
-	}
+// 	}
 
 	function DisplayNews () {
 		$output = "<STRONG>". $this->title ."</STRONG><P>";

@@ -20,9 +20,6 @@ abstract class cBasic {
     	//CT base function for building simple properties for class where value is just a string
     	$i = 0;
         foreach ($field_array as $key => $value) {
-        	//var_dump($key);
-        	//print_r(gettype($value));
-        	//var_dump($this->pascalcasify($key));
             if (method_exists($this, ($method = 'set'.$this->pascalcasify($key)))){
                  //if(is_null($value)) $value = "";
                  $this->$method($value);

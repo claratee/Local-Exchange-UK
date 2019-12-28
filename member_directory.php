@@ -19,7 +19,7 @@ if(!empty($_REQUEST['option'])) {
 //[chris] Search function
 //[CT] built on it for readability and use. page has now become a one-stop shop for insights and management by admins, to remove duplication and help maintainability
 
-	//language properties for fields
+	//CT language properties for fields...todo put somewhere else!
 	$field_array=array();
 	$field_array['member_id'] = 'Membership id';
 	$field_array['first_name'] = 'First Name';
@@ -134,6 +134,7 @@ if(!empty($_REQUEST['option'])) {
 	$row_output = "";
 	$i=0;
 	$running_balance = 0; //CT shown only in admin mode - to check state of system. useful for checking inactive accounts that are not 0
+	
 	foreach($members->getItems() as $member) {
 		$running_balance = $running_balance + $member->getBalance();
 
@@ -145,7 +146,7 @@ if(!empty($_REQUEST['option'])) {
 		//$postcode = $member->getPerson()->getAddressPostCode());
 		
 		$row_output .="<tr class='{$rowclass}'>
-		   <td>{$member->MemberLink()}</td>
+		   <td>{$member->makeMemberLink()}</td>
 		   <td>{$member->getDisplayName()}</td>
 		   <td>{$member->getDisplayPhone()}";
 		//if (MEM_LIST_DISPLAY_EMAIL==true)  {   

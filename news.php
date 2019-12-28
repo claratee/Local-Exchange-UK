@@ -7,17 +7,18 @@ $cUser->MustBeLoggedOn();
 $p->page_title = "News and Events";
 
  $output = "Upcoming";
-
-$news = new cNewsGroup();
-$condition = "expire_date > (CURRENT_DATE() - INTERVAL 1 DAY)";
-$news->Load($condition);
-
-
-foreach($news->getItems() as $news_item){
-	$output .= $news_item->description ."<h2>{$news_item->title}</h2>
-	{$news_item->title}
-	";
+try{
+	$news = new cNewsGroup();
+	$condition = "expire_date > (CURRENT_DATE() - INTERVAL 1 DAY)";
+	$is_success = $news->Load($condition);
+	foreach($news->getItems() as $news_item){
+		$output .= $news_item->getDescription() ."<h2>{$news_item->getTitle()}</h2>{$news_item->getTitle()}";
+	}
+} catch(Exception $e){
+	$statusMessage->Info($e->getMessage());
 }
+
+
 // $news->LoadNewsGroup();
 // $newstext = $news->DisplayNewsGroup();
 // if($newstext != "")

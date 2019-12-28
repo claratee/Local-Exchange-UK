@@ -77,7 +77,6 @@ class cDatabase
 
 		$result_message="";
 		//CT: why is this not a resource?
-		//print_r(mysqli_query($this->db_link, $string_query));
 		if($result = mysqli_query($this->db_link, $string_query)) {
 			if(gettype($result) == "object"){
 				//ct debug
@@ -102,7 +101,6 @@ class cDatabase
 		if($debug) $cStatusMessage->Info("Q.{$this->count_query}: {$string_query} {$result_message}");
 		//selects
 		if(gettype($result) == "object" || preg_match("DROP", $string_query) || preg_match("ALTER", $string_query)){
-			//print_r($string_query);
 			return $result;
 		}
 		//CT return affected rows if more than 0
@@ -152,7 +150,6 @@ class cDatabase
 	function MatchedRows() {
 		// "Rows matched: {n} <- ya want this bit
 	   $exploded_array=explode(' ', mysqli_info($this->db_link));
-	   //print_r($array);
 	   return $exploded_array[2];
 	}
 

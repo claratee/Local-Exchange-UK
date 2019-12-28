@@ -11,21 +11,20 @@ abstract class cCollection extends cBasic {
     }
 
 	function BuildCollection($rows) {
-		//print("hello");
 		global $cDB;
-		$i=0;
-        print($this->getItemsClassname());
+		//$i=0;
+        //print_r($rows);
 		foreach ($rows as $row) {
 			$classname = $this->getItemsClassname();
 			$item = new $classname();
 			$item->Build($row);
+            //print_r($item->getDescription());
 			$this->addItem($item);
-			$i++;
+			//$i++;
 		}
         //do anything that is appropriate for the groupclass - summaries, etc
         $is_success = $this->Build($rows);
-		//print_r(sizeof($this->getItems()));
-		return sizeof($this->getItems());
+		return $i;
 	}
     function Build($rows){
         //placeholder class - write in the child class any summary or extra stuff
@@ -34,10 +33,17 @@ abstract class cCollection extends cBasic {
     
     public function LoadCollection($string_query)  {
     	global $cDB;
+        //print_r(expression)
         if($query = $cDB->Query($string_query)){
+
         	$field_array = array();
+            // foreach ($cDB->FetchArray($query) as $row) {
+            //     $rows[] = $row;
+            // }
+            //print_r($rows);
         	while($row = $cDB->FetchArray($query)) $rows[] = $row; 
         	$count_items = $this->BuildCollection($rows);
+            //print_r("$count_items");
 			return $count_items;
         }else{
 			throw new Exception('Load - Could not execute query.');

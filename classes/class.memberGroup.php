@@ -13,21 +13,21 @@ class cMemberGroup extends cCollection {
         return $this;
     }
     //CT builds the type of object that items is supposed to be
-    // function Build($rows) {
-    //     //print("hello");
-    //     global $cDB;
-    //     $i=0;
-    //     foreach ($rows as $row) {
-    //         $item = $this->makeMember();
-    //         $item->Build($row);
-    //         $this->addItem($item);
-    //         $i++;
-    //         //print_r($i);
-    //     }
-    //     return $this->countItems();
-    // }
+    function Build($rows) {
+        global $cDB;
+       // $i=0;
+        foreach ($rows as $row) {
+            $item = $this->makeMember();
+            $item->Build($row);
+            $this->addItem($item);
+            //$i++;
+            //print_r($i);
+        }
+        return $this->countItems();
+    }
         //CT bit like a factory - returns new person object. rerouting opportunity for extend classes
     public function makeMember($field_array=null){
+        print_r($field_array);
         return new cMember($field_array);
     }
     //CT this isnt great - dont know how else to do this for now

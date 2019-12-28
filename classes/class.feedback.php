@@ -125,11 +125,9 @@ class cFeedback extends cSingle {
         } 
         $trades = new cTradeGroup();
         if($trades->Load($condition)) {
-            //print_r($trades->getItems());
             $new_trades = array();
             foreach ($trades->getItems() as $trade) {
                 //remove items you have already left feedback for
-                //print_r($trade->getTradeId());
                 if(!$this->FindTradeFeedback($trade->getTradeId())) {
                     $new_trades[]=$trade;
                     
@@ -229,22 +227,7 @@ class cFeedback extends cSingle {
         return $this->LoadFromDatabase($string_query);
      }   
 
- //  //       //print($string_query);
-	// 	// $query = $cDB->Query($string_query);
-	// 	// while ($row = $cDB->FetchArray($query)) {		
-	// 	// 	$this->Build($row);
 
-	// 	// 	//$rebuttal_group = new cFeedbackRebuttalGroup();
-	// 	// 	//if($rebuttal_group->LoadRebuttalGroup($feedback_id))
-	// 	// 	//	$this->rebuttals = $rebuttal_group;
-	// 	// 	return true;
-	// 	// } 
-	// 	// // didnt enter loop so didn't return
-	// 	// //$cStatusMessage->Error("There was an error getting feedback.  ");
-	// 	// //include("redirect.php");
-	// 	// return false;
-		
-	// }
 
 	/*
 	function DisplayFeedback () {

@@ -248,6 +248,7 @@ class cListingGroup extends cCollection
 						$member = $listing->getMember();
 						//$location="sd";
 
+						//$output .= " {$member->getDisplayName()} ({$member->MemberLink()}). {$member->getDisplayPostcode()}.";
 						$output .= " {$member->getDisplayName()} ({$member->MemberLink()}). {$member->getDisplayPostcode()}.";
 					}
 			

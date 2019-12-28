@@ -60,7 +60,7 @@ class cLogging extends cSingle {
 		
 		$string_query = $cDB->BuildInsertQuery(DATABASE_LOGGING, $field_array);
         
-        print_r($string_query);
+        //print_r($string_query);
         if($log_id = $cDB->QueryReturnId($string_query)){
          	return $log_id;
         }else{
