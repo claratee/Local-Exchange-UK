@@ -28,9 +28,16 @@ define ("PEAR_PATH", ""); // no ending slash
 // Ok, then lets define some paths (no need to edit these)
 define ("HTTP_BASE",SERVER_DOMAIN.SERVER_PATH_URL);
 define ("CLASSES_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/classes/");
-define ("IMAGES_PATH",SERVER_DOMAIN.SERVER_PATH_URL."/images/");
+define ("IMAGES_PATH", HTTP_BASE."/images/");
 define ("UPLOADS_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/uploads/");
-define ("VENDOR_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/vendor/"); //CT added extra libraries place
+
+// CT new locations for server. also no need to edit.
+define ("VENDOR_PATH",$_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/vendor/");
+define ("TEMPLATES_PATH", $_SERVER["DOCUMENT_ROOT"].SERVER_PATH_URL."/includes/templates/");
+
+// CT new locations for browser url
+define ("STYLES_PATH", HTTP_BASE . "/styles/");
+define ("SCRIPTS_PATH", HTTP_BASE."/scripts/");
 
 /**********************************************************/
 /***************** DATABASE LOGIN  ************************/
@@ -222,11 +229,11 @@ define ("LISTING_UPDATES_MESSAGE", "<h1>".SITE_LONG_TITLE."</h1>The following li
 
 // The following message is the one that will be emailed to the person 
 // whose listings have been expired (a delicate matter).
-define ("EXPIRED_LISTINGS_MESSAGE", "Hello,\n\nDue to inactivity, your ".SITE_SHORT_TITLE." listings have been set to automatically expire ". EXPIRATION_WINDOW ." days from now.\n\nIn order to keep the ".SITE_LONG_TITLE." system up to date and working smoothly for all members, we have developed an automatic system to expire listings for members who haven't recorded exchanges or updated their listings during a period of ".MAX_DAYS_INACTIVE." days. We want the directory to be up to date, so that members do not encounter listings that are out of date or expired. This works to everyone's advantage.\n\nWe apologize for any inconvenience this may cause you and thank you for your participation. If you have any questions or comments, or are unsure how to best use the system, please reply to this email message or call us at ".PHONE_ADMIN.".\n\nYou have ". EXPIRATION_WINDOW ." days to login to the system and reactivate listings that you would still like to have in the directory.  If you do not reactivate them during that timeframe, your listings will no longer appear in the directory, but will still be stored in the system for another ". DELETE_EXPIRED_AFTER ." days, during which time you can still edit and reactivate them.\n\n\nInstructions to reactivate listings:\n1) Login to the website\n2) Go to Update Listings\n3) Select Edit Offered (or Wanted) Listings\n4) Select the listing to edit\n5) Uncheck the box next to 'Should this listing be set to automatically expire?'\n6) Press the Update button\n7) Repeat steps 1-6 for all listings you wish to reactivate\n");
+// define ("EXPIRED_LISTINGS_MESSAGE", "Hello,\n\nDue to inactivity, your ".SITE_SHORT_TITLE." listings have been set to automatically expire ". EXPIRATION_WINDOW ." days from now.\n\nIn order to keep the ".SITE_LONG_TITLE." system up to date and working smoothly for all members, we have developed an automatic system to expire listings for members who haven't recorded exchanges or updated their listings during a period of ".MAX_DAYS_INACTIVE." days. We want the directory to be up to date, so that members do not encounter listings that are out of date or expired. This works to everyone's advantage.\n\nWe apologize for any inconvenience this may cause you and thank you for your participation. If you have any questions or comments, or are unsure how to best use the system, please reply to this email message or call us at ".PHONE_ADMIN.".\n\nYou have ". EXPIRATION_WINDOW ." days to login to the system and reactivate listings that you would still like to have in the directory.  If you do not reactivate them during that timeframe, your listings will no longer appear in the directory, but will still be stored in the system for another ". DELETE_EXPIRED_AFTER ." days, during which time you can still edit and reactivate them.\n\n\nInstructions to reactivate listings:\n1) Login to the website\n2) Go to Update Listings\n3) Select Edit Offered (or Wanted) Listings\n4) Select the listing to edit\n5) Uncheck the box next to 'Should this listing be set to automatically expire?'\n6) Press the Update button\n7) Repeat steps 1-6 for all listings you wish to reactivate\n");
 
 // The year your local currency started -- the lowest year shown
 // in the Join Year menu option for accounts.
-define ("JOIN_YEAR_MINIMUM", "2005");  
+define ("JOIN_YEAR_MINIMUM", "1995");  
 
 define ("DEFAULT_COUNTRY", "United Kingdom");
 define ("DEFAULT_ZIP_CODE", ""); // This is the postcode.
