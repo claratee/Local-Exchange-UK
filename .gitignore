@@ -28,3 +28,5 @@
 # composer stuff - php library distribution. 
 /composer.lock
 /composer.phar
+/includes/inc.config.local.php
+/includes/inc.config.remote.php

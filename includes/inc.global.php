@@ -208,7 +208,7 @@ $global = ""; 	// $global lets other includes know that
 					// inc.global.php has been included
 
 //CT use this to map to the config appropriate for your context
-require_once("inc.config-local.php");
+require_once("inc.config.local.php");
 //include_once("inc.config-local.php");
 //include_once("inc.config-remote.php");
 

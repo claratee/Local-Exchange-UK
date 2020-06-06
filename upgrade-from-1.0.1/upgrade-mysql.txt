@@ -14,14 +14,6 @@
 # if you are not working in your own db or your db has other info in it that you want to keep (like the live site) - you might want to prefix your tables with something . like lets_
 
 
-
-#PSEUDOANON - for testing server
-#make db safe for testing. replace with your own email so you can test. Use a webmail service that respects "+tag" on addresses so you can retain ref to the account.
-
-UPDATE `lets_person` SET `last_name`=concat("Deckard", member_id), `email`=concat("username+", member_id, "@example.com"),`address_street1`=concat(member_id, " Jetson Parkway")
-
-
-
 # ****************************************** #
 # ****************************************** #
 

@@ -1,0 +1,9 @@
+# WIP 2019-11-10 Clara Todd clarabara@gmail.com
+
+#PSEUDOANON - for testing server
+#make db safe for testing. replace with your own email so you can test. 
+# Use a webmail service that respects "+tag" on addresses so you can retain ref to the account. 
+# This doesnt go all the way for data security, but at least makes it slightly safer. Note - first names and postcodes not changed.
+
+
+UPDATE `lets_person` SET `last_name`=concat("Deckard", member_id), `email`=concat("username+", member_id, "@example.com"),`address_street1`=concat(member_id, " Jetson Parkway");
