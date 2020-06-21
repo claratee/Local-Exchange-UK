@@ -116,8 +116,8 @@ define("SEARCHABLE_MEMBERS_LIST",true);
 /******************** SITE CUSTOMIZATION **********************/
 
 // email addresses & phone number to be listed in the site
-define ("EMAIL_FEATURE_REQUEST","admin@camlets.org.uk"); // (is this actually used anywhere???)
-define ("EMAIL_ADMIN","admin@camlets.org.uk");
+define ("EMAIL_FEATURE_REQUEST","admin@example.com"); // (is this actually used anywhere???)
+define ("EMAIL_ADMIN","admin@example.com");
 
 define ("PHONE_ADMIN","360-321-1234"); // an email address may be substituted...
 
@@ -129,68 +129,193 @@ define ("PAGE_TITLE_HEADER", SITE_LONG_TITLE);
 // What keywords should be included in all pages?
 define ("SITE_KEYWORDS", "local currency,lets,exchange,". SITE_LONG_TITLE .",php");
 
-// Logo Graphic for Header
-define ("HEADER_LOGO", "localx_logo.png");
+// // Logo Graphic for Header
+// define ("HEADER_LOGO", "localx_logo.png");
 
-// Title Graphic for Header
-define ("HEADER_TITLE", "localx_title.png");
+// // Title Graphic for Header
+// define ("HEADER_TITLE", "localx_title.png");
 
-// Logo for Home Page
-define ("HOME_LOGO", "localx_black.png");
+// // Logo for Home Page
+// define ("HOME_LOGO", "localx_black.png");
 
-// Picture appearing left of logo on Home Page
-define ("HOME_PIC", "localx_home.png");
+// // Picture appearing left of logo on Home Page
+// define ("HOME_PIC", "localx_home.png");
 
 // What content should be in the site header and footer?
-define ("PAGE_HEADER_CONTENT", "<table align=center cellpadding=15 cellspacing=0 id=\"mainTable\"><tr><td id=\"header\" align=center><a href=\"index.php\"><img src=\"".HTTP_BASE."/images/". HEADER_LOGO ."\" alt=\"". SITE_SHORT_TITLE . " logo\" border=0></a></td><td id=\"header\"><h1 align=right><img src=\"".HTTP_BASE."/images/". HEADER_TITLE ."\"></h1></td></tr>");
+// define ("PAGE_HEADER_CONTENT", "<table align=center cellpadding=15 cellspacing=0 id=\"mainTable\"><tr><td id=\"header\" align=center><a href=\"index.php\"><img src=\"".HTTP_BASE."/images/". HEADER_LOGO ."\" alt=\"". SITE_SHORT_TITLE . " logo\" border=0></a></td><td id=\"header\"><h1 align=right><img src=\"".HTTP_BASE."/images/". HEADER_TITLE ."\"></h1></td></tr>");
 
-define ("PAGE_FOOTER_CONTENT", "<tr><td id=\"footer\" colspan=2><p align=center><strong>". SITE_LONG_TITLE ." </strong>&#8226; <a href=\"http://". SERVER_DOMAIN . SERVER_PATH_URL ."\">". SERVER_DOMAIN ."</a><br><a href=\"mailto:". EMAIL_ADMIN ."\">" . EMAIL_ADMIN ."</a> &#8226; ". PHONE_ADMIN ."<br><font size=\"-2\">Licensed under the <a href=\"http://www.gnu.org/copyleft/gpl.html\">GPL</a> &#8226; Local Exchange UK Ver. ".LOCALX_VERSION." <a href=\"http://". SERVER_DOMAIN . SERVER_PATH_URL ."/info/credits.php\">Credits</a></td></tr></table><br>");
+// define ("PAGE_FOOTER_CONTENT", "<tr><td id=\"footer\" colspan=2><p align=center><strong>". SITE_LONG_TITLE ." </strong>&#8226; <a href=\"http://". SERVER_DOMAIN . SERVER_PATH_URL ."\">". SERVER_DOMAIN ."</a><br><a href=\"mailto:". EMAIL_ADMIN ."\">" . EMAIL_ADMIN ."</a> &#8226; ". PHONE_ADMIN ."<br><font size=\"-2\">Licensed under the <a href=\"http://www.gnu.org/copyleft/gpl.html\">GPL</a> &#8226; Local Exchange UK Ver. ".LOCALX_VERSION." <a href=\"http://". SERVER_DOMAIN . SERVER_PATH_URL ."/info/credits.php\">Credits</a></td></tr></table><br>");
 
 /**********************************************************/
 /**************** DEFINE SIDEBAR MENU *********************/
 
-$SIDEBAR = array (
-	array("Home","index.php"),
-	array("Learn More","info/more.php"), // old style info pages
-// [CDM] uncomment line below to activate new style info pages 	
-//  array("Information","pages.php?id=1"),
-	array("News & Events","news.php"),
-	array("Offered","listings.php?type=Offer"),
-	array("Wanted","listings.php?type=Want"),
-	array("Update Listings","listings_menu.php"),
-	array("Exchanges","exchange_menu.php"),
-	array("Members List","member_directory.php"),
-	array("Member Profile","member_profile.php"),
-	array("Contact Us","contact.php"));
+// $SIDEBAR = array (
+// 	array("Home","index.php"),
+// 	array("Learn More","info/more.php"), // old style info pages
+// // [CDM] uncomment line below to activate new style info pages 	
+// //  array("Information","pages.php?id=1"),
+// 	array("News & Events","news.php"),
+// 	array("Offered","listings.php?type=Offer"),
+// 	array("Wanted","listings.php?type=Want"),
+// 	array("Update Listings","listings_menu.php"),
+// 	array("Exchanges","exchange_menu.php"),
+// 	array("Members List","member_directory.php"),
+// 	array("Member Profile","member_profile.php"),
+// 	array("Contact Us","contact.php"));
 	
 /**********************************************************/
 /**************** DEFINE SITE SECTIONS ********************/
 
-define ("EXCHANGES",0);
-define ("LISTINGS",1);
-define ("EVENTS",2);
-define ("ADMINISTRATION",3);
-define ("PROFILE",4);
-define ("SECTION_FEEDBACK",5);
-define ("SECTION_EMAIL",6);
-define ("SECTION_INFO",7);
-define ("SECTION_DIRECTORY",8);
+// define ("EXCHANGES",0);
+// define ("LISTINGS",1);
+// define ("EVENTS",2);
+// define ("ADMINISTRATION",3);
+// define ("PROFILE",4);
+// define ("SECTION_FEEDBACK",5);
+// define ("SECTION_EMAIL",6);
+// define ("SECTION_INFO",7);
+// define ("SECTION_DIRECTORY",8);
 
-$SECTIONS = array (
-	array(0, "Exchanges", "exchange.gif"),
-	array(1, "Listings", "listing.png"),
-	array(2, "Events", "news.png"),
-	array(3, "Administration", "admin.png"),
-	array(4, "Events", "member.png"),
-	array(5, "Feedback", "feedback.png"),
-	array(6, "Email", "contact.png"),
-	array(7, "Info", "info.png"),
-	array(8, "Directory", "directory.png"));
+// $SECTIONS = array (
+// 	array(0, "Exchanges", "exchange.gif"),
+// 	array(1, "Listings", "listing.png"),
+// 	array(2, "Events", "news.png"),
+// 	array(3, "Administration", "admin.png"),
+// 	array(4, "Events", "member.png"),
+// 	array(5, "Feedback", "feedback.png"),
+// 	array(6, "Email", "contact.png"),
+// 	array(7, "Info", "info.png"),
+// 	array(8, "Directory", "directory.png"));
 
 /**********************************************************/
-/******************* GENERAL SETTINGS *********************/
+/******************* GENERALLANGUAGE SETTINGS *********************/
 
-define ("UNITS", "LETS Units");  // This setting affects functionality, not just text displayed, so if you want to use hours/minutes this needs to read "Hours" exactly.  All other unit descriptions are ok, but receive no special treatment (i.e. there is no handling of "minutes").
+define ("UNITS", "Cams");  // This setting affects functionality, not just text displayed, so if you want to use hours/minutes this needs to read "Hours" exactly.  All other unit descriptions are ok, but receive no special treatment (i.e. there is no handling of "minutes").
+define ("WANT_LISTING_SINGLE", "Want");  // single requested thing.
+define ("WANT_LISTING_PLURAL", "Wants");  // plural requested thing.
+define ("WANT_LISTING_HEADING", "Wanted Listings");  // heading for requests
+define ("OFFER_LISTING_SINGLE", "Offer");  // single requested thing.
+define ("OFFER_LISTING_PLURAL", "Of fers");  // plural requested thing.
+define ("OFFER_LISTING_HEADING", "Offered Listings");  // heading for requests
+
+define("LOGGED_OUT","!");
+define("GO_BACK","< Back");
+define("GO_NEXT","Next >");
+define("GO_FINISH","Finish");
+
+define("ARRAY_CONTACT_SUBJECT", 
+    array(
+        "Membership enquiry" => "Membership enquiry",
+        "Lost login details" => "Lost login details",
+        "General question about LETS and complementary currencies" => "General question about LETS and complementary currencies",
+        "Press or local networking opportunities" => "Press or local networking opportunities",
+        "Other" => "Other"
+    )
+);
+//CT these are enums. prepare for localisation
+define("ARRAY_AGE", 
+	array(
+        "1" => "Under 18", 
+        "2" => "18-30", 
+        "3" => "30's", 
+        "4" => "40's",
+        "5" => "50's",
+        "6" => "60's",
+        "7" => "70's",
+        "8" => "80's",
+        "8" => "Over 80",
+        "9" => "Prefer not to say or n/a"
+    )
+);
+
+define("ARRAY_SEX", 
+	array(
+       	"1" => "Male", 
+		"2" => "Female", 
+        "3" => "Prefer not to say say or n/a"
+    )
+);
+
+define("ARRAY_ACCOUNT_TYPE", 
+	array(
+        "S" => "Single", 
+        "J" => "Joint", 
+        "H" => "Household", 
+        "O" => "Organization", 
+        "B" => "Business",
+        "F" => "Fund"
+    )
+);
+define("ARRAY_EMAIL_UPDATES", 
+	array(
+        "0" => "Never", 
+        "1" => "INTERVAL_DAILY",
+        "7" => "INTERVAL_WEEKLY",
+        "30" => "Monthly"
+    )
+);
+define("ARRAY_ACCOUNT_ROLE", 
+	array(
+        "0" => "Member", 
+        "1" => "Committee",
+        "2" => "Administrator"
+    )
+);
+define("ARRAY_PAGES_VISIBILITY_ROLES", 
+	array(
+        "0" => "Everyone", 
+        "1" => "Logged-in members",
+        "2" => "Committee and up",
+        "3" => "Administrators only"
+    )
+);
+
+define("ARRAY_RESTRICTION", 
+	array(
+        0 => "No restriction", 
+        1 => "Restriction" 
+    )
+);
+define("ARRAY_MONTHS",
+    array (
+        "1" => "January", 
+        "2" => "February", 
+        "3" => "March", 
+        "4" => "April", 
+        "5" => "May", 
+        "6" => "June", 
+        "7" => "July", 
+        "8" => "August", 
+        "9" => "September", 
+        "10" => "October", 
+        "11" => "November", 
+        "12" => "December"
+    )
+);
+
+define("ARRAY_FEEDBACK", array(
+        "1" => "Negative (1 star)", 
+        "2" => "Neutral (2 stars)", 
+        "3" => "Positive (3 stars)",
+    )
+);
+
+define("UPLOADS_TYPE_NEWSLETTER", "N");
+define("UPLOADS_TYPE_IMAGE", "I");
+define("UPLOADS_TYPE_IMAGE_MEMBER", "P");
+define("UPLOADS_TYPE_DOC", "D");
+define("UPLOADS_TYPE_OTHER", "O");
+
+
+
+define("ARRAY_UPLOADS_TYPES", array(
+        UPLOADS_TYPE_NEWSLETTER => "Newsletter", 
+        UPLOADS_TYPE_IMAGE => "Image", 
+        UPLOADS_TYPE_IMAGE_MEMBER => "Member photo", 
+        UPLOADS_TYPE_DOC => "Document",
+        UPLOADS_TYPE_OTHER => "Other"
+    )
+);
 
 
 /**************** Monthly fee related settings ********************/
@@ -255,7 +380,7 @@ define ("NEW_MEMBER_MESSAGE", "Hello, and welcome to the ". SITE_LONG_TITLE ." c
 // to be changed.
 
 // What's the name and location of the stylesheet?
-define ("SITE_STYLESHEET", "style.css");
+// define ("SITE_STYLESHEET", "style.css");
 
 // How long should trades be listed on the "leave feedback for 
 // a recent exchange" page?  After this # of days they will be
@@ -281,7 +406,7 @@ define ("MAGIC_QUOTES_ON",false);
 
 // CSS-related settings.  If you'r looking to change colors, 
 // best to edit the CSS rather than add to this...
-$CONTENT_TABLE = array("id"=>"contenttable", "cellspacing"=>"0", "cellpadding"=>"3");
+// $CONTENT_TABLE = array("id"=>"contenttable", "cellspacing"=>"0", "cellpadding"=>"3");
 
 // System events are processes which only need to run periodically,
 // and so are run at intervals rather than weighing the system

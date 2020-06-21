@@ -62,19 +62,19 @@ $output .= "
 	</div>
 
 	<div class=\"col\">
-		<h3>My Offers</h3>
+		<h3>".OFFER_LISTING_HEADING."</h3>
 		<ul>
-			<li><a href=\"listing_manage.php?type=". OFFER_LISTING_CODE . "&member_id={$member_id}\">Manage '". OFFER_LISTING . "' listings</a></li>
-			<li><a href=\"listing_edit.php?type=". OFFER_LISTING_CODE . "\">Add '". OFFER_LISTING . "' listing</a></li>
+			<li><a href=\"listing_manage.php?type=". OFFER_LISTING_CODE . "&member_id={$member_id}\">Manage ". OFFER_LISTING_PLURAL . "</a></li>
+			<li><a href=\"listing_edit.php?type=". OFFER_LISTING_CODE . "\">Add ". OFFER_LISTING_SINGLE . "</a></li>
 		</ul>
 	</div>";
 
 $output .= "
 	<div class=\"col\">
-		<h3>My Wants</h3>
+		<h3>".WANT_LISTING_HEADING."</h3>
 		<ul>
-			<li><a href=\"listing_manage.php?type=". WANT_LISTING_CODE . "&member_id={$member_id}\">Manage '".WANT_LISTING."' listings</a></li>
-			<li><a href=\"listing_edit.php?type=". WANT_LISTING_CODE . "\">Add '". WANT_LISTING . "' listing</a></li>
+			<li><a href=\"listing_manage.php?type=". WANT_LISTING_CODE . "&member_id={$member_id}\">Manage ". WANT_LISTING_PLURAL . "</a></li>
+			<li><a href=\"listing_edit.php?type=". WANT_LISTING_CODE . "\">Add ". WANT_LISTING_SINGLE . "</a></li>
 		</ul>
 	</div>";
 

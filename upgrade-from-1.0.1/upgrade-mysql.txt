@@ -147,11 +147,24 @@ ALTER TABLE `lets_member` ADD UNIQUE(`member_id`);
 
 UPDATE `lets_admin_activity` set category='S' where category='W' or category='D' or category='M';
 
-INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'USER_MODE', 'Enable usermode admin', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to allow members in admin role to explicitly enter admin mode before access to certain actions?', '4');
+INSERT INTO `lets_settings` (`name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES ('USER_MODE', 'Enable usermode admin', 'bool', 'TRUE', '', 'TRUE', '', 'Do you want to allow members in admin role to explicitly enter admin mode before access to certain actions?', '4');
 
-INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'SITE_MEMBER_ID', 'the member account used to handle the central balance for the scheme', 'varchar', '0001', '', '0000', '', 'What is the member ID used to hold the balance for the scheme? ie where do payments for memberships go.', '4');
+INSERT INTO `lets_settings` (`name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES ('SITE_MEMBER_ID', 'the member account used to handle the central balance for the scheme', 'varchar', '0001', '', '0000', '', 'What is the member ID used to hold the balance for the scheme? ie where do payments for memberships go.', '4');
 
-INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'MAIN_MENU', 'Main menu of the site', 'varchar', '<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
+INSERT INTO `lets_settings` (`name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES ('MAIN_MENU_ANON', 'Main menu for anonymous users', 'varchar', 
+					'<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
+					<li><a href="{{HTTP_BASE}}/pages.php?page_id=7">Information</a></li>
+					<li><a href="{{HTTP_BASE}}/contact.php">Contact us</a></li>	
+					<li><a href="{{HTTP_BASE}}/login.php">Log in</a></li>', 
+					'li', 
+					'<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
+					<li><a href="{{HTTP_BASE}}/pages.php?page_id=7">Information</a></li>
+					<li><a href="{{HTTP_BASE}}/contact.php">Contact us</a></li>	
+					<li><a href="{{HTTP_BASE}}/login.php">Log in</a></li>', 
+					'', 
+					'Main navigation for the site when not logged in - what are the links?', '1');
+
+INSERT INTO `lets_settings` (`name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES ('MAIN_MENU', 'Main menu for logged in users', 'varchar', '<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
 					<li><a href="{{HTTP_BASE}}/pages.php?page_id=7">Information</a></li>
 					<li><a href="{{HTTP_BASE}}/pages.php?page_id=84">Events</a></li>
 					<li><a href="{{HTTP_BASE}}/listings.php?type=O&timeframe=14">Offered</a></li>
@@ -159,9 +172,8 @@ INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value
 					<li><a href="{{HTTP_BASE}}/member_directory.php">Member directory</a></li>
 					<li><a href="{{HTTP_BASE}}/member_profile_menu.php">My profile </a></li>
 					<li><a href="{{HTTP_BASE}}/member_trade_menu.php">My trades and transactions</a></li>
-{{admin_menu_link}}
 					<li><a href="{{HTTP_BASE}}/contact.php">Contact us</a></li>	
-					<li><a href="{{HTTP_BASE}}/{{login_toggle_link}}">{{login_toggle_text}}</a></li>', 'li', '<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
+					<li><a href="{{HTTP_BASE}}/login.php">Log in</a></li>', 'li', '<li><a href="{{HTTP_BASE}}/index.php">Home</a></li>
 					<li><a href="{{HTTP_BASE}}/pages.php?page_id=7">Information</a></li>
 					<li><a href="{{HTTP_BASE}}/pages.php?page_id=84">Events</a></li>
 					<li><a href="{{HTTP_BASE}}/listings.php?type=O&timeframe=14">Offered</a></li>
@@ -169,6 +181,5 @@ INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value
 					<li><a href="{{HTTP_BASE}}/member_directory.php">Member directory</a></li>
 					<li><a href="{{HTTP_BASE}}/member_profile_menu.php">My profile </a></li>
 					<li><a href="{{HTTP_BASE}}/member_trade_menu.php">My trades and transactions</a></li>
-{{admin_menu_link}}
 					<li><a href="{{HTTP_BASE}}/contact.php">Contact us</a></li>	
-					<li><a href="{{HTTP_BASE}}/{{login_toggle_link}}">{{login_toggle_text}}</a></li>', '', 'Main navigation for the site - what are the links?', '1');
+					<li><a href="{{HTTP_BASE}}/login.php">Log in</a></li>', '', 'Main navigation for the site - what are the links?', '1');

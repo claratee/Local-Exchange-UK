@@ -1,7 +1,7 @@
-<?
+<?php
 include_once("includes/inc.global.php");
-include_once("classes/class.datetime.php");
-include_once("classes/class.trade.php");
+//include_once("classes/class.datetime.php");
+// include_once("classes/class.trade.php");
 
 /*
  An explanation of different member_decisions statuses in the trades_pending database...

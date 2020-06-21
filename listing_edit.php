@@ -73,7 +73,7 @@ if(!empty($_REQUEST["listing_id"])){
 }
 
 
-$type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING : WANT_LISTING;
+$type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING_SINGLE : WANT_LISTING_SINGLE;
 
 
 // //admin action... only for committee and above
@@ -95,13 +95,13 @@ $type_description = ($listing->getType() == OFFER_LISTING_CODE) ? OFFER_LISTING 
 if($listing->getFormAction() == "update"){
 
 	// CT user must match
-	$page_title = "Edit '{$type_description}': {$listing->getTitle()} " . $page_title;
+	$page_title = "Edit {$type_description}: {$listing->getTitle()} " . $page_title;
 	//CT doesnt go through build function - todo - should it?
 }else{
 	//ct hack - just make sure only these 2 values possible
 	//if($type == "W") $typeDescription = "Want";
 	//else $type == "Offer";
-	$page_title = "Create new '{$type_description}' listing " . $page_title;
+	$page_title = "Create {$type_description}" . $page_title;
 	$listing->setMemberId($member->getMemberId());
 
 	//CT doesnt go through build function - todo - should it?

@@ -156,7 +156,7 @@ class cMemberSelf extends cMember {
             $this->getLoginHistory()->RecordLoginSuccess($member_id);
             //DEBUG
             if (DEBUG) $cStatusMessage->Info("New session: " . print_r($_SESSION, 1));
-
+            
             return true;
         } 
             

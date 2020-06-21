@@ -3,6 +3,8 @@
         "form-manager/form-manager": "6.0.1",
         "components/font-awesome": "5.9.0",
         "ezyang/htmlpurifier": "4.12.0",
-        "gettext/gettext": "5.1.0"
+        "gettext/gettext": "5.1.0",
+        "phpmailer/phpmailer": "^6.1",
+        "swiftmailer/swiftmailer": "^6.0"
     }
 }

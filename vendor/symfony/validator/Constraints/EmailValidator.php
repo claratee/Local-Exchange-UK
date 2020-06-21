@@ -68,7 +68,7 @@ class EmailValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint)
     {
         if (!$constraint instanceof Email) {
-            throw new UnexpectedTypeException($constraint, __NAMESPACE__.'\Email');
+            throw new UnexpectedTypeException($constraint, Email::class);
         }
 
         if (null === $value || '' === $value) {
@@ -80,6 +80,9 @@ class EmailValidator extends ConstraintValidator
         }
 
         $value = (string) $value;
+        if ('' === $value) {
+            return;
+        }
 
         if (null !== $constraint->normalizer) {
             $value = ($constraint->normalizer)($value);
@@ -100,12 +103,12 @@ class EmailValidator extends ConstraintValidator
         }
 
         if (!\in_array($constraint->mode, Email::$validationModes, true)) {
-            throw new \InvalidArgumentException(sprintf('The %s::$mode parameter value is not valid.', \get_class($constraint)));
+            throw new \InvalidArgumentException(sprintf('The "%s::$mode" parameter value is not valid.', \get_class($constraint)));
         }
 
         if (Email::VALIDATION_MODE_STRICT === $constraint->mode) {
             if (!class_exists('\Egulias\EmailValidator\EmailValidator')) {
-                throw new LogicException('Strict email validation requires egulias/email-validator ~1.2|~2.0');
+                throw new LogicException('Strict email validation requires egulias/email-validator ~1.2|~2.0.');
             }
 
             $strictValidator = new \Egulias\EmailValidator\EmailValidator();

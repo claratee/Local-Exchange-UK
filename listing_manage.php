@@ -5,19 +5,20 @@ include_once("includes/inc.global.php");
 $cUser->MustBeLoggedOn();
 
 //only allow standard types
-switch($_REQUEST["type"]){
+$listing_type = strtoupper($_REQUEST["type"]);
+switch($type){
 	case WANT_LISTING_CODE:
 		$type=WANT_LISTING_CODE;
-		$type_single = "Want";
+		$type_single = WANT_LISTING_SINGLE;
+		$type_plural = WANT_LISTING_PLURAL;
 		$type_description = WANT_LISTING_HEADING;
 	break;
 	case OFFER_LISTING_CODE:
-		$type=OFFER_LISTING_CODE;
-		$type_single = "Offer";
-		$type_description = OFFER_LISTING_HEADING;
-	break;
 	default:
 		$type=OFFER_LISTING_CODE;
+		$type_single = OFFER_LISTING_SINGLE;
+		$type_plural = OFFER_LISTING_PLURAL;
+		$type_description = OFFER_LISTING_HEADING;
 } 
 
 //only allow editing other members in admin mode
@@ -27,7 +28,7 @@ if (!empty($_REQUEST["member_id"]) && $cUser->getMode() =="admin"){
 	$page_title = "Manage {$type_description} for Member #{$member_id}";
 }else{
 	$member_id = $cUser->getMemberId();
-	$page_title = "Manage Your {$type_description}";
+	$page_title = "Manage {$type_description}";
 
 }
 $member = new cMember;

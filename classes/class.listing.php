@@ -106,8 +106,8 @@ class cListing extends cSingle
 	function makeTypeDescription() {
         //CT language property...
         $type = $this->getType();
-        if($type == OFFER_LISTING_CODE) $type_description = OFFER_LISTING;
-        elseif($type == WANT_LISTING_CODE) $type_description = WANT_LISTING;
+        if($type == OFFER_LISTING_CODE) $type_description = OFFER_LISTING_SINGLE;
+        elseif($type == WANT_LISTING_CODE) $type_description = WANT_LISTING_SINGLE;
 		return $type_description;			
 	}
 

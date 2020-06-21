@@ -11,7 +11,7 @@ if (!empty($_POST["action"])){
 if ($action=="logout")
 {
 	$cUser->Logout();
-	$redir_url="member_dashboard.php";
+	$redir_url="index.php";
 }
 
 if ($action=="login")

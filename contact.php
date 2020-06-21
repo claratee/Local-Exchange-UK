@@ -1,18 +1,16 @@
 <?php
 include_once("includes/inc.global.php");
-
-//if(RECAPTCHA_VALIDATION) include_once(VENDOR_PATH. "/securimage/secureimage.php");
-
+//CT todo: improve this. 
+include_once("includes/inc.mailer.php");
 //$p->site_section = SECTION_EMAIL;
 $p->page_title = "Contact Us";
 
 $mail = new cMail();
-
 // if form submitted
 if ($_POST["submit"]){
 	//build object from inputs
-$cc_me_string ="";
-if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"";
+	$cc_me_string ="";
+	if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"";
 	// error catching without PEAR is a bit of a faff, but cant use PEAR anymore.
 	$error_message = "";
 	//if(!strlen($_POST['contact_form_message'] > 10)) $error_message .= "Message is missing or not long enough.";
@@ -26,30 +24,54 @@ if(!empty($_POST['contact_form_from_cc'])) $cc_me_string = " checked=\"checked\"
 
 	//check if errors and save
 	$is_sent = 0;
-	if(empty($error_message)) {
-		
+	if(!empty($error_message)) {
+		$cStatusMessage->Error($error_message);
+	}else {
 	    $field_array = array();
-	    $field_array['reply_to_name'] = $_POST['contact_form_from_name'];
-	    $field_array['reply_to_email'] = $_POST['contact_form_from_email'];
+	    // $field_array['reply_to_name'] = $_POST['contact_form_from_name'];
+	    // $field_array['reply_to_email'] = $_POST['contact_form_from_email'];
 
 	    //$field_array['recipients'] = array();
-	    $field_array['recipients'][0] = array('display_name'=>"Admin", 'email'=>$site_settings->getKey('EMAIL_ADMIN'));
-	    if(!empty($_POST['contact_form_from_cc'])){
-		    $field_array['recipients'][1] = array('display_name'=>$_POST['contact_form_from_name'], 'email'=>$_POST['contact_form_from_email']);
-	    }
-	    $field_array['message'] = "From: {$_POST['contact_form_from_name']} {$_POST['contact_form_from_member_id']}<br />
-			Email: {$_POST['contact_form_from_email']}<br />
-			<br />
-			{$_POST['contact_form_message']}
-			";
-		$field_array['subject'] = "Contact form - {$_POST['contact_form_subject']}";
-		$mail->Build($field_array);
-		//TODO allow user to be mailed a copy
+	    //$field_array['recipients'][0] = array('display_name'=>EMAIL_FROM[0], 'email'=>EMAIL_FROM[1]);
+		$subject = "Contact form - {$_POST['contact_form_subject']}";
 
-		$is_sent = $mail->sendMail(LOG_SEND_CONTACT);
-	} else {
-		$cStatusMessage->Error($error_message);
-	}
+	    $body = "Via the contact form on " . SITE_SHORT_TITLE . " (" . HTTP_BASE . ").
+	    	<hr />
+	    	<p>{$_POST['contact_form_from_name']} {$_POST['contact_form_from_member_id']} <a href='mailto:{$_POST['contact_form_from_email']}'>{$_POST['contact_form_from_email']}</a></p>
+	    	<p>Subject: {$subject}</p>
+	    	<p>&quot;{$_POST['contact_form_message']}&quot;</p>
+			";
+	
+
+
+		$mailer->addReplyTo($_POST['contact_form_from_email'], $_POST['contact_form_from_name']);
+		//TODO allow user to be mailed a copy
+		//CT mailer is an instance of PHPMailer instantiated in includes/inc.mailer.php	
+		$mailer->addAddress(EMAIL_FROM[0], EMAIL_FROM[1]);   
+			
+		// Content
+		$mailer->isHTML(true);                                  // Set email format to HTML
+		$mailer->Subject = $subject;
+		$mailer->Body    = $body;
+		$mailer->AltBody = strip_tags($body);
+
+	    try {
+	        //Server settings
+	        
+
+	       $mailer->send();
+	       if(!empty($_POST['contact_form_from_cc'])){
+	       		$mailer->Body    = "<p>A copy of the message you sent to the admin of the site. " . $body;
+	       		$mailer->ClearAllRecipients();
+		     	$mailer->addAddress($_POST['contact_form_from_email'], $_POST['contact_form_from_name']); 
+		     	$mailer->send();  
+		   }	
+	       $is_sent=true;
+	    } catch (Exception $e) {
+	    	$error_message .= "Message could not be sent. {$mailer->ErrorInfo}";
+	    	$cStatusMessage->Error($error_message);
+	    }
+	} 
 	
 
 	if($is_sent){
@@ -90,7 +112,7 @@ if($cUser->isLoggedOn()){
 	$member->Load("m.member_id=\"{$cUser->getMemberId()}\"");
 	$member_id = $member->getMemberId();
 	$contact_string = "
-		<p>You are logged in as {$member->getDisplayName()} ({$member->getPerson()->getMemberId()}).</p>
+		<p>You are logged in as {$member->getDisplayName()} ({$member->getPerson()->getMemberId()}). This information will be associated with your message.</p>
 		<input type=\"hidden\" id=\"contact_form_from_name\" name=\"contact_form_from_name\" value=\"{$member->getDisplayName()}\" />";
 
 	if(!empty($member->getPerson()->getEmail())){

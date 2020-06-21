@@ -61,6 +61,8 @@ class cPage {
 
 
 		//$string = file_get_contents(TEMPLATES_PATH . '/sidebar.php', TRUE);
+		$menu_key =($cUser->IsLoggedOn()) ? "MAIN_MENU" : "MAIN_MENU_ANON";
+			
 		$string = "<!--START include navigation -->
 			<div class=\"navigation\">
 					<input type=\"checkbox\" id=\"nav\" class=\"hidden\" />
@@ -68,7 +70,7 @@ class cPage {
 					<div class=\"nav-container\">
 						<nav>
 							<ul class=\"menu\">
-								{$site_settings->getKey("MAIN_MENU")}
+								{$site_settings->getKey($menu_key)}
 							</ul>
 						</nav>
 					</div>

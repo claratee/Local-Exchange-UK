@@ -519,9 +519,9 @@ public function getDisplayLocation(){
         $greeting_array[]=array("uk-UK", "Ukranian", "Dobriy den, {$name}!");
         $greeting_array[]=array("xh-ZA", "Xhosa (South Africa)", "Molo {$name}!");
 
-        $greeting_array[]=array("zh-CN", "Mandorin Chinese", "Nǐ hǎo {$name}!");
+        $greeting_array[]=array("zh-CN", "Mandarin Chinese", "Nǐ hǎo {$name}!");
         $n = rand(0,sizeof($greeting_array)-1);
-        return "<span title=\"A greeting in {$greeting_array[$n][1]}!\">" . $greeting_array[$n][2] . "</span>";
+        return "<h3>" . $greeting_array[$n][2] . " <em style='font-weight:normal; font-size:0.8em'>A greeting in {$greeting_array[$n][1]}.</em></h3>";
     }
 
 

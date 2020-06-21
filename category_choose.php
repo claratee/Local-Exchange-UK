@@ -49,12 +49,12 @@ function process_data ($values) {
 			$output = "This category still has listings in it.  You will need to move these listings to new categories or delete them before you can delete this category.  Note that the listings could be temporarily inactive or expired, in which case they will not show in the offered/wanted lists.<P>";
 
 			$output .= "Listings in this category:<BR>";
-			$listings = new cListingGroup(OFFER_LISTING);
+			$listings = new cListingGroup(OFFER_LISTING_SINGLE);
 			$listings->LoadListingGroup(null, $values["category"]);
 			foreach($listings->listing as $listing)
 				$output .= "OFFERED: ". $listing->description ." (". $listing->member_id .")<BR>"; 
 				
-			$listings = new cListingGroup(WANT_LISTING);
+			$listings = new cListingGroup(WANT_LISTING_SINGLE);
 			$listings->LoadListingGroup(null, $values["category"]);
 			foreach($listings->listing as $listing)
 				$output .= "WANTED: ". $listing->description ." (". $listing->member_id .")<BR>";			

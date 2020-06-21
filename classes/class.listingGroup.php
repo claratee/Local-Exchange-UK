@@ -249,7 +249,7 @@ class cListingGroup extends cCollection
 						//$location="sd";
 
 						//$output .= " {$member->getDisplayName()} ({$member->MemberLink()}). {$member->getDisplayPostcode()}.";
-						$output .= " {$member->getDisplayName()} ({$member->MemberLink()}). {$member->getDisplayPostcode()}.";
+						$output .= " {$member->getDisplayName()} ({$member->makeMemberLink()}). {$member->getDisplayPostcode()}.";
 					}
 			
 				//print($site_settings->getKey('SHOW_DATE_ON_LISTINGS'));

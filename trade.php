@@ -1,6 +1,7 @@
 <?php
 
 include_once("includes/inc.global.php");
+$cUser->MustBeLoggedOn();
 
 $p->site_section = EXCHANGES;
 
@@ -72,13 +73,13 @@ if($trade->getType() == TRADE_TYPE_INVOICE) {
 	$trade->setMemberIdTo($member->getMemberId());
 
 	
-	$intro .= "<p>You are sending an invoice to someone else. They will receive an email notification. Not what you expect? <a href=\"trade.php?type=transfer&member_id={$member_id}\">Transfer instead</a>.</p>";
+	$intro .= "<p>You are sending an invoice to someone else. They will receive an email notification. Not what you expect? <a href=\"trade.php?type=transfer&member_id={$_REQUEST['member_id']}\">Transfer instead</a>.</p>";
 } else {
 	$page_title = "Pay another member";
 	
 	$trade->setMemberIdFrom($member->getMemberId());
 	if(!empty($_REQUEST['member_id_to'])) $trade->setMemberIdTo($_REQUEST['member_id_to']);
-	$intro .= "<p>You are setting up a transfer of payment to someone else. They will receive an email notification. Not what you expect? <a href=\"trade.php?type=invoice&member_id={$member_id}\">Invoice instead</a>.</p>";
+	$intro .= "<p>You are setting up a transfer of payment to someone else. They will receive an email notification. Not what you expect? <a href=\"trade.php?type=invoice&member_id={$_REQUEST['member_id']}\">Invoice instead</a>.</p>";
 }		
 	
 if ($_POST["submit"]){

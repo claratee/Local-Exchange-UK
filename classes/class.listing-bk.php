@@ -315,7 +315,7 @@ class cListing
 
 	function TypeCode($type) {
 
-		if($type == OFFER_LISTING)
+		if($type == OFFER_LISTING_SINGLE)
 			return OFFER_LISTING_CODE;
 		else
 			return WANT_LISTING_CODE;			
@@ -323,9 +323,9 @@ class cListing
 
 	function TypeDesc($type_code) {
 		if($type_code == OFFER_LISTING_CODE)
-			return OFFER_LISTING;
+			return OFFER_LISTING_SINGLE;
 		else
-			return WANT_LISTING;			
+			return WANT_LISTING_SINGLE;			
 	}
 
 	// lookup on listing, not title as it was...because people want to change titles
