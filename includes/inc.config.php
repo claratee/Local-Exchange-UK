@@ -1,4 +1,5 @@
 <?php
+//CT - to use - if you want to continue to use the GIT repository, copy this file to a new file inc.config.local
 /* v1.0 note: a lot of these settings are now stored in MySQL and are configurable from the admin menu */
 
 if (!isset($global) && $running_upgrade_script!=true)
@@ -47,12 +48,25 @@ define ("DATABASE_PASSWORD","");
 define ("DATABASE_NAME","");
 define ("DATABASE_SERVER","localhost"); // often "localhost"
 define ("DATABASE_PORT",""); // CT if needed. like 8889
+/**********************************************************/
+/***************** SMTP LOGIN  ************************/
+//CT transition to using SMTP server so that the email does not get caught by spam filters 
+define("EMAIL_FROM", array('admin@example.com', 'LocalExchange Admin'));// who is it from. Note - repeats at from EMAIL_ADMIN
+
+//Enable SMTP authentication.
+define("EMAIL_SMTP_AUTH", true); // Enable SMTP. Set to false to use the standard server mail send;
+//CT these must be set if you use smtp server. you can use gmails free server
+define("EMAIL_SMTP_HOST","smtp.example.com");                   // Set the SMTP server to send through
+define("EMAIL_SMTP_USERNAME","user@example.com");                    	// SMTP user
+define("EMAIL_SMTP_PASSWORD","password");                    		// SMTP password
+define("EMAIL_SMTP_SMTPSECURE", "ENCRYPTION_STARTTLS");           // Enable TLS encryption; `PHPMailer::ENCRYPTION_SMTPS` encouraged
+define("EMAIL_PORT", 587);                    						// TCP port to connect to, use 465 for `PHPMailer::ENCRYPTION_SMTPS` above
 
 /**********************************************************/
 /********************* SITE NAMES *************************/
 
 // What is the name of the site?
-define ("SITE_LONG_TITLE", "Local Exchange");
+define ("SITE_LONG_TITLE", "Local Exchange and Trading Scheme");
 
 // What is the short, friendly, name of the site?
 define ("SITE_SHORT_TITLE", "Local Exchange");

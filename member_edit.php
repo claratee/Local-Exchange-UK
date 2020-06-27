@@ -25,7 +25,7 @@ must always pass in a member id unless admin in createmode
 // CT three vars to drive the actions on this page
 $action = $_REQUEST['action']; //create or update (default)
 //$mode = $_REQUEST['mode']; //admin or member (default)
-//$member_id = $_REQUEST['member_id']; //if missing, is user.
+$member_id = $_REQUEST['member_id']; //if missing, is user.
 
 // twisty logic for safety. not readability!
 // only core group and up can be in admin mode.

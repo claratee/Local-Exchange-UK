@@ -11,6 +11,11 @@
 #search and replace to put linebreaks before INSERT, DROP, CREATE.
 #replace 'CURRENT_TIMESTAMP()' with CURRENT_TIMESTAMP()
 
+#if you have mysql 5.6+, it is in strict mode by default you may have to change the mode of your mysql in your my.conf (find location by mysql --help) so it accepts null values 0000-00-00 00:00:00 
+#[mysqld]
+#sql_mode=NO_ENGINE_SUBSTITUTION
+
+
 # if you are not working in your own db or your db has other info in it that you want to keep (like the live site) - you might want to prefix your tables with something . like lets_
 
 
