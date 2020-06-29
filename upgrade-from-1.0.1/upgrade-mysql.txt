@@ -43,7 +43,7 @@ UPDATE `lets_cdm_pages` SET `updated_at`=FROM_UNIXTIME(`date`, '%Y-%m-%d %H:%I:%
 ALTER TABLE `lets_cdm_pages` ADD `member_id_author` VARCHAR(24) NOT NULL DEFAULT 'system' AFTER `permission`;
 
 #set up new column for opt-in printed directory
-ALTER TABLE `lets_member` ADD `opt_in_list` VARCHAR(1) NOT NULL DEFAULT 'N' AFTER `restriction`;
+ALTER TABLE `lets_member` ADD `opt_in_list`  INT(1) NULL DEFAULT '1' AFTER `restriction`;
 ALTER TABLE `lets_member` CHANGE `member_note` `member_note` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `admin_note` `admin_note` TEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL, CHANGE `expire_date` `expire_date` DATE NULL DEFAULT NULL, CHANGE `away_date` `away_date` DATE NULL DEFAULT NULL, CHANGE `confirm_payments` `confirm_payments` INT(1) NULL DEFAULT '0', CHANGE `restriction` `restriction` INT(1) NULL DEFAULT '0';
 ALTER TABLE `lets_member` CHANGE `member_note` `member_note` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `admin_note` `admin_note` VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL, CHANGE `expire_date` `expire_date` DATE NOT NULL DEFAULT '0000-00-00', CHANGE `away_date` `away_date` DATE NOT NULL DEFAULT '0000-00-00', CHANGE `confirm_payments` `confirm_payments` INT(1) NOT NULL DEFAULT '0', CHANGE `restriction` `restriction` INT(1) NOT NULL DEFAULT '0';
 
@@ -71,6 +71,8 @@ INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value
 
 INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES (NULL, 'EMAIL_LISTING_FOOTER', 'Text at the bottom of the listings email', 'varchar', '--\r\n\r\n<p><b>Join us on Facebook!</b><br />\r\nThere\'s a CamLETS facebook group for chatter and quick posts. Include your member number when you request to join, the group is only open to CamLETS members.<br />\r\n<a href=\"https://www.facebook.com/groups/camlets.org.uk/\">https://www.facebook.com/groups/camlets.org.uk/</a> \r\n\r\n<p><b>Want to feature on this listing update?</b><br />\r\nManage your CamLETS listings yourself from your main profile page. Updated listings are automatically included. <a href=\"http://www.cam.letslink.org/members/member_profile_all_in_one.php\">http://www.cam.letslink.org/members/member_profile_all_in_one.php</a>.</p>', '', '--\r\n\r\n<p><b>Want to feature on this listing update?</b><br />\r\nManage your listings yourself from your main profile page. Updated listings are automatically included.</p>', '', 'On the listings emails, what should the bottom text be?', '1');
 
+INSERT INTO `lets_settings` (`id`, `name`, `display_name`, `typ`, `current_value`, `options`, `default_value`, `max_length`, `descrip`, `section`) VALUES
+(56, 'SESSION_TIMEOUT', 'Timeout for the session, between 1 and 24 hours', 'bool', '1', '', '1', '', 'when someone logs in, how long should the site wait til they are asked to sign in again?', 2);
 
 #logins table - bugfix - all logins were logged as failure as it was set with current timestamp. changed title of the field so it becomes "login_date" column for any attempts, assume the count for consecutive failures would be the logic.
 ALTER TABLE `lets_logins` CHANGE `last_failed_date` `login_event_date` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;

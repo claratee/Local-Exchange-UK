@@ -340,7 +340,9 @@ $monthly_fee_exempt_list = array("ADMIN", SYSTEM_ACCOUNT_ID);
 // End of monthly fee related settings.
 
 define ("MAX_FILE_UPLOAD","5000000"); // Maximum file size, in bytes, allowed for uploads to the server
-									 
+					
+//CT timeout for the session
+define ("SESSION_TIMEOUT","10"); // how long the logged in session lasts in hours                    				 
 // The following text will appear at the beggining of the email update messages
 define ("LISTING_UPDATES_MESSAGE", "<h1>".SITE_LONG_TITLE."</h1>The following listings are new or updated.<p>If you would prefer not to receive automatic email updates, or if you would like to change their frequency, you can do so at the <a href=http://".HTTP_BASE."/member_edit.php?mode=self>Member Profile</a> area of our website.");
 

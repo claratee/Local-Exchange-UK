@@ -57,6 +57,12 @@ p{
  .large{
   font-size: 1.2em;
  }
+  .small{
+  font-size: 0.8em;
+ }
+ .bold{
+  font-weight: bold;
+ }
 .nowrap{
   white-space: nowrap;
 }
@@ -197,6 +203,20 @@ table tr.closed td{
 }
 table tr.closed td a{
   color: white;
+}
+
+/* styled for labels */
+table.labels {
+  border: solid 1px #CCC;
+  min-width: 100%;
+  font-size: 10pt;
+  /* font-size:0.9em; */
+}
+table.labels td {
+  border: solid 1px #CCC;
+  padding:10px;
+  width:50%;
+  font-size:11pt;
 }
 
  #footer {

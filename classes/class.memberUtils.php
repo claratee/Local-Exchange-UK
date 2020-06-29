@@ -91,7 +91,8 @@ class cMemberUtils extends cMember {
 
             if (null !=($this->getEmailUpdates())) $field_array['email_updates'] = $this->getEmailUpdates();
             if (null !=($this->getConfirmPayments())) $field_array['confirm_payments'] = $this->getConfirmPayments();
-            if (null !=($this->getAccountType())) $field_array['account_type'] = $this->getAccountType(); //CT non-admins can only change from single to joint or back again
+            if (null !=($this->getOptInList())) $field_array['opt_in_list'] = $this->getOptInList();
+             if (null !=($this->getAccountType())) $field_array['account_type'] = $this->getAccountType(); //CT non-admins can only change from single to joint or back again
 
             if($cUser->isAdminActionPermitted()){
                 if(null !=($this->getMemberId())) $field_array['member_id'] = $this->getMemberId();

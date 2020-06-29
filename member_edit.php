@@ -57,6 +57,7 @@ if($action == "create") $member->getPerson()->setPrimaryMember("Y");
 
 
 
+
 if ($_POST["submit"]){
 	$fieldArray = $_POST;
 	// set into object
@@ -81,6 +82,7 @@ if ($_POST["submit"]){
             'status'=>"A",
             'join_date'=>date('Y-m-d'),
             'expire_date'=>date('Y-m-d', strtotime('+1 years')), 
+            'opt_in_directory'=>'Y',
             'email_updates'=>'7'
         );
         $member->Build($field_array);
@@ -264,6 +266,8 @@ $adminElements="";
                 </label>
             </p>
             <input type=\"hidden\" id=\"address_country\" name=\"address_country\" value=\"". DEFAULT_COUNTRY ."\" />
+
+            <h3>Other preferences</h3>
             <p>
                 <label for=\"email_updates\">
 
@@ -272,9 +276,15 @@ $adminElements="";
                 </label>
             </p>
             <p>
-                <label for=\"email_updates\">
+                <label for=\"confirm_payments\">
                     Do you wish to confirm payments that are made to you? 
-                    {$p->PrepareFormSelector('confirm_payments', array("No - receive the transfer automatically", "Yes - I want to approve before the transfer is made"), null, $member->getConfirmPayments())}
+                    {$p->PrepareFormSelector('confirm_payments', ARRAY_TOGGLE, null, $member->getConfirmPayments())}
+                </label>
+            </p>
+            <p>
+                <label for=\"opt_in_list\">
+                    Do you wish to be included in the printed directory as well as online? This is produced several times a year.
+                    {$p->PrepareFormSelector('opt_in_list', ARRAY_TOGGLE, null, $member->getOptInList())}
                 </label>
             </p>
 

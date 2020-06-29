@@ -113,6 +113,7 @@ function getMySqlMember($condition){
     m.member_id AS member_id,
     m.confirm_payments AS confirm_payments,
     m.email_updates AS email_updates,
+    m.opt_in_list AS opt_in_list,
     p.person_id AS person_id,
     p.first_name AS first_name,
     p.last_name AS last_name,

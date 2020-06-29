@@ -25,6 +25,7 @@ class cMember extends cSingle
 	private $balance;
 	private $confirm_payments;
     private $restriction;
+    private $opt_in_list;
    //CT: extra properties
     private $display_name;  
     private $person;  
@@ -869,7 +870,25 @@ public function getDisplayLocation(){
         return $this;
     }
 
+   /**
+     * @return mixed
+     */
+    public function getOptInList()
+    {
+        return $this->opt_in_list;
+    }
 
+    /**
+     * @param mixed $opt_in_list
+     *
+     * @return self
+     */
+    public function setOptInList($opt_in_list)
+    {
+        $this->opt_in_list = $opt_in_list;
+
+        return $this;
+    }
 
 
 
@@ -881,8 +900,9 @@ public function getDisplayLocation(){
         return $this->password_reset;
     }
 
+
     /**
-     * @param mixed $login_history
+     * @param mixed $password_reset
      *
      * @return self
      */
@@ -893,6 +913,7 @@ public function getDisplayLocation(){
         return $this;
     }
 
+ 
 }
 
 ?>

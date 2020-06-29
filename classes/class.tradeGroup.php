@@ -184,7 +184,9 @@ class cTradeGroup extends cCollection {
 				<td>{$traded_from}</td>
 				<td>{$traded_to}</td>
 				<td>{$trade->getCategoryName()}</td>
-				<td><span class=\"metadata\">trade id: {$trade->getTradeId()} </span>{$trade->getDescription()}{$note}{$trade->getType()}{$trade->getStatus()}</td>
+				<td><span class=\"metadata\">trade id: {$trade->getTradeId()} </span>{$trade->getDescription()}{$note}
+                    <!-- {$trade->getType()}{$trade->getStatus()} -->
+                </td>
 				{$rb}</tr>
 				";
 				
